@@ -1,8 +1,8 @@
 package com.gostech.swiftportbackend.resources.domain.model.valueobjects;
 
-import jakarta.persistence.Embedded;
+import jakarta.persistence.Embeddable;
 
-@Embedded
+@Embeddable
 public record LocationId(Long locationId) {
     public LocationId {
         if (locationId == null || locationId < 1) {
