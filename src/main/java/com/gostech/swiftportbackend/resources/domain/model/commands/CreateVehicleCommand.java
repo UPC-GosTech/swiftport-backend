@@ -2,7 +2,9 @@ package com.gostech.swiftportbackend.resources.domain.model.commands;
 
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 
-public record CreateVehicleCommand(VehicleId vehicleId, TenantId tenantId, String plateNumber, String type, Capacity loadCapacity, VehicleStatus status, TimeInterval timeInterval) {
+import java.time.LocalDateTime;
+
+public record CreateVehicleCommand(VehicleId vehicleId, TenantId tenantId, String plateNumber, String type, Capacity loadCapacity, VehicleStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
     public CreateVehicleCommand {
         if (vehicleId == null) {
             throw new IllegalArgumentException("vehicleId cannot be null");
@@ -22,8 +24,11 @@ public record CreateVehicleCommand(VehicleId vehicleId, TenantId tenantId, Strin
         if (status == null) {
             throw new IllegalArgumentException("status cannot be null");
         }
-        if (timeInterval == null) {
-            throw new IllegalArgumentException("timeInterval cannot be null");
+        if (createdAt == null) {
+            throw new IllegalArgumentException("createdAt cannot be null");
+        }
+        if (updatedAt == null) {
+            throw new IllegalArgumentException("updatedAt cannot be null");
         }
     }
 }

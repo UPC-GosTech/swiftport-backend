@@ -2,7 +2,9 @@ package com.gostech.swiftportbackend.resources.domain.model.commands;
 
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 
-public record CreateEmployeeCommand(EmployeeId employeeId, TenantId tenantId, String name, PositionId positionId, EmployeeStatus employeeStatus, TimeInterval timeInterval) {
+import java.time.LocalDateTime;
+
+public record CreateEmployeeCommand(EmployeeId employeeId, TenantId tenantId, String name, PositionId positionId, EmployeeStatus employeeStatus, LocalDateTime createdAt, LocalDateTime updatedAt) {
 
     public CreateEmployeeCommand {
         if (employeeId == null) {
@@ -20,8 +22,11 @@ public record CreateEmployeeCommand(EmployeeId employeeId, TenantId tenantId, St
         if (employeeStatus == null) {
             throw new IllegalArgumentException("employeeStatus cannot be null");
         }
-        if (timeInterval == null) {
-            throw new IllegalArgumentException("timeInterval cannot be null");
+        if (createdAt == null) {
+            throw new IllegalArgumentException("createdAt cannot be null");
+        }
+        if (updatedAt == null) {
+            throw new IllegalArgumentException("updatedAt cannot be null");
         }
     }
 }
