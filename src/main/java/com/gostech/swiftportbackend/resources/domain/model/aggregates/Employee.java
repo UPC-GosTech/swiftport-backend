@@ -10,19 +10,6 @@ import lombok.Getter;
 @Getter
 @Entity
 public class Employee extends AuditableAbstractAggregateRoot<Employee> {
-    /**
-     *  class Employee <<AggregateRoot>> {
-     *         - EmployeeId id
-     *         - TenantId tenantId
-     *         - String name
-     *         - PositionId positionId
-     *         - EmployeeStatus status		// ENUM
-     *         - LocalDateTime createdAt
-     *         - LocalDateTime updatedAt
-     *         # Employee(CreateEmployeeCommand)
-     *         + boolean isAvailable(TimeInterval interval)
-     *       }
-     */
 
     @Embedded
     private EmployeeId employeeId;
