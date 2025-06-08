@@ -6,7 +6,7 @@ import jakarta.persistence.Embeddable;
 public record EmployeeId(Long employeeId) {
     public EmployeeId {
         if (employeeId == null || employeeId <= 1) {
-            throw new NullPointerException("EmployeeId cannot be null or less than 1");
+            throw new IllegalArgumentException("EmployeeId cannot be null or less than 1");
         }
     }
 }
