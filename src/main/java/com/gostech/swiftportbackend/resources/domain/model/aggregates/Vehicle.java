@@ -55,6 +55,17 @@ public class Vehicle extends AuditableAbstractAggregateRoot<Vehicle> {
         this.plateNumber = command.plateNumber();
         this.type = command.type();
         this.capacity = new Capacity(command.tons(), command.passengers());
+        switch (command.status()) {
+            case "Available":
+                this.vehicleStatus = VehicleStatus.AVAILABLE;
+                break;
+            case "In Maintenance":
+                this.vehicleStatus = VehicleStatus.IN_MAINTENANCE;
+                break;
+            default:
+                this.vehicleStatus = VehicleStatus.UNAVAILABLE;
+                break;
+        }
     }
 
     public boolean isAvailable(TimeInterval timeInterval) {
