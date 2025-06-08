@@ -1,7 +1,8 @@
 package com.gostech.swiftportbackend.resources.domain.model.valueobjects;
 
-import java.math.BigDecimal;
+import jakarta.persistence.Embeddable;
 
+@Embeddable
 public record Coordinates(Double latitude, Double longitude) {
 
     public Coordinates {
