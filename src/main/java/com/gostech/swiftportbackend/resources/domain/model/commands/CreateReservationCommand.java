@@ -1,37 +1,32 @@
 package com.gostech.swiftportbackend.resources.domain.model.commands;
 
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
-
 import java.time.LocalDateTime;
 
-public record CreateReservationCommand(ReservationId reservationId, TenantId tenantId, ResourceType resourceType, ResourceId resourceId, TimeInterval timeInterval, ActivityId activityId, TaskId taskId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+public record CreateReservationCommand(Long reservationId, Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end, Long activityId, Long taskId) {
     public CreateReservationCommand {
-        if (reservationId == null) {
+        if (reservationId == null || reservationId <= 0) {
             throw new IllegalArgumentException("reservationId cannot be null");
         }
-        if (tenantId == null) {
+        if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("tenantId cannot be null");
         }
-        if (resourceType == null) {
+        if (resourceType == null || resourceType.isEmpty()) {
             throw new IllegalArgumentException("resourceType cannot be null");
         }
-        if (resourceId == null) {
+        if (resourceId == null || resourceId <= 0) {
             throw new IllegalArgumentException("resourceId cannot be null");
         }
-        if (timeInterval == null) {
-            throw new IllegalArgumentException("timeInterval cannot be null");
+        if (start == null) {
+            throw new IllegalArgumentException("start cannot be null");
         }
-        if (activityId == null) {
+        if (end == null) {
+            throw new IllegalArgumentException("end cannot be null");
+        }
+        if (activityId == null || activityId <= 0) {
             throw new IllegalArgumentException("activityId cannot be null");
         }
-        if (taskId == null) {
+        if (taskId == null || taskId <= 0) {
             throw new IllegalArgumentException("taskId cannot be null");
-        }
-        if (createdAt == null) {
-            throw new IllegalArgumentException("createdAt cannot be null");
-        }
-        if (updatedAt == null) {
-            throw new IllegalArgumentException("updatedAt cannot be null");
         }
     }
 }

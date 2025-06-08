@@ -1,15 +1,13 @@
 package com.gostech.swiftportbackend.resources.domain.model.commands;
 
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
+import java.math.BigDecimal;
 
-import java.time.LocalDateTime;
-
-public record CreateVehicleCommand(VehicleId vehicleId, TenantId tenantId, String plateNumber, String type, Capacity loadCapacity, VehicleStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+public record CreateVehicleCommand(Long vehicleId, Long tenantId, String plateNumber, String type, BigDecimal tons, Integer passengers, String status) {
     public CreateVehicleCommand {
-        if (vehicleId == null) {
+        if (vehicleId == null || vehicleId <= 0) {
             throw new IllegalArgumentException("vehicleId cannot be null");
         }
-        if (tenantId == null) {
+        if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("tenantId cannot be null");
         }
         if (plateNumber == null || plateNumber.isEmpty()) {
@@ -18,17 +16,14 @@ public record CreateVehicleCommand(VehicleId vehicleId, TenantId tenantId, Strin
         if (type == null || type.isEmpty()) {
             throw new IllegalArgumentException("type cannot be null or empty");
         }
-        if (loadCapacity == null) {
-            throw new IllegalArgumentException("loadCapacity cannot be null");
+        if (tons == null || tons.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("tons cannot be null");
         }
-        if (status == null) {
+        if (passengers == null || passengers <= 0) {
+            throw new IllegalArgumentException("passengers cannot be null or less than 1");
+        }
+        if (status == null || status.isEmpty()) {
             throw new IllegalArgumentException("status cannot be null");
-        }
-        if (createdAt == null) {
-            throw new IllegalArgumentException("createdAt cannot be null");
-        }
-        if (updatedAt == null) {
-            throw new IllegalArgumentException("updatedAt cannot be null");
         }
     }
 }
