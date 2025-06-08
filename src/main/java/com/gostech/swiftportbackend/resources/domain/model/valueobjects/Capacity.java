@@ -1,18 +1,10 @@
 package com.gostech.swiftportbackend.resources.domain.model.valueobjects;
 
 import jakarta.persistence.Embeddable;
-
 import java.math.BigDecimal;
 
+@Embeddable
 public record Capacity(BigDecimal Tons, Integer passengers) {
-
-    /**
-     * class Capacity <<ValueObject>> {
-     *         - BigDecimal tons
-     *         - Integer passengers
-     *         # Capacity(BigDecimal tons, Integer passengers)
-     *       }
-     */
 
     public Capacity {
         if (Tons == null || Tons.compareTo(BigDecimal.ZERO) <= 0) {
