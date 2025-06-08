@@ -9,5 +9,4 @@ public class SwiftportBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(SwiftportBackendApplication.class, args);
     }
-    // just watching
 }
