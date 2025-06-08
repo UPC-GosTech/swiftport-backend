@@ -12,6 +12,19 @@ import lombok.Getter;
 @Entity
 public class Position extends AuditableAbstractAggregateRoot<Position> {
 
+    /**
+     *      class Equipment <<AggregateRoot>> {
+     *         - EquipmentId id
+     *         - TenantId tenantId
+     *         - String name
+     *         - EquipmentStatus status
+     *         - LocalDateTime createdAt
+     *         - LocalDateTime updatedAt
+     *         # Equipment(CreateEquipmentCommand)
+     *         + boolean isAvailable(TimeInterval interval)
+     *         + void scheduleInspection(LocalDateTime date)
+     *       }
+     */
     @Embedded
     private PositionId positionId;
 
