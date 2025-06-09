@@ -1,7 +1,6 @@
 package com.gostech.swiftportbackend.resources.domain.model.commands;
 
 public record CreateEmployeeCommand(Long employeeId, Long tenantId, String name, Long positionId, String employeeStatus) {
-
     public CreateEmployeeCommand {
         if (employeeId == null || employeeId <= 0) {
             throw new IllegalArgumentException("EmployeeId cannot be null");
