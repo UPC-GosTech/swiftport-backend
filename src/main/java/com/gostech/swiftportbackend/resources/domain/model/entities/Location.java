@@ -27,8 +27,4 @@ public class Location extends AuditableModel {
 
     @Embedded
     private Coordinates coordinates;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 }
