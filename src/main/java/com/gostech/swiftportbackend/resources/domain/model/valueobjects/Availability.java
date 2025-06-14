@@ -1,7 +1,8 @@
 package com.gostech.swiftportbackend.resources.domain.model.valueobjects;
 
-public enum EquipmentStatus {
+public enum Availability {
     AVAILABLE,
     UNAVAILABLE,
-    IN_MAINTENANCE
+    VACATION,
+    RESERVED
 }

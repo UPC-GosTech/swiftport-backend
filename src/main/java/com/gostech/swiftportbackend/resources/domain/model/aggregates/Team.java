@@ -1,6 +1,7 @@
 package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateTeamCommand;
+import com.gostech.swiftportbackend.resources.domain.model.entities.TeamMember;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TeamId;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TimeInterval;
@@ -25,13 +26,13 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
 
     @ElementCollection
     @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
-    private List<EmployeeId> memberIds;
+    private List<TeamMember> teamMembers;
 
-    public Team(Long TeamId, Long tenantId, String name, List<EmployeeId> memberIds) {
+    public Team(Long TeamId, Long tenantId, String name, List<TeamMember> teamMembers) {
         this.teamId = new TeamId(TeamId);
         this.tenantId = new TenantId(tenantId);
         this.name = name;
-        this.memberIds = memberIds;
+        this.teamMembers = teamMembers;
     }
 
     public Team() {}
@@ -40,21 +41,20 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
         this.teamId = new TeamId(command.teamId());
         this.tenantId = new TenantId(command.tenantId());
         this.name = command.name();
-        this.memberIds = command.memberIds();
+        this.teamMembers = command.teamMembers();
     }
 
-    public void addMember(EmployeeId employeeId) {
-        this.memberIds.add(employeeId);
+    public void addMember(TeamMember teamMember) {
+        this.teamMembers.add(teamMember);
     }
 
     public void removeMember(EmployeeId employeeId) {
-        this.memberIds.remove(employeeId);
+        this.teamMembers.removeIf(member -> member.getEmployeeId().equals(employeeId));
     }
 
-    public boolean isAvailable(TimeInterval timeInterval) {
+    public void validateMembersUnique() {
         /**
-         * MISSING THE LOGIC
+         * Ya aqui no se, tu mismo eres sergio
          */
-        return true;
     }
 }

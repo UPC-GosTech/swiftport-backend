@@ -8,6 +8,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,24 +21,35 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     @Embedded
     private TenantId tenantId;
 
+    private String code;
     private String name;
+    private String plate;
 
     @Embedded
-    EquipmentStatus equipmentStatus;
+    Capacity capacity;
 
-    public Equipment(Long EquipmentId, Long tenantId, String name, String status) {
+    @Embedded
+    Availability equipmentStatus;
+
+    public Equipment(Long EquipmentId, Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
         this.equipmentId = new EquipmentId(EquipmentId);
         this.tenantId = new TenantId(tenantId);
+        this.code = code;
         this.name = name;
+        this.plate = plate;
+        this.capacity = new Capacity(capacityLoad, capacityPax);
         switch (status) {
             case "Available":
-                this.equipmentStatus = EquipmentStatus.AVAILABLE;
+                this.equipmentStatus = Availability.AVAILABLE;
                 break;
-            case "In Maintenance":
-                this.equipmentStatus = EquipmentStatus.IN_MAINTENANCE;
+            case "Vacation":
+                this.equipmentStatus = Availability.VACATION;
+                break;
+            case "Reserved":
+                this.equipmentStatus = Availability.RESERVED;
                 break;
             default:
-                this.equipmentStatus = EquipmentStatus.UNAVAILABLE;
+                this.equipmentStatus = Availability.UNAVAILABLE;
                 break;
         }
     }
@@ -47,22 +59,28 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     public Equipment(CreateEquipmentCommand command) {
         this.equipmentId = new EquipmentId(command.equipmentId());
         this.tenantId = new TenantId(command.tenantId());
+        this.code = command.code();
         this.name = command.name();
+        this.plate = command.plate();
+        this.capacity = new Capacity(command.capacityLoad(), command.capacityPax());
         switch (command.status()) {
             case "Available":
-                this.equipmentStatus = EquipmentStatus.AVAILABLE;
+                this.equipmentStatus = Availability.AVAILABLE;
                 break;
-            case "In Maintenance":
-                this.equipmentStatus = EquipmentStatus.IN_MAINTENANCE;
+            case "Vacation":
+                this.equipmentStatus = Availability.VACATION;
+                break;
+            case "Reserved":
+                this.equipmentStatus = Availability.RESERVED;
                 break;
             default:
-                this.equipmentStatus = EquipmentStatus.UNAVAILABLE;
+                this.equipmentStatus = Availability.UNAVAILABLE;
                 break;
         }
     }
 
     public boolean isAvailable(TimeInterval timeInterval) {
-        return this.equipmentStatus == EquipmentStatus.AVAILABLE;
+        return this.equipmentStatus == Availability.AVAILABLE;
 
         /**
          * MISSING PART OF THE LOGIC
@@ -71,7 +89,7 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     }
 
     public void scheduleInspection(LocalDateTime scheduledTime) {
-        this.equipmentStatus = EquipmentStatus.IN_MAINTENANCE;
+        this.equipmentStatus = Availability.VACATION;
 
         /**
          * MISSING PART OF THE LOGIC
