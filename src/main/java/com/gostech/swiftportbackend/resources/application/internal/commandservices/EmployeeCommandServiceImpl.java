@@ -23,7 +23,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
         try {
             employeeRepository.save(employee);
         } catch (Exception e) {
-            throw  new IllegalArgumentException("Error saving employee: %s".formatted(e.getMessage()));
+            throw new IllegalArgumentException("Error saving employee: %s".formatted(e.getMessage()));
         }
         return employee.getEmployeeId().employeeId();
     }
