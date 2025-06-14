@@ -31,22 +31,22 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
         this.tenantId = new TenantId(tenantId);
         switch (resourceType) {
             case "Vehicle":
-                this.resourceReference = new ResourceReference(ResourceType.VEHICLE, new ResourceId(resourceId));
+                this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), resourceId);
                 break;
             case "Employee":
-                this.resourceReference = new ResourceReference(ResourceType.EMPLOYEE, new ResourceId(resourceId));
+                this.resourceReference = new ResourceReference(ResourceType.EMPLOYEE.toString(), resourceId);
                 break;
             case "Position":
-                this.resourceReference = new ResourceReference(ResourceType.POSITION, new ResourceId(resourceId));
+                this.resourceReference = new ResourceReference(ResourceType.POSITION.toString(), resourceId);
                 break;
             case "Zone":
-                this.resourceReference = new ResourceReference(ResourceType.ZONE, new ResourceId(resourceId));
+                this.resourceReference = new ResourceReference(ResourceType.ZONE.toString(), resourceId);
                 break;
             case "Equipment":
-                this.resourceReference = new ResourceReference(ResourceType.EQUIPMENT, new ResourceId(resourceId));
+                this.resourceReference = new ResourceReference(ResourceType.EQUIPMENT.toString(), resourceId);
                 break;
             case "Team":
-                this.resourceReference = new ResourceReference(ResourceType.TEAM, new ResourceId(resourceId));
+                this.resourceReference = new ResourceReference(ResourceType.TEAM.toString(), resourceId);
                 break;
             default:
                 this.resourceReference = null;
@@ -62,22 +62,22 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
         this.tenantId = new TenantId(command.tenantId());
         switch (command.resourceType()) {
             case "Vehicle":
-                this.resourceReference = new ResourceReference(ResourceType.VEHICLE, new ResourceId(command.resourceId()));
+                this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), command.resourceId());
                 break;
             case "Employee":
-                this.resourceReference = new ResourceReference(ResourceType.EMPLOYEE, new ResourceId(command.resourceId()));
+                this.resourceReference = new ResourceReference(ResourceType.EMPLOYEE.toString(), command.resourceId());
                 break;
             case "Position":
-                this.resourceReference = new ResourceReference(ResourceType.POSITION, new ResourceId(command.resourceId()));
+                this.resourceReference = new ResourceReference(ResourceType.POSITION.toString(), command.resourceId());
                 break;
             case "Zone":
-                this.resourceReference = new ResourceReference(ResourceType.ZONE, new ResourceId(command.resourceId()));
+                this.resourceReference = new ResourceReference(ResourceType.ZONE.toString(), command.resourceId());
                 break;
             case "Equipment":
-                this.resourceReference = new ResourceReference(ResourceType.EQUIPMENT, new ResourceId(command.resourceId()));
+                this.resourceReference = new ResourceReference(ResourceType.EQUIPMENT.toString(), command.resourceId());
                 break;
             case "Team":
-                this.resourceReference = new ResourceReference(ResourceType.TEAM, new ResourceId(command.resourceId()));
+                this.resourceReference = new ResourceReference(ResourceType.TEAM.toString(), command.resourceId());
                 break;
             default:
                 this.resourceReference = null;

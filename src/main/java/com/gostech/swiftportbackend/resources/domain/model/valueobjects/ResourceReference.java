@@ -3,7 +3,7 @@ package com.gostech.swiftportbackend.resources.domain.model.valueobjects;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public record ResourceReference(ResourceType resourceType, ResourceId resourceId) {
+public record ResourceReference(String resourceType, Long resourceId) {
     public ResourceReference {
         if (resourceType == null) {
             throw new IllegalArgumentException("resourceType cannot be null");
