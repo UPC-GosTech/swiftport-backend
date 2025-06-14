@@ -2,8 +2,8 @@ package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreatePositionCommand;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.PositionId;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TenantId;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.Getter;

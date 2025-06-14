@@ -3,6 +3,7 @@ package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateReservationCommand;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.Getter;
