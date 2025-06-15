@@ -1,10 +1,10 @@
-package com.gostech.swiftportbackend.iam.infrastructure.authorization.sfs.pipeline;
+package com.gostech.swiftportbackend.shared.infrastructure.multitenancy;
 
 import org.springframework.stereotype.Component;
 
 /**
  * Helper class to facilitate usage of TenantContext in services and repositories
- * Provides convenient methods to work with tenant information
+ * Provides convenient methods to work with tenant information across bounded contexts
  */
 @Component
 public class TenantContextHelper {
@@ -61,6 +61,7 @@ public class TenantContextHelper {
      * @return formatted string with tenant information
      */
     public String getTenantContextInfo() {
-        return String.format("TenantContext[id=%d]", getCurrentTenantId());
+        return String.format("Current Tenant: %d, Has Context: %b", 
+                getCurrentTenantId(), hasValidTenantContext());
     }
 } 

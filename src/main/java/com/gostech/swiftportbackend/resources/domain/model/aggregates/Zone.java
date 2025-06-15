@@ -1,12 +1,14 @@
 package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateZoneCommand;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.LocationsList;
+import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -17,13 +19,14 @@ public class Zone extends AuditableAbstractAggregateRoot<Zone> {
 
     private String name;
 
-    @Embedded
-    private LocationsList locationsList;
+    @ElementCollection
+    @CollectionTable(name = "zone_locations", joinColumns = @JoinColumn(name = "zone_id"))
+    private List<Location> locationsList = new ArrayList<>();
 
     public Zone(Long tenantId, String name) {
         this.tenantId = new TenantId(tenantId);
         this.name = name;
-        this.locationsList = new LocationsList();
+        this.locationsList = new ArrayList<>();
     }
 
     public Zone() {}
@@ -31,7 +34,7 @@ public class Zone extends AuditableAbstractAggregateRoot<Zone> {
     public Zone(CreateZoneCommand command) {
         this.tenantId = new TenantId(command.tenantId());
         this.name = command.name();
-        this.locationsList = new LocationsList();
+        this.locationsList = command.locations();
 
         /**
          * MISSING ADD LOCATION

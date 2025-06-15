@@ -1,6 +1,7 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllEmployeesQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeeByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeCommandService;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeQueryService;
@@ -14,10 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -50,5 +50,33 @@ public class EmployeeController {
         var employeeEntity = employee.get();
         var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);
         return new ResponseEntity<>(employeeResource, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{employeeId}")
+    @Operation(summary = "Get employee by id", description = "Get employee by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employee found"),
+            @ApiResponse(responseCode = "404", description = "Employee not found")})
+    public ResponseEntity<EmployeeResource> getEmployee(@PathVariable Long employeeId) {
+        var getEmployeeByIdQuery = new GetEmployeeByIdQuery(employeeId);
+        var employee = employeeQueryService.handle(getEmployeeByIdQuery);
+        if (employee.isEmpty()) return ResponseEntity.notFound().build();
+        var employeeEntity = employee.get();
+        var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);
+        return ResponseEntity.ok(employeeResource);
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all employees", description = "Get all employees")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employees found"),
+            @ApiResponse(responseCode = "404", description = "Employee not found")})
+    public ResponseEntity<List<EmployeeResource>> getAllEmployees() {
+        var employees = employeeQueryService.handle(new GetAllEmployeesQuery());
+        if (employees.isEmpty()) return ResponseEntity.notFound().build();
+        var employeeResource = employees.stream()
+                .map(EmployeeResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(employeeResource);
     }
 }

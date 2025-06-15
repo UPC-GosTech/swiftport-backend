@@ -3,7 +3,6 @@ package com.gostech.swiftportbackend.resources.application.internal.queryservice
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllEmployeesQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeeByIdQuery;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeQueryService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class EmployeeQueryServiceImpl implements EmployeeQueryService {
 
     @Override
     public Optional<Employee> handle(GetEmployeeByIdQuery query) {
-        return employeeRepository.findByEmployeeId(new EmployeeId(query.employeeId()));
+        return employeeRepository.findById(query.employeeId());
     }
 
     @Override
