@@ -82,5 +82,4 @@ public class ReservationController {
                 .toList();
         return ResponseEntity.ok(reservationResources);
     }
-
 }
