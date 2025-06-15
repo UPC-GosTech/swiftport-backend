@@ -12,9 +12,6 @@ import lombok.Getter;
 public class Employee extends AuditableAbstractAggregateRoot<Employee> {
 
     @Embedded
-    private EmployeeId employeeId;
-
-    @Embedded
     private TenantId tenantId;
 
     @Embedded
