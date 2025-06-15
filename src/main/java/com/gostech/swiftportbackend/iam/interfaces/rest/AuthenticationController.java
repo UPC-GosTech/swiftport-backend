@@ -102,7 +102,6 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "400", description = "Bad request.")})
     public ResponseEntity<?> signUp(@RequestBody SignUpResource signUpResource) {
         logger.info("Processing sign-up request for username: {}", signUpResource.username());
-        logger.info("Roles received: {}", signUpResource.roles());
         
         try {
             var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);

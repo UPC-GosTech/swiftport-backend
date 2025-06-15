@@ -1,33 +1,58 @@
 package com.gostech.swiftportbackend.iam.domain.model.commands;
 
-import java.util.List;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmailAddress;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.PhoneNumber;
 
 /**
- * Command to sign up a new user
- * @param username the username
- * @param password the password
- * @param email the email
- * @param firstName the first name
- * @param lastName the last name
- * @param roles the list of role names
+ * Sign up command
+ * This command is used to register a new tenant (company) with an admin user
  */
-public record SignUpCommand(String username, String password, String email, 
-                           String firstName, String lastName, List<String> roles) {
+public record SignUpCommand(
+    // Tenant data
+    String ruc,
+    String legalName,
+    String commercialName,
+    String address,
+    String city,
+    String country,
+    PhoneNumber tenantPhone,
+    EmailAddress tenantEmail,
+    String website,
+    
+    // Admin user data
+    String username,
+    String password,
+    EmailAddress email,
+    String firstName,
+    String lastName
+) {
     public SignUpCommand {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null or blank");
+        // Tenant validations
+        if (ruc == null || ruc.trim().isEmpty()) {
+            throw new IllegalArgumentException("RUC cannot be null or empty");
         }
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or blank");
+        if (legalName == null || legalName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Legal name cannot be null or empty");
         }
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email cannot be null or blank");
+        if (tenantEmail == null) {
+            throw new IllegalArgumentException("Tenant email cannot be null");
         }
-        if (firstName == null || firstName.isBlank()) {
-            throw new IllegalArgumentException("First name cannot be null or blank");
+        
+        // Admin user validations
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
         }
-        if (lastName == null || lastName.isBlank()) {
-            throw new IllegalArgumentException("Last name cannot be null or blank");
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
+        if (email == null) {
+            throw new IllegalArgumentException("User email cannot be null");
+        }
+        if (firstName == null || firstName.trim().isEmpty()) {
+            throw new IllegalArgumentException("First name cannot be null or empty");
+        }
+        if (lastName == null || lastName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Last name cannot be null or empty");
         }
     }
 } 

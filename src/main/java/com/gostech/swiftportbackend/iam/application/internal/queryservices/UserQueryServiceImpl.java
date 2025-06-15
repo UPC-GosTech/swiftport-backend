@@ -1,5 +1,11 @@
 package com.gostech.swiftportbackend.iam.application.internal.queryservices;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.stereotype.Service;
+
 import com.gostech.swiftportbackend.iam.application.internal.outboundservices.hashing.HashingService;
 import com.gostech.swiftportbackend.iam.application.internal.outboundservices.tokens.TokenService;
 import com.gostech.swiftportbackend.iam.domain.model.aggregates.User;
@@ -10,11 +16,6 @@ import com.gostech.swiftportbackend.iam.domain.model.queries.GetUserByUsernameQu
 import com.gostech.swiftportbackend.iam.domain.services.UserQueryService;
 import com.gostech.swiftportbackend.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * User query service implementation
@@ -57,9 +58,9 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public ImmutablePair<User, String> handle(SignInCommand command) {
         // Find user by username and current tenant
-        Long tenantId = TenantContext.getCurrentTenantId();
-        User user = userRepository.findByUsernameAndTenantId(command.username(), tenantId)
+        User user = userRepository.findByUsername(command.username())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
         
         // Verify password
         if (!hashingService.matches(command.password(), user.getPasswordHash())) {
@@ -72,7 +73,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         }
         
         // Generate token
-        String token = tokenService.generateToken(user.getUsername(), tenantId);
+        String token = tokenService.generateToken(user.getUsername(), user.getTenantId());
         
         return ImmutablePair.of(user, token);
     }

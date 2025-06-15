@@ -1,16 +1,25 @@
 package com.gostech.swiftportbackend.iam.interfaces.rest.resources;
 
-import java.util.List;
-
 /**
- * Sign Up Resource
- * @param username the username
- * @param password the password
- * @param email the email
- * @param firstName the first name
- * @param lastName the last name
- * @param roles the list of role names
+ * Sign up resource
+ * This resource is used for tenant registration with admin user creation
  */
-public record SignUpResource(String username, String password, String email, 
-                            String firstName, String lastName, List<String> roles) {
-} 
+public record SignUpResource(
+    // Tenant data
+    String ruc,
+    String legalName,
+    String commercialName,
+    String address,
+    String city,
+    String country,
+    String tenantPhone,
+    String tenantEmail,
+    String website,
+    
+    // Admin user data
+    String username,
+    String password,
+    String email,
+    String firstName,
+    String lastName
+) {} 

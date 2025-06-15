@@ -1,9 +1,9 @@
 package com.gostech.swiftportbackend.iam.interfaces.rest.transform;
 
+import java.util.stream.Collectors;
+
 import com.gostech.swiftportbackend.iam.domain.model.aggregates.User;
 import com.gostech.swiftportbackend.iam.interfaces.rest.resources.UserResource;
-
-import java.util.stream.Collectors;
 
 /**
  * Assembler to transform from User entity to UserResource

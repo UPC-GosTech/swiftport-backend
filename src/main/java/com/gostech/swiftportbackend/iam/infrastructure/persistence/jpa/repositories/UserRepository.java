@@ -1,12 +1,13 @@
 package com.gostech.swiftportbackend.iam.infrastructure.persistence.jpa.repositories;
 
-import com.gostech.swiftportbackend.iam.domain.model.aggregates.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.gostech.swiftportbackend.iam.domain.model.aggregates.User;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmailAddress;
 /**
  * User Repository
  * <p>
@@ -28,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email the email to search for
      * @return Optional containing the user if found, empty otherwise
      */
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmail(EmailAddress email);
     
     /**
      * Check if a user exists by username
@@ -42,7 +43,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email the email to check
      * @return true if user exists, false otherwise
      */
-    boolean existsByEmail(String email);
+    boolean existsByEmail(EmailAddress email);
     
     /**
      * Find a user by username and tenant ID
@@ -66,4 +67,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Optional containing the user if found, empty otherwise
      */
     Optional<User> findByIdAndTenantId(Long id, Long tenantId);
+    
+    /**
+     * Check if user exists by username and tenant
+     * @param username the username to check
+     * @param tenantId the tenant ID
+     * @return true if user exists, false otherwise
+     */
+    boolean existsByUsernameAndTenantId(String username, Long tenantId);
+    
+    /**
+     * Check if user exists by email and tenant
+     * @param email the email to check
+     * @param tenantId the tenant ID
+     * @return true if user exists, false otherwise
+     */
+    boolean existsByEmailAndTenantId(EmailAddress email, Long tenantId);
 } 
