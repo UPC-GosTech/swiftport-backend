@@ -1,11 +1,11 @@
-package com.gostech.swiftportbackend.resources.domain.model.commands;
+package com.gostech.swiftportbackend.resources.interfaces.rest.resources;
 
 import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 
 import java.util.List;
 
-public record CreateZoneCommand(Long tenantId, String name, List<Location> locations) {
-    public CreateZoneCommand {
+public record CreateZoneResource(Long tenantId, String name, List<Location> locations) {
+    public CreateZoneResource {
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("TenantId cannot be null");
         }

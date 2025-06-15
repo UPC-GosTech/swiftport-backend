@@ -16,9 +16,6 @@ import java.time.LocalDateTime;
 public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
 
     @Embedded
-    private EquipmentId equipmentId;
-
-    @Embedded
     private TenantId tenantId;
 
     private String code;
@@ -31,8 +28,7 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     @Embedded
     Availability equipmentStatus;
 
-    public Equipment(Long EquipmentId, Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
-        this.equipmentId = new EquipmentId(EquipmentId);
+    public Equipment(Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
         this.tenantId = new TenantId(tenantId);
         this.code = code;
         this.name = name;
@@ -57,7 +53,6 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     public Equipment() {}
 
     public Equipment(CreateEquipmentCommand command) {
-        this.equipmentId = new EquipmentId(command.equipmentId());
         this.tenantId = new TenantId(command.tenantId());
         this.code = command.code();
         this.name = command.name();

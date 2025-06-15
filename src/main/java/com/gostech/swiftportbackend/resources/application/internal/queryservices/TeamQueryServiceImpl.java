@@ -2,9 +2,7 @@ package com.gostech.swiftportbackend.resources.application.internal.queryservice
 
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Team;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllTeamsQuery;
-import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeeByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetTeamByIdQuery;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TeamId;
 import com.gostech.swiftportbackend.resources.domain.services.TeamQueryService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.TeamRepository;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,7 @@ public class TeamQueryServiceImpl implements TeamQueryService {
 
     @Override
     public Optional<Team> handle(GetTeamByIdQuery query) {
-        return teamRepository.findByTeamId(new TeamId(query.teamId()));
+        return teamRepository.findById(query.teamId());
     }
 
     @Override

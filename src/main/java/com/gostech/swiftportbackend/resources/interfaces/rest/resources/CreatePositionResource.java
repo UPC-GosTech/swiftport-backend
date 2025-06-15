@@ -1,7 +1,7 @@
-package com.gostech.swiftportbackend.resources.domain.model.commands;
+package com.gostech.swiftportbackend.resources.interfaces.rest.resources;
 
-public record CreatePositionCommand(Long tenantId, String title, String description) {
-    public CreatePositionCommand {
+public record CreatePositionResource (Long tenantId, String title, String description) {
+    public CreatePositionResource {
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("tenantId cannot be null");
         }

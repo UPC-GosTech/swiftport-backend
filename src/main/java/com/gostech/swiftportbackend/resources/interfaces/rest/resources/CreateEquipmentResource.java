@@ -1,9 +1,9 @@
-package com.gostech.swiftportbackend.resources.domain.model.commands;
+package com.gostech.swiftportbackend.resources.interfaces.rest.resources;
 
 import java.math.BigDecimal;
 
-public record CreateEquipmentCommand(Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
-    public  CreateEquipmentCommand {
+public record CreateEquipmentResource(Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
+    public  CreateEquipmentResource {
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("tenantId cannot be null");
         }

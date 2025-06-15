@@ -1,7 +1,7 @@
-package com.gostech.swiftportbackend.resources.domain.model.commands;
+package com.gostech.swiftportbackend.resources.interfaces.rest.resources;
 
-public record CreateEmployeeCommand(Long tenantId, String name, String lastName, String position, String employeeStatus, String email, String phoneNumber) {
-    public CreateEmployeeCommand {
+public record CreateEmployeeResource(Long tenantId, String name, String lastName, String position, String employeeStatus, String email, String phoneNumber) {
+    public CreateEmployeeResource {
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("TenantId cannot be null");
         }

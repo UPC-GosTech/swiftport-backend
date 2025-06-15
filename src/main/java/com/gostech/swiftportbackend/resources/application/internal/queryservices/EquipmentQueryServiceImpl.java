@@ -3,7 +3,6 @@ package com.gostech.swiftportbackend.resources.application.internal.queryservice
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Equipment;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllEquipmentsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetEquipmentByIdQuery;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.EquipmentId;
 import com.gostech.swiftportbackend.resources.domain.services.EquipmentQueryService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EquipmentRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class EquipmentQueryServiceImpl implements EquipmentQueryService {
 
     @Override
     public Optional<Equipment> handle(GetEquipmentByIdQuery query) {
-        return equipmentRepository.findByEquipmentId(new EquipmentId(query.equipmentId()));
+        return equipmentRepository.findById(query.equipmentId());
     }
 
     @Override

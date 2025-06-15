@@ -4,16 +4,20 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmploy
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter
 @Entity
 public class Employee extends AuditableAbstractAggregateRoot<Employee> {
 
-    @Embedded
+    @EmbeddedId
     private EmployeeId employeeId;
+
+    @MapsId
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "employee_id")
+    private Long id;
 
     @Embedded
     private TenantId tenantId;
@@ -29,8 +33,7 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     @Embedded
     private Availability employeeStatus;
 
-    public Employee(Long employeeId, Long tenantId, String name, String lastName, String position, String status, String email, String phoneNumber) {
-        this.employeeId = new EmployeeId(employeeId);
+    public Employee(Long tenantId, String name, String lastName, String position, String status, String email, String phoneNumber) {
         this.tenantId = new TenantId(tenantId);
         this.name = new FullName(name, lastName);
         this.contactInfo = new ContactInfo(email, phoneNumber);
@@ -54,7 +57,6 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     public Employee() {}
 
     public Employee(CreateEmployeeCommand command) {
-        this.employeeId = new EmployeeId(command.employeeId());
         this.tenantId = new TenantId(command.tenantId());
         this.name = new FullName(command.name(), command.lastName());
         this.contactInfo = new ContactInfo(command.email(), command.phoneNumber());

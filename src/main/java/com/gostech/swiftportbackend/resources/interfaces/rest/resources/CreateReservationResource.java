@@ -1,9 +1,9 @@
-package com.gostech.swiftportbackend.resources.domain.model.commands;
+package com.gostech.swiftportbackend.resources.interfaces.rest.resources;
 
 import java.time.LocalDateTime;
 
-public record CreateReservationCommand(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
-    public CreateReservationCommand {
+public record CreateReservationResource(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
+    public CreateReservationResource {
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("tenantId cannot be null");
         }

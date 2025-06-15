@@ -3,7 +3,6 @@ package com.gostech.swiftportbackend.resources.application.internal.queryservice
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Position;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllPositionsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetPositionByIdQuery;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.PositionId;
 import com.gostech.swiftportbackend.resources.domain.services.PositionQueryService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.PositionRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class PositionQueryServiceImpl implements PositionQueryService {
 
     @Override
     public Optional<Position> handle(GetPositionByIdQuery query) {
-        return positionRepository.findByPositionId(new PositionId(query.positionId()));
+        return positionRepository.findById(query.positionId());
     }
 
     @Override

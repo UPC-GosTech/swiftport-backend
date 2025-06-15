@@ -15,9 +15,6 @@ import java.time.LocalDateTime;
 public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
 
     @Embedded
-    private ReservationId reservationId;
-
-    @Embedded
     private TenantId tenantId;
 
     @Embedded
@@ -26,8 +23,7 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
     @Embedded
     private TimeInterval timeInterval;
 
-    public Reservation(Long reservationId, Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
-        this.reservationId = new ReservationId(reservationId);
+    public Reservation(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
         this.tenantId = new TenantId(tenantId);
         switch (resourceType) {
             case "Vehicle":
@@ -58,7 +54,6 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
     public Reservation() {}
 
     public Reservation(CreateReservationCommand command) {
-        this.reservationId = new ReservationId(command.reservationId());
         this.tenantId = new TenantId(command.tenantId());
         switch (command.resourceType()) {
             case "Vehicle":
