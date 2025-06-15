@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -68,7 +69,7 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
     }
 
     public Activity() {
-        this.tasks = List.of();
+        this.tasks = new ArrayList<>();
     }
 
     public Activity(CreateActivityCommand command) {
@@ -95,7 +96,9 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
         this.tenantId = new TenantId(command.tenantId());
     }
 
-    /**
-     * TDV FALTAN FUNCIONES
-     */
+    public void addTask(Task task) {
+        // task.setActivity(this);
+        tasks.add(task);
+    }
+
 }

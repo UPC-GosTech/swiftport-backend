@@ -5,6 +5,7 @@ import com.gostech.swiftportbackend.shared.domain.model.entities.AuditableModel;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,13 +21,13 @@ public class Task extends AuditableModel {
     private List<TaskProgramming> taskProgrammings;
 
     public Task() {
-        this.taskProgrammings = List.of();
+        this.taskProgrammings = new ArrayList<>();
     }
 
     public Task(String description, TaskStatus status) {
         this.description = description;
         this.status = status;
-        this.taskProgrammings = List.of();
+        this.taskProgrammings = new ArrayList<>();
     }
 
     public void addProgramming(TaskProgramming programming) {
