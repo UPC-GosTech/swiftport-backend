@@ -1,9 +1,9 @@
-package com.gostech.swiftportbackend.iam.infrastructure.authorization.sfs.pipeline;
+package com.gostech.swiftportbackend.shared.infrastructure.multitenancy;
 
 /**
  * Thread-safe context holder for tenant information
  * This class provides a way to store and retrieve tenant information
- * for the current thread/request context
+ * for the current thread/request context across all bounded contexts
  */
 public class TenantContext {
     

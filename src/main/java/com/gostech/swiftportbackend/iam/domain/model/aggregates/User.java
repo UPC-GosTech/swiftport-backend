@@ -1,16 +1,25 @@
 package com.gostech.swiftportbackend.iam.domain.model.aggregates;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.gostech.swiftportbackend.iam.domain.model.entities.Role;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.*;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmailAddress;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * User aggregate root for IAM context
@@ -33,10 +42,8 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Column(nullable = false)
     private String passwordHash;
     
-    @NotBlank
-    @Size(max = 100)
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Embedded
+    private EmailAddress email;
     
     @Size(max = 50)
     private String firstName;
@@ -63,7 +70,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.active = true;
     }
     
-    public User(String username, String passwordHash, String email, 
+    public User(String username, String passwordHash, EmailAddress email, 
                 String firstName, String lastName, Long tenantId) {
         this();
         this.username = username;
@@ -74,7 +81,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.tenantId = tenantId;
     }
     
-    public User(String username, String passwordHash, String email, 
+    public User(String username, String passwordHash, EmailAddress email, 
                 String firstName, String lastName, Long tenantId, List<Role> roles) {
         this(username, passwordHash, email, firstName, lastName, tenantId);
         addRoles(roles);
@@ -98,6 +105,15 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     
     public void updatePassword(String newPasswordHash) {
         this.passwordHash = newPasswordHash;
+    }
+    
+    // Convenience method for email
+    public String getEmail() {
+        return email != null ? email.value() : null;
+    }
+    
+    public void setEmail(String emailValue) {
+        this.email = emailValue != null ? new EmailAddress(emailValue) : null;
     }
     
     /**
