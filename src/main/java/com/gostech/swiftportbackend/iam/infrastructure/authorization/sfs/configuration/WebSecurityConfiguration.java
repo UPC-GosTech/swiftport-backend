@@ -1,8 +1,7 @@
 package com.gostech.swiftportbackend.iam.infrastructure.authorization.sfs.configuration;
 
-import com.gostech.swiftportbackend.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
-import com.gostech.swiftportbackend.iam.infrastructure.hashing.bcrypt.BCryptHashingService;
-import com.gostech.swiftportbackend.iam.infrastructure.tokens.jwt.BearerTokenService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.List;
+import com.gostech.swiftportbackend.iam.infrastructure.authorization.sfs.pipeline.BearerAuthorizationRequestFilter;
+import com.gostech.swiftportbackend.iam.infrastructure.hashing.bcrypt.BCryptHashingService;
+import com.gostech.swiftportbackend.iam.infrastructure.tokens.jwt.BearerTokenService;
 
 /**
  * Web Security Configuration.
