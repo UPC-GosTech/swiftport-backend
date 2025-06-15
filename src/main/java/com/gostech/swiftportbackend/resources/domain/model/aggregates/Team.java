@@ -1,14 +1,14 @@
 package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateTeamCommand;
+import com.gostech.swiftportbackend.resources.domain.model.entities.TeamMember;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.EmployeeId;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TeamId;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TenantId;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TimeInterval;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -16,45 +16,39 @@ import java.util.List;
 public class Team extends AuditableAbstractAggregateRoot<Team> {
 
     @Embedded
-    private TeamId teamId;
-
-    @Embedded
     private TenantId tenantId;
 
     private String name;
 
-    @ElementCollection
-    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
-    private List<EmployeeId> memberIds;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> teamMembers = new ArrayList<>();
 
-    public Team(Long TeamId, Long tenantId, String name, List<EmployeeId> memberIds) {
-        this.teamId = new TeamId(TeamId);
+    public Team(Long tenantId, String name, List<TeamMember> teamMembers) {
         this.tenantId = new TenantId(tenantId);
         this.name = name;
-        this.memberIds = memberIds;
+        this.teamMembers = teamMembers;
+        this.teamMembers.forEach(member -> member.setTeam(this)); // asegura la relación bidireccional
     }
 
     public Team() {}
 
     public Team(CreateTeamCommand command) {
-        this.teamId = new TeamId(command.teamId());
         this.tenantId = new TenantId(command.tenantId());
         this.name = command.name();
-        this.memberIds = command.memberIds();
+        this.teamMembers = command.teamMembers();
+        this.teamMembers.forEach(member -> member.setTeam(this));
     }
 
-    public void addMember(EmployeeId employeeId) {
-        this.memberIds.add(employeeId);
+    public void addMember(TeamMember teamMember) {
+        teamMember.setTeam(this);
+        this.teamMembers.add(teamMember);
     }
 
     public void removeMember(EmployeeId employeeId) {
-        this.memberIds.remove(employeeId);
+        this.teamMembers.removeIf(member -> member.getEmployeeId().equals(employeeId));
     }
 
-    public boolean isAvailable(TimeInterval timeInterval) {
-        /**
-         * MISSING THE LOGIC
-         */
-        return true;
+    public void validateMembersUnique() {
+        // TODO: lógica para evitar duplicados
     }
 }

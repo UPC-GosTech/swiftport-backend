@@ -3,6 +3,7 @@ package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateReservationCommand;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import lombok.Getter;
@@ -14,89 +15,78 @@ import java.time.LocalDateTime;
 public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
 
     @Embedded
-    private ReservationId reservationId;
-
-    @Embedded
     private TenantId tenantId;
 
     @Embedded
-    private ResourceType resourceType;
-
-    @Embedded
-    private ResourceId resourceId;
+    private ResourceReference resourceReference;
 
     @Embedded
     private TimeInterval timeInterval;
 
-    @Embedded
-    private ActivityId activityId;
-
-    @Embedded
-    private TaskId taskId;
-
-    public Reservation(Long reservationId, Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end, Long activityId, Long taskId) {
-        this.reservationId = new ReservationId(reservationId);
+    public Reservation(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
         this.tenantId = new TenantId(tenantId);
         switch (resourceType) {
             case "Vehicle":
-                this.resourceType = ResourceType.VEHICLE;
+                this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), resourceId);
                 break;
             case "Employee":
-                this.resourceType = ResourceType.EMPLOYEE;
+                this.resourceReference = new ResourceReference(ResourceType.EMPLOYEE.toString(), resourceId);
                 break;
             case "Position":
-                this.resourceType = ResourceType.POSITION;
+                this.resourceReference = new ResourceReference(ResourceType.POSITION.toString(), resourceId);
                 break;
             case "Zone":
-                this.resourceType = ResourceType.ZONE;
+                this.resourceReference = new ResourceReference(ResourceType.ZONE.toString(), resourceId);
                 break;
             case "Equipment":
-                this.resourceType = ResourceType.EQUIPMENT;
+                this.resourceReference = new ResourceReference(ResourceType.EQUIPMENT.toString(), resourceId);
                 break;
             case "Team":
-                this.resourceType = ResourceType.TEAM;
+                this.resourceReference = new ResourceReference(ResourceType.TEAM.toString(), resourceId);
                 break;
             default:
-                this.resourceType = null;
+                this.resourceReference = null;
                 break;
         }
-        this.resourceId = new ResourceId(resourceId);
         this.timeInterval = new TimeInterval(start, end);
-        this.activityId = new ActivityId(activityId);
-        this.taskId = new TaskId(taskId);
     }
 
     public Reservation() {}
 
     public Reservation(CreateReservationCommand command) {
-        this.reservationId = new ReservationId(command.reservationId());
         this.tenantId = new TenantId(command.tenantId());
         switch (command.resourceType()) {
             case "Vehicle":
-                this.resourceType = ResourceType.VEHICLE;
+                this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), command.resourceId());
                 break;
             case "Employee":
-                this.resourceType = ResourceType.EMPLOYEE;
+                this.resourceReference = new ResourceReference(ResourceType.EMPLOYEE.toString(), command.resourceId());
                 break;
             case "Position":
-                this.resourceType = ResourceType.POSITION;
+                this.resourceReference = new ResourceReference(ResourceType.POSITION.toString(), command.resourceId());
                 break;
             case "Zone":
-                this.resourceType = ResourceType.ZONE;
+                this.resourceReference = new ResourceReference(ResourceType.ZONE.toString(), command.resourceId());
                 break;
             case "Equipment":
-                this.resourceType = ResourceType.EQUIPMENT;
+                this.resourceReference = new ResourceReference(ResourceType.EQUIPMENT.toString(), command.resourceId());
                 break;
             case "Team":
-                this.resourceType = ResourceType.TEAM;
+                this.resourceReference = new ResourceReference(ResourceType.TEAM.toString(), command.resourceId());
                 break;
             default:
-                this.resourceType = null;
+                this.resourceReference = null;
                 break;
         }
-        this.resourceId = new ResourceId(command.resourceId());
         this.timeInterval = new TimeInterval(command.start(), command.end());
-        this.activityId = new ActivityId(command.activityId());
-        this.taskId = new TaskId(command.taskId());
     }
+
+    public static Reservation create(CreateReservationCommand command) {
+        return new Reservation(command);
+    }
+
+    public boolean conflictsWith(TimeInterval other) {
+        return this.timeInterval.overlaps(other);
+    }
+
 }

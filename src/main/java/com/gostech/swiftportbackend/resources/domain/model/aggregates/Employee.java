@@ -3,8 +3,8 @@ package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmployeeCommand;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter
@@ -17,28 +17,34 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     @Embedded
     private TenantId tenantId;
 
-    private String name;
+    @Embedded
+    private FullName name;
 
     @Embedded
-    private PositionId positionId;
+    private ContactInfo contactInfo;
+
+    private String position;
 
     @Embedded
-    private EmployeeStatus employeeStatus;
+    private Availability employeeStatus;
 
-    public Employee(Long employeeId, Long tenantId, String name, Long positionId, String status) {
-        this.employeeId = new EmployeeId(employeeId);
+    public Employee(Long tenantId, String name, String lastName, String position, String status, String email, String phoneNumber) {
         this.tenantId = new TenantId(tenantId);
-        this.name = name;
-        this.positionId = new PositionId(positionId);
+        this.name = new FullName(name, lastName);
+        this.contactInfo = new ContactInfo(email, phoneNumber);
+        this.position = position;
         switch (status) {
             case "Available":
-                this.employeeStatus = EmployeeStatus.AVAILABLE;
+                this.employeeStatus = Availability.AVAILABLE;
                 break;
             case "Vacation":
-                this.employeeStatus = EmployeeStatus.VACATION;
+                this.employeeStatus = Availability.VACATION;
+                break;
+            case "Reserved":
+                this.employeeStatus = Availability.RESERVED;
                 break;
             default:
-                this.employeeStatus = EmployeeStatus.UNAVAILABLE;
+                this.employeeStatus = Availability.UNAVAILABLE;
                 break;
         }
     }
@@ -46,29 +52,31 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     public Employee() {}
 
     public Employee(CreateEmployeeCommand command) {
-        this.employeeId = new EmployeeId(command.employeeId());
         this.tenantId = new TenantId(command.tenantId());
-        this.name = command.name();
-        this.positionId = new PositionId(command.positionId());
+        this.name = new FullName(command.name(), command.lastName());
+        this.contactInfo = new ContactInfo(command.email(), command.phoneNumber());
+        this.position = command.position();
         switch (command.employeeStatus()) {
             case "Available":
-                this.employeeStatus = EmployeeStatus.AVAILABLE;
+                this.employeeStatus = Availability.AVAILABLE;
                 break;
             case "Vacation":
-                this.employeeStatus = EmployeeStatus.VACATION;
+                this.employeeStatus = Availability.VACATION;
+                break;
+            case "Reserved":
+                this.employeeStatus = Availability.RESERVED;
                 break;
             default:
-                this.employeeStatus = EmployeeStatus.UNAVAILABLE;
+                this.employeeStatus = Availability.UNAVAILABLE;
                 break;
         }
     }
 
-    public boolean isAvailable(TimeInterval timeInterval) {
-        return this.employeeStatus == EmployeeStatus.AVAILABLE;
+    public void updateContactInfo(ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
-        /**
-         * MISSING PART OF THE LOGIC
-         */
-
+    public void changeAvailability(Availability availability) {
+        this.employeeStatus = availability;
     }
 }

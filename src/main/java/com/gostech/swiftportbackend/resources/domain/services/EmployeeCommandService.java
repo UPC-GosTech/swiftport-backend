@@ -6,5 +6,5 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmploy
 import java.util.Optional;
 
 public interface EmployeeCommandService {
-    Optional<Employee> handle(CreateEmployeeCommand command);
+    Long handle(CreateEmployeeCommand command);
 }

@@ -4,11 +4,8 @@ import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 
 import java.util.List;
 
-public record CreateZoneCommand(Long zoneId, Long tenantId, String name, List<Location> locations) {
+public record CreateZoneCommand(Long tenantId, String name, List<Location> locations) {
     public CreateZoneCommand {
-        if (zoneId == null || zoneId <= 0) {
-            throw new IllegalArgumentException("ZoneId cannot be null");
-        }
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("TenantId cannot be null");
         }

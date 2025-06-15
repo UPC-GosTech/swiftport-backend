@@ -2,11 +2,8 @@ package com.gostech.swiftportbackend.resources.domain.model.commands;
 
 import java.time.LocalDateTime;
 
-public record CreateReservationCommand(Long reservationId, Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end, Long activityId, Long taskId) {
+public record CreateReservationCommand(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
     public CreateReservationCommand {
-        if (reservationId == null || reservationId <= 0) {
-            throw new IllegalArgumentException("reservationId cannot be null");
-        }
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("tenantId cannot be null");
         }
@@ -21,12 +18,6 @@ public record CreateReservationCommand(Long reservationId, Long tenantId, String
         }
         if (end == null) {
             throw new IllegalArgumentException("end cannot be null");
-        }
-        if (activityId == null || activityId <= 0) {
-            throw new IllegalArgumentException("activityId cannot be null");
-        }
-        if (taskId == null || taskId <= 0) {
-            throw new IllegalArgumentException("taskId cannot be null");
         }
     }
 }
