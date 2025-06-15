@@ -7,26 +7,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Embeddable
 @Getter
-@Entity
-@Table(name = "team_members")
 @NoArgsConstructor
-public class TeamMember extends AuditableModel {
+public class TeamMember {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long employeeId;
 
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
-
     public TeamMember(Long employeeId, Team team) {
         this.employeeId = employeeId;
-        this.team = team;
     }
 
 }

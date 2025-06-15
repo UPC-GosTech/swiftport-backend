@@ -1,30 +1,28 @@
 package com.gostech.swiftportbackend.resources.domain.model.entities;
 
-import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.Address;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.Coordinates;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.LocationId;
 import com.gostech.swiftportbackend.shared.domain.model.entities.AuditableModel;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
+@Embeddable
 @Getter
-@Entity
-public class Location extends AuditableModel {
-    @NotNull
-    @Embedded
-    private LocationId locationId;
+@NoArgsConstructor
+public class Location {
 
-    @ManyToOne
-    @JoinColumn(name = "zone_id")
-    private Zone zone;
+    private Long id;
 
     @Embedded
     private Address address;
 
     @Embedded
     private Coordinates coordinates;
+
+    public Location(Address address, Coordinates coordinates) {
+        this.address = address;
+        this.coordinates = coordinates;
+    }
 }
