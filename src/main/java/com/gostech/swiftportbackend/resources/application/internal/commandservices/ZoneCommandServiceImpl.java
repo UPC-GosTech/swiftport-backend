@@ -24,6 +24,6 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving zone: %s".formatted(e.getMessage()));
         }
-        return zone.getZoneId().zoneId();
+        return zone.getId();
     }
 }

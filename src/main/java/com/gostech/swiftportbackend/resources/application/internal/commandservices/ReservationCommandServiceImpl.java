@@ -22,6 +22,6 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving reservation: %s".formatted(e.getMessage()));
         }
-        return reservation.getReservationId().reservationId();
+        return reservation.getId();
     }
 }

@@ -24,6 +24,6 @@ public class EquipmentCommandServiceImpl implements EquipmentCommandService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving equipment: %s".formatted(e.getMessage()));
         }
-        return equipment.getEquipmentId().equipmentId();
+        return equipment.getId();
     }
 }

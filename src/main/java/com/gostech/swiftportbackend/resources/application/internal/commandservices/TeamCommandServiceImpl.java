@@ -25,6 +25,6 @@ public class TeamCommandServiceImpl implements TeamCommandService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving team: %s".formatted(e.getMessage()));
         }
-        return team.getTeamId().teamId();
+        return team.getId();
     }
 }

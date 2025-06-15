@@ -24,6 +24,6 @@ public class PositionCommandServiceImpl implements PositionCommandService {
         } catch (Exception ex) {
             throw new IllegalArgumentException("Error saving position: %s".formatted(ex.getMessage()));
         }
-        return position.getPositionId().positionId();
+        return position.getId();
     }
 }
