@@ -1,22 +1,34 @@
 package com.gostech.swiftportbackend.resources.domain.model.entities;
 
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Team;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.EmployeeId;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TeamMemberId;
 import com.gostech.swiftportbackend.shared.domain.model.entities.AuditableModel;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Embeddable
+@Getter
+@Entity
+@Table(name = "team_members")
+@NoArgsConstructor
 public class TeamMember extends AuditableModel {
-    @NotNull
-    @Embedded
-    private TeamMemberId teamMemberId;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Embedded
-    EmployeeId employeeId;
+    private EmployeeId employeeId;
 
-    public EmployeeId getEmployeeId() {
-        return this.getEmployeeId();
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    public TeamMember(EmployeeId employeeId, Team team) {
+        this.employeeId = employeeId;
+        this.team = team;
     }
+
 }

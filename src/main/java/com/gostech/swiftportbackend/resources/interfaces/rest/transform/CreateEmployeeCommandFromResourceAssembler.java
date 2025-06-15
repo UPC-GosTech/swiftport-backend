@@ -1,10 +1,11 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.transform;
 
+import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmployeeCommand;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEmployeeResource;
 
 public class CreateEmployeeCommandFromResourceAssembler {
-    public static CreateEmployeeResource toCommandResourceFromEntity(CreateEmployeeResource resource) {
-        return new CreateEmployeeResource(
+    public static CreateEmployeeCommand toCommandFromResource(CreateEmployeeResource resource) {
+        return new CreateEmployeeCommand(
                 resource.tenantId(),
                 resource.name(),
                 resource.lastName(),

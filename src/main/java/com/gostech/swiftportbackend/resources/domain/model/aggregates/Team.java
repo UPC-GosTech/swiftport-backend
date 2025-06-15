@@ -8,6 +8,7 @@ import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,14 +20,14 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
 
     private String name;
 
-    @ElementCollection
-    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
-    private List<TeamMember> teamMembers;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> teamMembers = new ArrayList<>();
 
     public Team(Long tenantId, String name, List<TeamMember> teamMembers) {
         this.tenantId = new TenantId(tenantId);
         this.name = name;
         this.teamMembers = teamMembers;
+        this.teamMembers.forEach(member -> member.setTeam(this)); // asegura la relación bidireccional
     }
 
     public Team() {}
@@ -35,9 +36,11 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
         this.tenantId = new TenantId(command.tenantId());
         this.name = command.name();
         this.teamMembers = command.teamMembers();
+        this.teamMembers.forEach(member -> member.setTeam(this));
     }
 
     public void addMember(TeamMember teamMember) {
+        teamMember.setTeam(this);
         this.teamMembers.add(teamMember);
     }
 
@@ -46,8 +49,6 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
     }
 
     public void validateMembersUnique() {
-        /**
-         * Ya aqui no se, tu mismo eres sergio
-         */
+        // TODO: lógica para evitar duplicados
     }
 }

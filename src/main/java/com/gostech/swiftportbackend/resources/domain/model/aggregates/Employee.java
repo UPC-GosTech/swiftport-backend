@@ -11,13 +11,8 @@ import lombok.Getter;
 @Entity
 public class Employee extends AuditableAbstractAggregateRoot<Employee> {
 
-    @EmbeddedId
+    @Embedded
     private EmployeeId employeeId;
-
-    @MapsId
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "employee_id")
-    private Long id;
 
     @Embedded
     private TenantId tenantId;

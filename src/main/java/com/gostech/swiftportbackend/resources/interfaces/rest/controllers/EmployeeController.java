@@ -1,4 +1,54 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeeByIdQuery;
+import com.gostech.swiftportbackend.resources.domain.services.EmployeeCommandService;
+import com.gostech.swiftportbackend.resources.domain.services.EmployeeQueryService;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEmployeeResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.EmployeeResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.CreateEmployeeCommandFromResourceAssembler;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.EmployeeResourceFromEntityAssembler;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+@RestController
+@RequestMapping(value = "api/v1/employees", produces = APPLICATION_JSON_VALUE)
+@Tag(name = "Employees", description = "Available Employees Endpoints")
 public class EmployeeController {
+    private final EmployeeCommandService employeeCommandService;
+    private final EmployeeQueryService employeeQueryService;
+
+    public EmployeeController(EmployeeCommandService employeeCommandService, EmployeeQueryService employeeQueryService) {
+        this.employeeCommandService = employeeCommandService;
+        this.employeeQueryService = employeeQueryService;
+    }
+
+    @PostMapping
+    @Operation(summary = "Create a new employee", description = "Create a new employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Employee created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Employee not found")})
+    public ResponseEntity<EmployeeResource> createEmployee(@RequestBody CreateEmployeeResource resource) {
+        System.out.println("Recibido: " + resource);
+        var createEmployeeCommand = CreateEmployeeCommandFromResourceAssembler.toCommandFromResource(resource);
+        var employeeId = employeeCommandService.handle(createEmployeeCommand);
+        if (employeeId == null || employeeId == 0L) return ResponseEntity.badRequest().build();
+        var getEmployeeByIdQuery = new GetEmployeeByIdQuery(employeeId);
+        var employee = employeeQueryService.handle(getEmployeeByIdQuery);
+        if (employee.isEmpty()) return ResponseEntity.notFound().build();
+        var employeeEntity = employee.get();
+        var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);
+        return new ResponseEntity<>(employeeResource, HttpStatus.CREATED);
+    }
 }
