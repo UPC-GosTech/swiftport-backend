@@ -1,7 +1,5 @@
 package com.gostech.swiftportbackend.plannification.domain.model.commands;
 
-import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.TaskStatus;
-
 public record AddTaskCommand(Long activityId, String description, String status) {
     public AddTaskCommand {
         if (activityId == null || activityId <= 0) {

@@ -65,7 +65,7 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
         this.origin = new LocationRef(zoneOrigin, locationOrigin);
         this.destination = new LocationRef(zoneDestination, locationDestination);
         this.tenantId = new TenantId(tenantId);
-        this.tasks = List.of();
+        this.tasks = new ArrayList<>();
     }
 
     public Activity() {
