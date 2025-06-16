@@ -97,7 +97,7 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
     }
 
     public void addTask(Task task) {
-        // task.setActivity(this);
+        task.setActivity(this);
         tasks.add(task);
     }
 
