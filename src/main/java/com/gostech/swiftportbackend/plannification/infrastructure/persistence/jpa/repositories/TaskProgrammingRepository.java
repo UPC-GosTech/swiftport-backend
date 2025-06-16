@@ -4,6 +4,9 @@ import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskPro
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TaskProgrammingRepository extends JpaRepository<TaskProgramming, Long> {
+    List<TaskProgramming> findByTaskId(Long id);
 }
