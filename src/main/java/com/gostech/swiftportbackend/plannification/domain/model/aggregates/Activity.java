@@ -19,7 +19,7 @@ import java.util.List;
 public class Activity extends AuditableAbstractAggregateRoot<Activity> {
 
     @Embedded
-    private ActicityCode acticityCode;
+    private ActicityCode activityCode;
 
     private String description;
 
@@ -44,7 +44,7 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
     private List<Task> tasks;
 
     public Activity(String activityCode, String description, LocalDateTime expectedTime, Integer weekNumber, String activityStatus, Long zoneOrigin, Long locationOrigin, Long zoneDestination, Long locationDestination, Long tenantId) {
-        this.acticityCode = new ActicityCode(activityCode);
+        this.activityCode = new ActicityCode(activityCode);
         this.description = description;
         this.expectedTime = expectedTime;
         this.weekNumber = weekNumber;
@@ -73,7 +73,7 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
     }
 
     public Activity(CreateActivityCommand command) {
-        this.acticityCode = new ActicityCode(command.activityCode());
+        this.activityCode = new ActicityCode(command.activityCode());
         this.description = command.description();
         this.expectedTime = command.expectedTime();
         this.weekNumber = command.weekNumber();

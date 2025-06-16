@@ -17,6 +17,7 @@ import java.util.List;
 @Getter
 public class Task extends AuditableModel {
 
+    private String title;
     private String description;
 
     @Setter
@@ -35,7 +36,8 @@ public class Task extends AuditableModel {
         this.taskProgrammings = new ArrayList<>();
     }
 
-    public Task(String description, String status) {
+    public Task(String description, String status, String title) {
+        this.title = title;
         this.description = description;
         switch (status) {
             case "Pending":
@@ -55,6 +57,7 @@ public class Task extends AuditableModel {
     }
 
     public Task(AddTaskCommand command) {
+        this.title = command.title();
         this.description = command.description();
         switch (command.status()) {
             case "Pending":

@@ -1,7 +1,10 @@
 package com.gostech.swiftportbackend.plannification.domain.model.commands;
 
-public record AddTaskCommand(Long activityId, String description, String status) {
+public record AddTaskCommand(Long activityId, String title, String description, String status) {
     public AddTaskCommand {
+        if (title == null || title.isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be null or empty");
+        }
         if (activityId == null || activityId <= 0) {
             throw new IllegalArgumentException("Activity id cannot be null or zero or negative");
         }
