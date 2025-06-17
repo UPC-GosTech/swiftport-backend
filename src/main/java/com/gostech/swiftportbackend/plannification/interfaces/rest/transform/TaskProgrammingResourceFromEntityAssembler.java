@@ -11,7 +11,7 @@ public class TaskProgrammingResourceFromEntityAssembler {
                 entity.getResourceReference().resourceId(),
                 entity.getTimeInterval().start(),
                 entity.getTimeInterval().end(),
-                entity.getProgrammingStatus().toString()
+                entity.getProgrammingStatus()
         );
     }
 }

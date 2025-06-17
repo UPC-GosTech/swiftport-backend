@@ -11,7 +11,7 @@ public class ActivityResourceFromEntityAssembler {
                 entity.getDescription(),
                 entity.getExpectedTime(),
                 entity.getWeekNumber(),
-                entity.getActivityStatus().toString(),
+                entity.getActivityStatus(),
                 entity.getOrigin().zoneId(),
                 entity.getOrigin().locationId(),
                 entity.getDestination().zoneId(),

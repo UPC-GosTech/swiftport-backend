@@ -1,6 +1,5 @@
 package com.gostech.swiftportbackend.plannification.interfaces.rest.controllers;
 
-import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskCommand;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskByIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTasksByActivityIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;

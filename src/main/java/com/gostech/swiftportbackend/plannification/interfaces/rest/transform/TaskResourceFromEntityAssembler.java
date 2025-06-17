@@ -8,7 +8,7 @@ public class TaskResourceFromEntityAssembler {
         return new TaskResource(
                 entity.getId(),
                 entity.getDescription(),
-                entity.getStatus().toString(),
+                entity.getStatus(),
                 entity.getTitle()
         );
     }

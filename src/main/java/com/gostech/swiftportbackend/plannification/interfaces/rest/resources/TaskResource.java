@@ -1,4 +1,6 @@
 package com.gostech.swiftportbackend.plannification.interfaces.rest.resources;
 
-public record TaskResource(Long taskId, String description, String status, String title) {
+import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.TaskStatus;
+
+public record TaskResource(Long taskId, String description, TaskStatus status, String title) {
 }

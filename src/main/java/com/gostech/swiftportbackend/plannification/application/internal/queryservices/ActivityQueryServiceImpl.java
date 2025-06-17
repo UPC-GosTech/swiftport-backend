@@ -46,6 +46,11 @@ public class ActivityQueryServiceImpl implements ActivityQueryService {
     }
 
     @Override
+    public Optional<TaskProgramming> handle(GetTaskProgrammingByIdQuery query) {
+        return taskProgrammingRepository.findById(query.id());
+    }
+
+    @Override
     public List<TaskProgramming> handle(GetTaskProgrammingsByTaskIdQuery query) {
         return taskProgrammingRepository.findByTaskId(query.taskId());
     }
