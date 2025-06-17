@@ -39,7 +39,6 @@ public class EquipmentController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Equipment not found")})
     public ResponseEntity<EquipmentResource> createEquipment(@RequestBody CreateEquipmentResource resource) {
-        System.out.println("Recibido: " + resource);
         var createEquipmentCommand = CreateEquipmentCommandFromResourceAssembler.toCommandFromResource(resource);
         var equipmentId = equipmentCommandService.handle(createEquipmentCommand);
         if (equipmentId == null || equipmentId == 0L) return ResponseEntity.badRequest().build();

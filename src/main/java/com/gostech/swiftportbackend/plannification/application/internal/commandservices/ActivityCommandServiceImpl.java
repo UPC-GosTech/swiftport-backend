@@ -11,7 +11,9 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityComma
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ActivityCommandServiceImpl implements ActivityCommandService {
     private final ActivityRepository activityRepository;
     private final TaskRepository taskRepository;
