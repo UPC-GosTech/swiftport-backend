@@ -8,10 +8,12 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityQuery
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ActivityQueryServiceImpl implements ActivityQueryService {
     private final ActivityRepository activityRepository;
     private final TaskRepository taskRepository;
@@ -41,6 +43,11 @@ public class ActivityQueryServiceImpl implements ActivityQueryService {
     @Override
     public List<Task> handle(GetTasksByActivityIdQuery query) {
         return taskRepository.findByActivityId(query.activityId());
+    }
+
+    @Override
+    public Optional<TaskProgramming> handle(GetTaskProgrammingByIdQuery query) {
+        return taskProgrammingRepository.findById(query.id());
     }
 
     @Override

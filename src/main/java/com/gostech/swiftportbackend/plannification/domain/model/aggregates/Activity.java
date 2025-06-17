@@ -32,9 +32,17 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
     private ActivityStatus activityStatus;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "zoneId", column = @Column(name = "zoneId_origin")),
+            @AttributeOverride(name = "locationId", column = @Column(name = "locationId_origin"))
+    })
     private LocationRef origin;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "zoneId", column = @Column(name = "zoneId_destination")),
+            @AttributeOverride(name = "locationId", column = @Column(name = "locationId_destination"))
+    })
     private LocationRef destination;
 
     @Embedded
