@@ -3,7 +3,6 @@ package com.gostech.swiftportbackend.execution.domain.model.aggregates;
 import com.gostech.swiftportbackend.execution.domain.model.commands.CreateExecutionCommand;
 import com.gostech.swiftportbackend.execution.domain.model.entities.IncidentReport;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.*;
-import com.gostech.swiftportbackend.iam.domain.model.aggregates.Tenant;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.*;
@@ -109,11 +108,24 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.incidents.add(incidentReport);
     }
 
-    public void updateTaskExecutionStatus(TaskExecutionStatus taskExecutionStatus) {
-        this.taskExecutionStatus = taskExecutionStatus;
+    public void updateTaskExecutionStatus(String taskExecutionStatus) {
+        switch (taskExecutionStatus) {
+            case "Completed":
+                this.taskExecutionStatus = TaskExecutionStatus.COMPLETED;
+                break;
+            case "InProgress":
+                this.taskExecutionStatus = TaskExecutionStatus.IN_PROGRESS;
+                break;
+            case "Cancelled":
+                this.taskExecutionStatus = TaskExecutionStatus.CANCELLED;
+                break;
+            default:
+                this.taskExecutionStatus = TaskExecutionStatus.PENDING;
+                break;
+        }
     }
 
-    public void reportModifications(String modificationReason) {
+    public void addModifications(String modificationReason) {
         this.modificationReason = modificationReason;
     }
 }
