@@ -1,6 +1,7 @@
 package com.gostech.swiftportbackend.execution.domain.model.aggregates;
 
 import com.gostech.swiftportbackend.execution.domain.model.commands.CreateExecutionCommand;
+import com.gostech.swiftportbackend.execution.domain.model.commands.UpdateExecutionCommand;
 import com.gostech.swiftportbackend.execution.domain.model.entities.IncidentReport;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -96,11 +97,15 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
     }
 
     public void addEmployeeId(EmployeeId employeeId) {
-        this.employeeIdList.add(employeeId);
+        if (!this.employeeIdList.contains(employeeId)) {
+            this.employeeIdList.add(employeeId);
+        } else throw new IllegalArgumentException("EmployeeId already added");
     }
 
     public void addEquipmentId(EquipmentId equipmentId) {
-        this.equipmentIdList.add(equipmentId);
+        if (!this.equipmentIdList.contains(equipmentId)) {
+            this.equipmentIdList.add(equipmentId);
+        } else throw new IllegalArgumentException("EquipmentId already added");
     }
 
     public void addIncidentReport(IncidentReport incidentReport) {
@@ -125,7 +130,17 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         }
     }
 
-    public void addModifications(String modificationReason) {
+    public void addModifications(Long taskProgrammingId, String taskExecutionStatus, LocalDateTime start, LocalDateTime end, String modificationReason) {
+        this.taskProgrammingId = new TaskProgrammingId(taskProgrammingId);
+        updateTaskExecutionStatus(taskExecutionStatus);
+        this.executionTimeFrame = new ExecutionTimeFrame(start, end);
         this.modificationReason = modificationReason;
+    }
+
+    public void addModifications(UpdateExecutionCommand command) {
+        this.taskProgrammingId = new TaskProgrammingId(command.taskProgrammingId());
+        updateTaskExecutionStatus(command.taskExecutionStatus());
+        this.executionTimeFrame = new ExecutionTimeFrame(command.start(), command.end());
+        this.modificationReason = command.reason();
     }
 }
