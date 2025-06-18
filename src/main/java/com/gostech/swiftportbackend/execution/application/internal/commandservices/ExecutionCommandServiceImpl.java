@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     private final ExecutionRepository executionRepository;
 
-    public  ExecutionCommandServiceImpl(ExecutionRepository executionRepository) {
+    public ExecutionCommandServiceImpl(ExecutionRepository executionRepository) {
         this.executionRepository = executionRepository;
     }
 
