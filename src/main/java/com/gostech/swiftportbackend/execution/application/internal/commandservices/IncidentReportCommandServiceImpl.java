@@ -9,6 +9,8 @@ import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.rep
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.IncidentReportRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class IncidentReportCommandServiceImpl implements IncidentReportCommandService {
     private final IncidentReportRepository incidentReportRepository;
@@ -37,7 +39,7 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
     }
 
     @Override
-    public Long handle(UpdateIncidentReportDescriptionCommand command) {
+    public Optional<IncidentReport> handle(UpdateIncidentReportDescriptionCommand command) {
         IncidentReport incidentReport = incidentReportRepository.findById(command.incidentReportId())
                 .orElseThrow(() -> new IllegalArgumentException("Incident report not found"));
         incidentReport.updateDescription(command.description());
@@ -46,6 +48,6 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving incident report: %s".formatted(e.getMessage()));
         }
-        return incidentReport.getId();
+        return Optional.of(incidentReport);
     }
 }

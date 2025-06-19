@@ -134,7 +134,7 @@ public class ExecutionController {
             @ApiResponse(responseCode = "200", description = "Execution updated"),
             @ApiResponse(responseCode = "404", description = "Execution not found")
     })
-    public ResponseEntity<ExecutionResource> updateExecution(@PathVariable Long executionId, @RequestBody UpdateExecutionResource resource) {
+    public ResponseEntity<ExecutionResource> updateExecution(@RequestBody UpdateExecutionResource resource) {
         var updateExecutionCommand = UpdateExecutionCommandFromResourceAssembler.toCommandFromResource(resource);
         var updatedExecution = executionCommandService.handle(updateExecutionCommand);
         if (updatedExecution.isEmpty()) return ResponseEntity.notFound().build();
@@ -149,9 +149,7 @@ public class ExecutionController {
             @ApiResponse(responseCode = "200", description = "Execution status updated"),
             @ApiResponse(responseCode = "404", description = "Execution not found")
     })
-    public ResponseEntity<ExecutionResource> updateExecutionStatus(
-            @PathVariable Long executionId,
-            @RequestBody UpdateTaskExecutionStatusResource resource) {
+    public ResponseEntity<ExecutionResource> updateExecutionStatus(@RequestBody UpdateTaskExecutionStatusResource resource) {
         var updateStatusCommand = UpdateTaskExecutionStatusCommandFromResourceAssembler.toCommandFromResource(resource);
         var updatedExecution = executionCommandService.handle(updateStatusCommand);
         if (updatedExecution.isEmpty()) return ResponseEntity.notFound().build();
