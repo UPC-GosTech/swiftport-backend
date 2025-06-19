@@ -5,7 +5,6 @@ import com.gostech.swiftportbackend.execution.domain.model.queries.GetAllInciden
 import com.gostech.swiftportbackend.execution.domain.model.queries.GetIncidentReportByIdQuery;
 import com.gostech.swiftportbackend.execution.domain.model.queries.GetIncidentReportsByExecutionIdQuery;
 import com.gostech.swiftportbackend.execution.domain.services.IncidentReportQueryService;
-import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionRepository;
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.IncidentReportRepository;
 import org.springframework.stereotype.Service;
 
