@@ -1,9 +1,9 @@
-package com.gostech.swiftportbackend.execution.domain.model.commands;
+package com.gostech.swiftportbackend.execution.interfaces.rest.resources;
 
 import java.time.LocalDateTime;
 
-public record CreateExecutionCommand(Long taskProgrammingId, String taskExecutionStatus, LocalDateTime start, LocalDateTime end, Long tenantId) {
-    public CreateExecutionCommand {
+public record CreateExecutionResource(Long taskProgrammingId, String taskExecutionStatus, LocalDateTime start, LocalDateTime end, Long tenantId) {
+    public CreateExecutionResource {
         if (taskProgrammingId == null || taskProgrammingId <= 0) {
             throw new IllegalArgumentException("Task Programming Id can't be null or empty");
         }

@@ -9,6 +9,8 @@ import com.gostech.swiftportbackend.execution.domain.services.ExecutionCommandSe
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     private final ExecutionRepository executionRepository;
@@ -59,7 +61,7 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     }
 
     @Override
-    public Long handle(UpdateExecutionCommand command) {
+    public Optional<Execution> handle(UpdateExecutionCommand command) {
         Execution execution = executionRepository.findById(command.executionId())
                 .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
         execution.addModifications(command);
@@ -68,11 +70,11 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
         } catch (Exception ex) {
             throw new IllegalArgumentException("Error updating execution %s".formatted(ex.getMessage()));
         }
-        return execution.getId();
+        return Optional.of(execution);
     }
 
     @Override
-    public Long handle(UpdateTaskExecutionStatusCommand command) {
+    public Optional<Execution> handle(UpdateTaskExecutionStatusCommand command) {
         Execution execution = executionRepository.findById(command.executionId())
                 .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
         execution.updateTaskExecutionStatus(command.taskExecutionStatus());
@@ -81,6 +83,6 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
         } catch (Exception ex) {
             throw new IllegalArgumentException("Error updating execution %s".formatted(ex.getMessage()));
         }
-        return execution.getId();
+        return Optional.of(execution);
     }
 }
