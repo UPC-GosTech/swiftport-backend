@@ -48,7 +48,7 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.equipmentIdList = new ArrayList<>();
     }
 
-    public Execution(Long taskProgrammingId, String taskExecutionStatus, LocalDateTime start, LocalDateTime end, String modificationReason, Long tenantId) {
+    public Execution(Long taskProgrammingId, String taskExecutionStatus, LocalDateTime start, LocalDateTime end, Long tenantId) {
         this.taskProgrammingId = new TaskProgrammingId(taskProgrammingId);
         switch (taskExecutionStatus) {
             case "Completed":
