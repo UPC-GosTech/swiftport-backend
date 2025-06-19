@@ -130,13 +130,6 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         }
     }
 
-    public void addModifications(Long taskProgrammingId, String taskExecutionStatus, LocalDateTime start, LocalDateTime end, String modificationReason) {
-        this.taskProgrammingId = new TaskProgrammingId(taskProgrammingId);
-        updateTaskExecutionStatus(taskExecutionStatus);
-        this.executionTimeFrame = new ExecutionTimeFrame(start, end);
-        this.modificationReason = modificationReason;
-    }
-
     public void addModifications(UpdateExecutionCommand command) {
         this.taskProgrammingId = new TaskProgrammingId(command.taskProgrammingId());
         updateTaskExecutionStatus(command.taskExecutionStatus());
