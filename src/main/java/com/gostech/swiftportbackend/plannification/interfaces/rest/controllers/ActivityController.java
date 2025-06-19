@@ -1,11 +1,9 @@
 package com.gostech.swiftportbackend.plannification.interfaces.rest.controllers;
 
-import com.gostech.swiftportbackend.plannification.domain.model.aggregates.Activity;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetActivityByIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetAllActivitiesQuery;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
-import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.ActivityResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.CreateActivityResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.ActivityResourceFromEntityAssembler;
