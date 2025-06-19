@@ -6,6 +6,6 @@ public interface ExecutionCommandService {
     Long handle(CreateExecutionCommand command);
     Long handle(AddEmployeeIdToExecutionCommand command);
     Long handle(AddEquipmentIdToExecutionCommand command);
-    Long handle(AddModificationReasonToExecutionCommand command);
+    Long handle(UpdateExecutionCommand command);
     Long handle(UpdateTaskExecutionStatusCommand command);
 }
