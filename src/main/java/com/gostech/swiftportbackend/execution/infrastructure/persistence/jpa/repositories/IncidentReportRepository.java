@@ -12,4 +12,6 @@ public interface IncidentReportRepository extends JpaRepository<IncidentReport, 
     boolean existsByTitle(String title);
     Optional<IncidentReport> findById(Long id);
     List<IncidentReport> findByExecutionId(Long id);
+
+    List<IncidentReport> getByExecutionId(Long executionId);
 }
