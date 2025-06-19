@@ -21,20 +21,22 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
 
     @ElementCollection
     @CollectionTable(name = "team_teamMember", joinColumns = @JoinColumn(name = "team_id"))
-    private List<TeamMember> teamMembers = new ArrayList<>();
+    private List<TeamMember> teamMembers;
 
-    public Team(Long tenantId, String name, List<TeamMember> teamMembers) {
+    public Team(Long tenantId, String name) {
         this.tenantId = new TenantId(tenantId);
         this.name = name;
-        this.teamMembers = teamMembers; // asegura la relación bidireccional
+        this.teamMembers = new ArrayList<>();
     }
 
-    public Team() {}
+    public Team() {
+        this.teamMembers = new ArrayList<>();
+    }
 
     public Team(CreateTeamCommand command) {
         this.tenantId = new TenantId(command.tenantId());
         this.name = command.name();
-        this.teamMembers = command.teamMembers();
+        this.teamMembers = new ArrayList<>();
     }
 
     public void addMember(TeamMember teamMember) {
@@ -43,9 +45,5 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
 
     public void removeMember(Long employeeId) {
         this.teamMembers.removeIf(member -> member.getEmployeeId().equals(employeeId));
-    }
-
-    public void validateMembersUnique() {
-        // TODO: lógica para evitar duplicados
     }
 }
