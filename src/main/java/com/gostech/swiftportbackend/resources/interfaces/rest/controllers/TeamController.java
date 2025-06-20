@@ -1,5 +1,6 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.resources.domain.model.commands.DeleteTeamMemberCommand;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllTeamsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetTeamByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetTeamMemberByIdQuery;
@@ -118,4 +119,19 @@ public class TeamController {
         var resource = TeamMemberResourceFromEntityAssembler.toResourceFromEntity(optionalMember.get());
         return ResponseEntity.ok(resource);
     }
+
+    @DeleteMapping("/members/{memberId}")
+    @Operation(summary = "Delete team member", description = "Delete (deactivate or remove) a team member from its team")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Team member deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Team member not found")
+    })
+    public ResponseEntity<TeamMemberResource> deleteTeamMember(@PathVariable Long memberId, @PathVariable Long teamId) {
+        var command = new DeleteTeamMemberCommand(memberId, teamId);
+        var deletedMember = teamCommandService.handle(command);
+        if (deletedMember.isEmpty()) return ResponseEntity.notFound().build();
+        var resource = TeamMemberResourceFromEntityAssembler.toResourceFromEntity(deletedMember.get());
+        return ResponseEntity.ok(resource);
+    }
+
 }
