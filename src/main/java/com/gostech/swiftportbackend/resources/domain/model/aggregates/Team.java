@@ -19,8 +19,7 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
 
     private String name;
 
-    @ElementCollection
-    @CollectionTable(name = "team_teamMember", joinColumns = @JoinColumn(name = "team_id"))
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMembers;
 
     public Team(Long tenantId, String name) {
@@ -40,10 +39,18 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
     }
 
     public void addMember(TeamMember teamMember) {
+        teamMember.setTeam(this);
         this.teamMembers.add(teamMember);
     }
 
     public void removeMember(Long employeeId) {
-        this.teamMembers.removeIf(member -> member.getEmployeeId().equals(employeeId));
+        this.teamMembers.removeIf(member -> {
+            if (member.getEmployeeId().equals(employeeId)) {
+                member.setTeam(null);
+                return true;
+            }
+            return false;
+        });
     }
+
 }

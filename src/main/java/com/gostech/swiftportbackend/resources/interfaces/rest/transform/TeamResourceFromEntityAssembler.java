@@ -8,8 +8,7 @@ public class TeamResourceFromEntityAssembler {
         return new TeamResource(
                 entity.getId(),
                 entity.getTenantId().getValue(),
-                entity.getName(),
-                entity.getTeamMembers()
+                entity.getName()
         );
     }
 }
