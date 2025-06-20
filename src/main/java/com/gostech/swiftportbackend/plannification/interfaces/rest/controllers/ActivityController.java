@@ -21,8 +21,8 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "api/v1/activity", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Activity", description = "Available Activity Endpoints")
+@RequestMapping(value = "api/v1/activities", produces = APPLICATION_JSON_VALUE)
+@Tag(name = "Activities", description = "Available Activity Endpoints")
 public class ActivityController {
     private final ActivityCommandService activityCommandService;
     private final ActivityQueryService activityQueryService;
