@@ -86,7 +86,7 @@ public class TeamController {
         return ResponseEntity.ok(teamResources);
     }
 
-    @PostMapping("/{executionId}/incidents")
+    @PostMapping("/{teamId}/members")
     @Operation(summary = "Add team member to team", description = "Creates a new team member and adds it to the given team")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Team member added to team"),
@@ -104,4 +104,19 @@ public class TeamController {
         var teamMemberResource = TeamMemberResourceFromEntityAssembler.toResourceFromEntity(entity);
         return new ResponseEntity<>(teamMemberResource, HttpStatus.CREATED);
     }
+
+    @GetMapping("/members/{memberId}")
+    @Operation(summary = "Get team member by ID within a team", description = "Retrieve a specific team member from a given team by their employee ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Team member found"),
+            @ApiResponse(responseCode = "404", description = "Team or team member not found")
+    })
+    public ResponseEntity<TeamMemberResource> getTeamMemberById(@PathVariable Long memberId) {
+        var query = new GetTeamMemberByIdQuery(memberId);
+        var optionalMember = teamQueryService.handle(query);
+        if (optionalMember.isEmpty()) return ResponseEntity.notFound().build();
+        var resource = TeamMemberResourceFromEntityAssembler.toResourceFromEntity(optionalMember.get());
+        return ResponseEntity.ok(resource);
+    }
+
 }
