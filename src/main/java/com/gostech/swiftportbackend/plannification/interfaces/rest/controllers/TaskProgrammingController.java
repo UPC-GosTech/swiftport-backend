@@ -65,7 +65,7 @@ public class TaskProgrammingController {
         return ResponseEntity.ok(taskProgrammingResource);
     }
 
-    @GetMapping("/task/{taskId}")
+    @GetMapping("/tasks/{taskId}")
     @Operation(summary = "Get task programmings by task ID", description = "Get all task programmings for a given task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task programmings found"),

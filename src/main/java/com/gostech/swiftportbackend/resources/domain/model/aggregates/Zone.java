@@ -19,9 +19,8 @@ public class Zone extends AuditableAbstractAggregateRoot<Zone> {
 
     private String name;
 
-    @ElementCollection
-    @CollectionTable(name = "zone_locations", joinColumns = @JoinColumn(name = "zone_id"))
-    private List<Location> locationsList = new ArrayList<>();
+    @OneToMany(mappedBy = "zone", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Location> locationsList;
 
     public Zone(Long tenantId, String name) {
         this.tenantId = new TenantId(tenantId);
@@ -29,17 +28,18 @@ public class Zone extends AuditableAbstractAggregateRoot<Zone> {
         this.locationsList = new ArrayList<>();
     }
 
-    public Zone() {}
+    public Zone() {
+        this.locationsList = new ArrayList<>();
+    }
 
     public Zone(CreateZoneCommand command) {
         this.tenantId = new TenantId(command.tenantId());
         this.name = command.name();
-        this.locationsList = command.locations();
+        this.locationsList = new ArrayList<>();
+    }
 
-        /**
-         * MISSING ADD LOCATION
-         *      ON CONSTRUCTOR
-         *      AS FUNCTION
-         */
+    public void addLocation(Location location) {
+        location.setZone(this);
+        this.locationsList.add(location);
     }
 }

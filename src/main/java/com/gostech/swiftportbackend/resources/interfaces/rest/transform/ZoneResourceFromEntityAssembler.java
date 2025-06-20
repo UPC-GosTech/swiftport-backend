@@ -8,8 +8,7 @@ public class ZoneResourceFromEntityAssembler {
         return new ZoneResource(
                 entity.getId(),
                 entity.getTenantId().getValue(),
-                entity.getName(),
-                entity.getLocationsList()
+                entity.getName()
         );
     }
 }

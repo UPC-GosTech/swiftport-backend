@@ -21,8 +21,8 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "api/v1/task", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Task", description = "Available Task Endpoints")
+@RequestMapping(value = "api/v1/tasks", produces = APPLICATION_JSON_VALUE)
+@Tag(name = "Tasks", description = "Available Task Endpoints")
 public class TaskController {
     private final ActivityCommandService activityCommandService;
     private final ActivityQueryService activityQueryService;
@@ -63,7 +63,7 @@ public class TaskController {
         return ResponseEntity.ok(taskResource);
     }
 
-    @GetMapping("/activity/{activityId}")
+    @GetMapping("/activities/{activityId}")
     @Operation(summary = "Get tasks by activity id", description = "Get all tasks for a given activity")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Tasks found"),

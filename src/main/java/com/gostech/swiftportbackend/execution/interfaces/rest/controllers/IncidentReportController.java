@@ -24,8 +24,8 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "api/v1/incident-report", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Incident Report", description = "Available Incident Report Endpoints")
+@RequestMapping(value = "api/v1/incident-reports", produces = APPLICATION_JSON_VALUE)
+@Tag(name = "Incident Reports", description = "Available Incident Report Endpoints")
 public class IncidentReportController {
     private final IncidentReportCommandService incidentReportCommandService;
     private final IncidentReportQueryService incidentReportQueryService;

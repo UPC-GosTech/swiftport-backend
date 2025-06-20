@@ -4,7 +4,6 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public record Address(String street, String city, String country) {
-
     public Address {
         if (street == null || street.isEmpty()) {
             throw new IllegalArgumentException("Street cannot be null or empty");
