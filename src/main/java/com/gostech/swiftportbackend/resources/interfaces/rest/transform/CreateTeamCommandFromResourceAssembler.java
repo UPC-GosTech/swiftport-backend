@@ -7,8 +7,7 @@ public class CreateTeamCommandFromResourceAssembler {
     public static CreateTeamCommand toCommandFromResource(CreateTeamResource resource) {
         return new CreateTeamCommand(
                 resource.tenantId(),
-                resource.name(),
-                resource.teamMembers()
+                resource.name()
         );
     }
 }

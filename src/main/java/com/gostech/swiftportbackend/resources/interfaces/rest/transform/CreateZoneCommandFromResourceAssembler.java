@@ -7,8 +7,7 @@ public class CreateZoneCommandFromResourceAssembler {
     public static CreateZoneCommand toCommandFromResource(CreateZoneResource resource) {
         return new CreateZoneCommand(
                 resource.tenantId(),
-                resource.name(),
-                resource.locations()
+                resource.name()
         );
     }
 }
