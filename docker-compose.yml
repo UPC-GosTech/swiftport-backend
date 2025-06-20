@@ -1,6 +1,6 @@
 services:
-  learning-center-platform-os:
-    image: swiftport-api:0.0.1
+  swiftport-api:
+    image: swiftport-api:0.0.2
     build:
       context: .
       dockerfile: Dockerfile

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.gostech</groupId>
     <artifactId>swiftport-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>swiftport-backend</name>
     <description>swiftport-backend</description>
     <url/>
