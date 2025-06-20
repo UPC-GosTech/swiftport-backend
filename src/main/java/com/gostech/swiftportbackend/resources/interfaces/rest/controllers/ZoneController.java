@@ -1,12 +1,17 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllZonesQuery;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetLocationByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetZoneByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneCommandService;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneQueryService;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateLocationResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateZoneResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.LocationResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.ZoneResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.AddLocationCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.CreateZoneCommandFromResourceAssembler;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.LocationResourceFromEntityAssembler;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.ZoneResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -79,5 +84,41 @@ public class ZoneController {
                 .map(ZoneResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(zoneResources);
+    }
+
+    @PostMapping("/{zoneId}/locations")
+    @Operation(summary = "Add location to zone", description = "Creates a new location and adds it to the given zone")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Location added to zone"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Zone not found")
+    })
+    public ResponseEntity<LocationResource> addLocationToZone(@RequestBody CreateLocationResource resource) {
+        var command = AddLocationCommandFromResourceAssembler.toCommandFromResource(resource);
+        var locationId = zoneCommandService.handle(command);
+        if (locationId == null || locationId == 0L) return ResponseEntity.badRequest().build();
+
+        var query = new GetLocationByIdQuery(locationId);
+        var location = zoneQueryService.handle(query);
+        if (location.isEmpty()) return ResponseEntity.notFound().build();
+
+        var entity = location.get();
+        var locationResource = LocationResourceFromEntityAssembler.toResourceFromEntity(entity);
+        return new ResponseEntity<>(locationResource, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/locations/{locationId}")
+    @Operation(summary = "Get location by ID", description = "Retrieve a specific location by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Location found"),
+            @ApiResponse(responseCode = "404", description = "Location not found")
+    })
+    public ResponseEntity<LocationResource> getLocationById(@PathVariable Long locationId) {
+        var query = new GetLocationByIdQuery(locationId);
+        var optionalLocation = zoneQueryService.handle(query);
+        if (optionalLocation.isEmpty()) return ResponseEntity.notFound().build();
+
+        var resource = LocationResourceFromEntityAssembler.toResourceFromEntity(optionalLocation.get());
+        return ResponseEntity.ok(resource);
     }
 }

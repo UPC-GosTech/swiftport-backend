@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class TeamMember extends AuditableModel{
+public class TeamMember extends AuditableModel {
 
     @Embedded
     private EmployeeId employeeId;

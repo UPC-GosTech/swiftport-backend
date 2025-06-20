@@ -118,5 +118,4 @@ public class TeamController {
         var resource = TeamMemberResourceFromEntityAssembler.toResourceFromEntity(optionalMember.get());
         return ResponseEntity.ok(resource);
     }
-
 }
