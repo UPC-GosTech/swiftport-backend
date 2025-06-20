@@ -46,7 +46,6 @@ public class ZoneController {
             @ApiResponse(responseCode = "404", description = "Zone not found")
     })
     public ResponseEntity<ZoneResource> createZone(@RequestBody CreateZoneResource resource) {
-        System.out.println("Recibido: " + resource);
         var createZoneCommand = CreateZoneCommandFromResourceAssembler.toCommandFromResource(resource);
         var zoneId = zoneCommandService.handle(createZoneCommand);
         if (zoneId == null || zoneId == 0L) return ResponseEntity.badRequest().build();
