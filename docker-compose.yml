@@ -1,6 +1,6 @@
 services:
   swiftport-api:
-    image: swiftport-api:0.0.3
+    image: swiftport-api:0.0.4
     build:
       context: .
       dockerfile: Dockerfile

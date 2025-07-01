@@ -1,4 +1,4 @@
-package com.gostech.swiftportbackend.shared.infrastructure.documentation.openapi.configuration;
+package com.gostech.swiftportbackend.shared.infrastructure.documentacion.openapi.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

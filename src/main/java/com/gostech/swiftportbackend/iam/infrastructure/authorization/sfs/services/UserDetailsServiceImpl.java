@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
  * for Spring Security authentication.
  * </p>
  */
-@Service("defaultUserDetailsService")
+@Service(value = "defaultUserDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
