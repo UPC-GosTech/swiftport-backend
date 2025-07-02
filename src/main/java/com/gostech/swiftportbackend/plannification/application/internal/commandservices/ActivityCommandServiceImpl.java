@@ -95,4 +95,17 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
         }
         return Optional.of(task);
     }
+
+    @Override
+    public Optional<Task> handle(UpdateTaskStatusCommand command) {
+        Task task = taskRepository.findById(command.taskId())
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        try {
+            task.updateTaskStatus(command.status());
+            taskRepository.save(task);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task status: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(task);
+    }
 }

@@ -94,4 +94,23 @@ public class Task extends AuditableModel {
     public void updateTaskDescription(String description) {
         this.description = description;
     }
+
+    public void updateTaskStatus(String status) {
+        switch (status) {
+            case "Pending":
+                this.status = TaskStatus.PENDING;
+                break;
+            case "Completed":
+                this.status = TaskStatus.COMPLETED;
+                break;
+            case "InProgress":
+                this.status = TaskStatus.IN_PROGRESS;
+                break;
+            case "Cancelled":
+                this.status = TaskStatus.CANCELLED;
+                break;
+            default:
+                break;
+        }
+    }
 }

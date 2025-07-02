@@ -11,4 +11,5 @@ public interface ActivityCommandService {
     Long handle(AddTaskProgrammingCommand command);
     Optional<Task> handle(UpdateEmployeeAssignedOnTaskCommand command);
     Optional<Task> handle(UpdateTaskDescriptionCommand command);
+    Optional<Task> handle(UpdateTaskStatusCommand command);
 }
