@@ -2,7 +2,7 @@ package com.gostech.swiftportbackend.execution.application.internal.commandservi
 
 import com.gostech.swiftportbackend.execution.domain.model.aggregates.Execution;
 import com.gostech.swiftportbackend.execution.domain.model.commands.*;
-import com.gostech.swiftportbackend.execution.domain.model.valueobjects.EmployeeId;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.EquipmentId;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.TaskProgrammingId;
 import com.gostech.swiftportbackend.execution.domain.services.ExecutionCommandService;
