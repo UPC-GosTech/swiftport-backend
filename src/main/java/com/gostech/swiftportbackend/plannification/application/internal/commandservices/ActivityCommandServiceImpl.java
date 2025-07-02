@@ -1,10 +1,7 @@
 package com.gostech.swiftportbackend.plannification.application.internal.commandservices;
 
 import com.gostech.swiftportbackend.plannification.domain.model.aggregates.Activity;
-import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskCommand;
-import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskProgrammingCommand;
-import com.gostech.swiftportbackend.plannification.domain.model.commands.CreateActivityCommand;
-import com.gostech.swiftportbackend.plannification.domain.model.commands.UpdateEmployeeAssignedOnTaskCommand;
+import com.gostech.swiftportbackend.plannification.domain.model.commands.*;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.Task;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActicityCode;
@@ -82,6 +79,19 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
             taskRepository.save(task);
         }  catch (Exception e) {
             throw new IllegalArgumentException("Error updating employee Id on task: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(task);
+    }
+
+    @Override
+    public Optional<Task> handle(UpdateTaskDescriptionCommand  command) {
+        Task task = taskRepository.findById(command.taskId())
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        try {
+            task.updateTaskDescription(command.description());
+            taskRepository.save(task);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task description: %s".formatted(e.getMessage()));
         }
         return Optional.of(task);
     }

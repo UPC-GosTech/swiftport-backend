@@ -6,8 +6,11 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityComma
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.CreateTaskResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.TaskResource;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.UpdateEmployeeIdResource;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.UpdateTaskDescriptionResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.AddTaskCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.TaskResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateTaskDescriptionCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateTaskEmployeeIdCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -78,18 +81,34 @@ public class TaskController {
         return ResponseEntity.ok(resources);
     }
 
-    @PatchMapping("/{taskId}/employeeId/{employeeId}")
+    @PatchMapping("/{taskId}/employeeId")
     @Operation(summary = "Update employee id assgined on task", description = "Updates only the employee Id assigned to a task")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task Employee Id updated"),
             @ApiResponse(responseCode = "404", description = "Task not found")
     })
-    public ResponseEntity<TaskResource> updateTaskEmployeeId(@PathVariable Long taskId, @PathVariable Long employeeId) {
-        var updateEmployeeId = UpdateTaskEmployeeIdCommandFromResourceAssembler.toCommandFromResource(taskId, employeeId);
+    public ResponseEntity<TaskResource> updateTaskEmployeeId(@PathVariable Long taskId, @RequestBody UpdateEmployeeIdResource resource) {
+        var updateEmployeeId = UpdateTaskEmployeeIdCommandFromResourceAssembler.toCommandFromResource(taskId, resource);
         var updatedTask = activityCommandService.handle(updateEmployeeId);
         if (updatedTask.isEmpty()) return ResponseEntity.notFound().build();
         var updatedTaskEntity = updatedTask.get();
         var updatedTaskResource = TaskResourceFromEntityAssembler.toResourceFromEntity(updatedTaskEntity);
         return ResponseEntity.ok(updatedTaskResource);
     }
+
+    @PatchMapping("/{taskId}/description")
+    @Operation(summary = "Update task description", description = "Updates only the task description")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task description updated"),
+            @ApiResponse(responseCode = "404", description = "Task not found")
+    })
+    public ResponseEntity<TaskResource> updateTaskDescription(@PathVariable Long taskId, @RequestBody UpdateTaskDescriptionResource resource) {
+        var command = UpdateTaskDescriptionCommandFromResourceAssembler.toCommandFromResource(taskId, resource);
+        var updatedTask = activityCommandService.handle(command);
+        if (updatedTask.isEmpty()) return ResponseEntity.notFound().build();
+        var updatedTaskEntity = updatedTask.get();
+        var updatedTaskResource = TaskResourceFromEntityAssembler.toResourceFromEntity(updatedTaskEntity);
+        return ResponseEntity.ok(updatedTaskResource);
+    }
+
 }
