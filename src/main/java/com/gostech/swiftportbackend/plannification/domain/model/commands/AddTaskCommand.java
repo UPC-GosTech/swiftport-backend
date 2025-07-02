@@ -1,6 +1,6 @@
 package com.gostech.swiftportbackend.plannification.domain.model.commands;
 
-public record AddTaskCommand(Long activityId, String title, String description, String status) {
+public record AddTaskCommand(Long activityId, String title, String description, String status, Long employeeId) {
     public AddTaskCommand {
         if (title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Title cannot be null or empty");
@@ -13,6 +13,9 @@ public record AddTaskCommand(Long activityId, String title, String description, 
         }
         if (status == null || status.isEmpty()) {
             throw new IllegalArgumentException("Status cannot be null or empty");
+        }
+        if (employeeId == null || employeeId <= 0) {
+            throw new IllegalArgumentException("Employee id cannot be null or zero or negative");
         }
     }
 }

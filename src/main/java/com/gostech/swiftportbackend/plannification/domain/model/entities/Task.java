@@ -5,6 +5,7 @@ import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTask
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.TaskStatus;
 import com.gostech.swiftportbackend.shared.domain.model.entities.AuditableModel;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmployeeId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -29,6 +30,9 @@ public class Task extends AuditableModel {
     @Embedded
     private TaskStatus status;
 
+    @Embedded
+    private EmployeeId employeeId;
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TaskProgramming> taskProgrammings;
 
@@ -36,7 +40,7 @@ public class Task extends AuditableModel {
         this.taskProgrammings = new ArrayList<>();
     }
 
-    public Task(String description, String status, String title) {
+    public Task(String description, String status, String title, Long employeeId) {
         this.title = title;
         this.description = description;
         switch (status) {
@@ -54,6 +58,7 @@ public class Task extends AuditableModel {
                 break;
         }
         this.taskProgrammings = new ArrayList<>();
+        this.employeeId = new EmployeeId(employeeId);
     }
 
     public Task(AddTaskCommand command) {
@@ -74,6 +79,7 @@ public class Task extends AuditableModel {
                 break;
         }
         this.taskProgrammings = new ArrayList<>();
+        this.employeeId = new EmployeeId(command.employeeId());
     }
 
     public void addProgramming(TaskProgramming programming) {
