@@ -86,4 +86,8 @@ public class Task extends AuditableModel {
         programming.setTask(this);
         taskProgrammings.add(programming);
     }
+
+    public void updateEmployeeAssigned(Long employeeId) {
+        this.employeeId = new EmployeeId(employeeId);
+    }
 }

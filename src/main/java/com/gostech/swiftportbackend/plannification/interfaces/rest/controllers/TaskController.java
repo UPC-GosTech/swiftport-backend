@@ -8,6 +8,7 @@ import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.Cre
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.TaskResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.AddTaskCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.TaskResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateTaskEmployeeIdCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -75,5 +76,20 @@ public class TaskController {
                 .map(TaskResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(resources);
+    }
+
+    @PatchMapping("/{taskId}/employeeId/{employeeId}")
+    @Operation(summary = "Update employee id assgined on task", description = "Updates only the employee Id assigned to a task")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task Employee Id updated"),
+            @ApiResponse(responseCode = "404", description = "Task not found")
+    })
+    public ResponseEntity<TaskResource> updateTaskEmployeeId(@PathVariable Long taskId, @PathVariable Long employeeId) {
+        var updateEmployeeId = UpdateTaskEmployeeIdCommandFromResourceAssembler.toCommandFromResource(taskId, employeeId);
+        var updatedTask = activityCommandService.handle(updateEmployeeId);
+        if (updatedTask.isEmpty()) return ResponseEntity.notFound().build();
+        var updatedTaskEntity = updatedTask.get();
+        var updatedTaskResource = TaskResourceFromEntityAssembler.toResourceFromEntity(updatedTaskEntity);
+        return ResponseEntity.ok(updatedTaskResource);
     }
 }

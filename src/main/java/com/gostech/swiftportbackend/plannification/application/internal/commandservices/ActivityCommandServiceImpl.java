@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.plannification.domain.model.aggregates.Activ
 import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskCommand;
 import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskProgrammingCommand;
 import com.gostech.swiftportbackend.plannification.domain.model.commands.CreateActivityCommand;
+import com.gostech.swiftportbackend.plannification.domain.model.commands.UpdateEmployeeAssignedOnTaskCommand;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.Task;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActicityCode;
@@ -12,6 +13,8 @@ import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jp
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ActivityCommandServiceImpl implements ActivityCommandService {
@@ -68,5 +71,18 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
             throw new IllegalArgumentException("Error saving task programming: %s".formatted(e.getMessage()));
         }
         return taskProgramming.getId();
+    }
+
+    @Override
+    public Optional<Task> handle(UpdateEmployeeAssignedOnTaskCommand command) {
+        Task task = taskRepository.findById(command.taskId())
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        try {
+            task.updateEmployeeAssigned(command.employeeId());
+            taskRepository.save(task);
+        }  catch (Exception e) {
+            throw new IllegalArgumentException("Error updating employee Id on task: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(task);
     }
 }
