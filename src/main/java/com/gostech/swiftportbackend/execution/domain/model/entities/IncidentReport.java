@@ -80,4 +80,8 @@ public class IncidentReport extends AuditableModel {
     public void updateDescription(String description) {
         this.description = description;
     }
+
+    public void updateEmployeeId(Long employeeId) {
+        this.employeeId = new EmployeeId(employeeId);
+    }
 }
