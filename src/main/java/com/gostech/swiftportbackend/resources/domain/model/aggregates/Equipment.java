@@ -3,14 +3,12 @@ package com.gostech.swiftportbackend.resources.domain.model.aggregates;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEquipmentCommand;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -26,7 +24,6 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     @Embedded
     Capacity capacity;
 
-    @Embedded
     Availability equipmentStatus;
 
     public Equipment(Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {

@@ -21,7 +21,6 @@ import java.util.Set;
 @Entity
 public class Execution extends AuditableAbstractAggregateRoot<Execution> {
 
-    @Embedded
     private TaskExecutionStatus taskExecutionStatus;
 
     @Embedded

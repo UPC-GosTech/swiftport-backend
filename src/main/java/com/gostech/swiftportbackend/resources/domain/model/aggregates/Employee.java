@@ -4,8 +4,6 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmploy
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
-import com.gostech.swiftportbackend.resources.domain.model.entities.TeamMember;
-import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -26,7 +24,6 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     @JoinColumn(name = "position", referencedColumnName = "id")
     private Position position;
 
-    @Embedded
     private Availability employeeStatus;
 
     public Employee(Long tenantId, String name, String lastName, Position position, String status, String email, String phoneNumber) {

@@ -27,7 +27,6 @@ public class Task extends AuditableModel {
     @NotNull
     private Activity activity;
 
-    @Embedded
     private TaskStatus status;
 
     @Embedded

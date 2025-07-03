@@ -29,7 +29,6 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
 
     private Integer weekNumber;
 
-    @Embedded
     private ActivityStatus activityStatus;
 
     @Embedded

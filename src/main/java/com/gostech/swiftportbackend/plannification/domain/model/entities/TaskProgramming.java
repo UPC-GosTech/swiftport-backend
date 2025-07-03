@@ -22,7 +22,6 @@ public class TaskProgramming extends AuditableModel {
     @Embedded
     private TimeInterval timeInterval;
 
-    @Embedded
     private ProgrammingStatus programmingStatus;
 
     @Setter
