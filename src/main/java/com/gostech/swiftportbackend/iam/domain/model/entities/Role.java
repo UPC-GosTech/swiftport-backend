@@ -1,6 +1,7 @@
 package com.gostech.swiftportbackend.iam.domain.model.entities;
 
 import com.gostech.swiftportbackend.iam.domain.model.valueobjects.Roles;
+import com.gostech.swiftportbackend.iam.domain.model.aggregates.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Role entity
@@ -29,6 +31,9 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Roles name;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
 
     public Role(Roles name) {
         this.name = name;

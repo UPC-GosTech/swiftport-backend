@@ -1,6 +1,6 @@
 package com.gostech.swiftportbackend.resources.domain.model.commands;
 
-public record CreateEmployeeCommand(Long tenantId, String name, String lastName, String position, String employeeStatus, String email, String phoneNumber) {
+public record CreateEmployeeCommand(Long tenantId, String name, String lastName, String position, String employeeStatus, String email, String phoneNumber, Long positionId) {
     public CreateEmployeeCommand {
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("TenantId cannot be null");
@@ -23,5 +23,9 @@ public record CreateEmployeeCommand(Long tenantId, String name, String lastName,
         if (phoneNumber == null || phoneNumber.isEmpty()) {
             throw new IllegalArgumentException("phoneNumber cannot be null or empty");
         }
+    }
+
+    public Long positionId() {
+        return positionId;
     }
 }

@@ -107,7 +107,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                 command.email(),
                 command.firstName(),
                 command.lastName(),
-                savedTenant.getId(),
+                savedTenant,
                 List.of(adminRole)
             );
             
@@ -134,6 +134,9 @@ public class UserCommandServiceImpl implements UserCommandService {
             throw new RuntimeException("Tenant context not found");
         }
         
+        Tenant tenant = tenantRepository.findById(tenantId)
+            .orElseThrow(() -> new RuntimeException("Tenant not found"));
+        
         // Check if user already exists in this tenant
         if (userRepository.existsByUsernameAndTenantId(command.username(), tenantId)) {
             throw new RuntimeException("Username already exists in this organization");
@@ -155,7 +158,7 @@ public class UserCommandServiceImpl implements UserCommandService {
             command.email(),
             command.firstName(),
             command.lastName(),
-            tenantId,
+            tenant,
             roles
         );
         

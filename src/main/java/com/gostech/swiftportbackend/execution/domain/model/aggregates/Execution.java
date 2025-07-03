@@ -7,19 +7,19 @@ import com.gostech.swiftportbackend.execution.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
+import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Entity
 public class Execution extends AuditableAbstractAggregateRoot<Execution> {
-
-    @Embedded
-    private TaskProgrammingId taskProgrammingId;
 
     @Embedded
     private TaskExecutionStatus taskExecutionStatus;
@@ -30,27 +30,20 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
     @OneToMany(mappedBy = "execution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IncidentReport> incidents;
 
-    @ElementCollection
-    @CollectionTable(name = "execution_employees", joinColumns = @JoinColumn(name = "execution_id"))
-    private List<EmployeeId> employeeIdList;
-
-    @ElementCollection
-    @CollectionTable(name = "execution_equipment", joinColumns = @JoinColumn(name = "execution_id"))
-    private List<EquipmentId> equipmentIdList;
-
     private String modificationReason;
 
     @Embedded
     private TenantId tenantId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_programming_id", referencedColumnName = "id")
+    private TaskProgramming taskProgramming;
+
     public Execution() {
         this.incidents = new ArrayList<>();
-        this.employeeIdList = new ArrayList<>();
-        this.equipmentIdList = new ArrayList<>();
     }
 
-    public Execution(Long taskProgrammingId, String taskExecutionStatus, LocalDateTime start, LocalDateTime end, Long tenantId) {
-        this.taskProgrammingId = new TaskProgrammingId(taskProgrammingId);
+    public Execution(String taskExecutionStatus, LocalDateTime start, LocalDateTime end, Long tenantId) {
         switch (taskExecutionStatus) {
             case "Completed":
                 this.taskExecutionStatus = TaskExecutionStatus.COMPLETED;
@@ -67,14 +60,11 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         }
         this.executionTimeFrame = new ExecutionTimeFrame(start, end);
         this.incidents = new ArrayList<>();
-        this.employeeIdList = new ArrayList<>();
-        this.equipmentIdList = new ArrayList<>();
         this.modificationReason = "";
         this.tenantId = new TenantId(tenantId);
     }
 
     public Execution(CreateExecutionCommand  command) {
-        this.taskProgrammingId = new TaskProgrammingId(command.taskProgrammingId());
         switch (command.taskExecutionStatus()) {
             case "Completed":
                 this.taskExecutionStatus = TaskExecutionStatus.COMPLETED;
@@ -91,22 +81,8 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         }
         this.executionTimeFrame = new ExecutionTimeFrame(command.start(), command.end());
         this.incidents = new ArrayList<>();
-        this.employeeIdList = new ArrayList<>();
-        this.equipmentIdList = new ArrayList<>();
         this.modificationReason = "";
         this.tenantId = new TenantId(command.tenantId());
-    }
-
-    public void addEmployeeId(EmployeeId employeeId) {
-        if (!this.employeeIdList.contains(employeeId)) {
-            this.employeeIdList.add(employeeId);
-        } else throw new IllegalArgumentException("EmployeeId already added");
-    }
-
-    public void addEquipmentId(EquipmentId equipmentId) {
-        if (!this.equipmentIdList.contains(equipmentId)) {
-            this.equipmentIdList.add(equipmentId);
-        } else throw new IllegalArgumentException("EquipmentId already added");
     }
 
     public void addIncidentReport(IncidentReport incidentReport) {
@@ -132,7 +108,6 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
     }
 
     public void addModifications(UpdateExecutionCommand command) {
-        this.taskProgrammingId = new TaskProgrammingId(command.taskProgrammingId());
         updateTaskExecutionStatus(command.taskExecutionStatus());
         this.executionTimeFrame = new ExecutionTimeFrame(command.start(), command.end());
         this.modificationReason = command.reason();

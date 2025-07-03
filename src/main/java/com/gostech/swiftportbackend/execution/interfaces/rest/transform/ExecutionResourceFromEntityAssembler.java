@@ -7,12 +7,12 @@ public class ExecutionResourceFromEntityAssembler {
     public static ExecutionResource toResourceFromEntity(Execution entity) {
         return new ExecutionResource(
                 entity.getId(),
-                entity.getTaskProgrammingId().taskProgrammingId(),
+                entity.getTaskProgramming() != null ? entity.getTaskProgramming().getId() : null,
                 entity.getTaskExecutionStatus(),
                 entity.getExecutionTimeFrame().start(),
                 entity.getExecutionTimeFrame().end(),
                 entity.getModificationReason(),
-                entity.getTenantId().getValue()
+                entity.getTenantId() != null ? entity.getTenantId().getValue() : null
         );
     }
 }

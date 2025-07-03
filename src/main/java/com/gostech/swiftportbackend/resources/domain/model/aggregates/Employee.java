@@ -4,6 +4,8 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmploy
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
+import com.gostech.swiftportbackend.resources.domain.model.entities.TeamMember;
+import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -20,12 +22,14 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     @Embedded
     private ContactInfo contactInfo;
 
-    private String position;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position", referencedColumnName = "id")
+    private Position position;
 
     @Embedded
     private Availability employeeStatus;
 
-    public Employee(Long tenantId, String name, String lastName, String position, String status, String email, String phoneNumber) {
+    public Employee(Long tenantId, String name, String lastName, Position position, String status, String email, String phoneNumber) {
         this.tenantId = new TenantId(tenantId);
         this.name = new FullName(name, lastName);
         this.contactInfo = new ContactInfo(email, phoneNumber);
@@ -48,11 +52,11 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
 
     public Employee() {}
 
-    public Employee(CreateEmployeeCommand command) {
+    public Employee(CreateEmployeeCommand command, Position position) {
         this.tenantId = new TenantId(command.tenantId());
         this.name = new FullName(command.name(), command.lastName());
         this.contactInfo = new ContactInfo(command.email(), command.phoneNumber());
-        this.position = command.position();
+        this.position = position;
         switch (command.employeeStatus()) {
             case "Available":
                 this.employeeStatus = Availability.AVAILABLE;

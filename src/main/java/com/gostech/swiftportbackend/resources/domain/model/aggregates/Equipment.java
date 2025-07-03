@@ -6,6 +6,7 @@ import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbst
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
 
-    @Embedded
-    private TenantId tenantId;
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
 
     private String code;
     private String name;
@@ -29,7 +30,7 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     Availability equipmentStatus;
 
     public Equipment(Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
-        this.tenantId = new TenantId(tenantId);
+        this.tenantId = tenantId;
         this.code = code;
         this.name = name;
         this.plate = plate;
@@ -53,7 +54,7 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     public Equipment() {}
 
     public Equipment(CreateEquipmentCommand command) {
-        this.tenantId = new TenantId(command.tenantId());
+        this.tenantId = command.tenantId();
         this.code = command.code();
         this.name = command.name();
         this.plate = command.plate();

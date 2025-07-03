@@ -7,7 +7,7 @@ public class PositionResourceFromEntityAssembler {
     public static PositionResource toResourceFromEntity(Position entity) {
         return new PositionResource(
                 entity.getId(),
-                entity.getTenantId().getValue(),
+                entity.getTenantId(),
                 entity.getTitle(),
                 entity.getDescription()
         );

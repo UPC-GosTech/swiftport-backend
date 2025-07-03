@@ -12,10 +12,10 @@ public class ActivityResourceFromEntityAssembler {
                 entity.getExpectedTime(),
                 entity.getWeekNumber(),
                 entity.getActivityStatus(),
-                entity.getOrigin().zoneId(),
-                entity.getOrigin().locationId(),
-                entity.getDestination().zoneId(),
-                entity.getDestination().locationId(),
+                entity.getZoneOrigin() != null ? entity.getZoneOrigin().getId() : null,
+                entity.getLocationOrigin() != null ? entity.getLocationOrigin().getId() : null,
+                entity.getZoneDestination() != null ? entity.getZoneDestination().getId() : null,
+                entity.getLocationDestination() != null ? entity.getLocationDestination().getId() : null,
                 entity.getTenantId().getValue()
         );
     }

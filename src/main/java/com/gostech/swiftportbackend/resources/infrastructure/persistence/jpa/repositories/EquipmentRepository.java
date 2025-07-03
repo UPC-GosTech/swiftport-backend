@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface EquipmentRepository extends JpaRepository<Equipment,Long> {
     boolean existsByPlate(String plate);
+    java.util.List<Equipment> findByTenantId(Long tenantId);
     Optional<Equipment> findById(Long id);
     List<Equipment> findByEquipmentStatus(Availability status);
 }

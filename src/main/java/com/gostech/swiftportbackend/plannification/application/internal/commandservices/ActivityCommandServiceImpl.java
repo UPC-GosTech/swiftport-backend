@@ -29,7 +29,26 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     public Long handle(CreateActivityCommand command) {
         if (activityRepository.existsByActivityCode(new ActicityCode(command.activityCode())))
             throw new IllegalArgumentException("Activity with code %s already exists".formatted(command.activityCode()));
-        var activity = new Activity(command);
+        var activity = new Activity();
+        activity.setActivityCode(new ActicityCode(command.activityCode()));
+        activity.setDescription(command.description());
+        activity.setExpectedTime(command.expectedTime());
+        activity.setWeekNumber(command.weekNumber());
+        switch (command.activityStatus()) {
+            case "Planned":
+                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.PLANNED);
+                break;
+            case "Completed":
+                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.COMPLETED);
+                break;
+            case "InProgress":
+                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.IN_PROGRESS);
+                break;
+            default:
+                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.CANCELLED);
+                break;
+        }
+        activity.setTenantId(new com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId(command.tenantId()));
         try {
             activityRepository.save(activity);
         } catch (Exception e) {

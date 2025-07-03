@@ -4,9 +4,10 @@ import com.gostech.swiftportbackend.plannification.domain.model.commands.CreateA
 import com.gostech.swiftportbackend.plannification.domain.model.entities.Task;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActicityCode;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus;
-import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.LocationRef;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
+import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -32,81 +33,74 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
     private ActivityStatus activityStatus;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "zoneId", column = @Column(name = "zoneId_origin")),
-            @AttributeOverride(name = "locationId", column = @Column(name = "locationId_origin"))
-    })
-    private LocationRef origin;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "zoneId", column = @Column(name = "zoneId_destination")),
-            @AttributeOverride(name = "locationId", column = @Column(name = "locationId_destination"))
-    })
-    private LocationRef destination;
-
-    @Embedded
     private TenantId tenantId;
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 
-    public Activity(String activityCode, String description, LocalDateTime expectedTime, Integer weekNumber, String activityStatus, Long zoneOrigin, Long locationOrigin, Long zoneDestination, Long locationDestination, Long tenantId) {
-        this.activityCode = new ActicityCode(activityCode);
-        this.description = description;
-        this.expectedTime = expectedTime;
-        this.weekNumber = weekNumber;
-        switch (activityStatus) {
-            case "Planned":
-                this.activityStatus = ActivityStatus.PLANNED;
-                break;
-            case "Completed":
-                this.activityStatus = ActivityStatus.COMPLETED;
-                break;
-            case "InProgress":
-                this.activityStatus = ActivityStatus.IN_PROGRESS;
-                break;
-            default:
-                this.activityStatus = ActivityStatus.CANCELLED;
-                break;
-        }
-        this.origin = new LocationRef(zoneOrigin, locationOrigin);
-        this.destination = new LocationRef(zoneDestination, locationDestination);
-        this.tenantId = new TenantId(tenantId);
-        this.tasks = new ArrayList<>();
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id_origin", referencedColumnName = "id", insertable = false, updatable = false)
+    private Location locationOrigin;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id_destination", referencedColumnName = "id", insertable = false, updatable = false)
+    private Location locationDestination;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zone_id_origin", referencedColumnName = "id", insertable = false, updatable = false)
+    private Zone zoneOrigin;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zone_id_destination", referencedColumnName = "id", insertable = false, updatable = false)
+    private Zone zoneDestination;
 
     public Activity() {
         this.tasks = new ArrayList<>();
     }
 
-    public Activity(CreateActivityCommand command) {
-        this.activityCode = new ActicityCode(command.activityCode());
-        this.description = command.description();
-        this.expectedTime = command.expectedTime();
-        this.weekNumber = command.weekNumber();
-        switch (command.activityStatus()) {
-            case "Planned":
-                this.activityStatus = ActivityStatus.PLANNED;
-                break;
-            case "Completed":
-                this.activityStatus = ActivityStatus.COMPLETED;
-                break;
-            case "InProgress":
-                this.activityStatus = ActivityStatus.IN_PROGRESS;
-                break;
-            default:
-                this.activityStatus = ActivityStatus.CANCELLED;
-                break;
-        }
-        this.origin = new LocationRef(command.zoneOrigin(), command.locationOrigin());
-        this.destination = new LocationRef(command.zoneDestination(), command.locationDestination());
-        this.tenantId = new TenantId(command.tenantId());
-    }
-
     public void addTask(Task task) {
         task.setActivity(this);
         tasks.add(task);
+    }
+
+    public void setActivityCode(ActicityCode activityCode) {
+        this.activityCode = activityCode;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setExpectedTime(LocalDateTime expectedTime) {
+        this.expectedTime = expectedTime;
+    }
+
+    public void setWeekNumber(Integer weekNumber) {
+        this.weekNumber = weekNumber;
+    }
+
+    public void setActivityStatus(ActivityStatus activityStatus) {
+        this.activityStatus = activityStatus;
+    }
+
+    public void setTenantId(TenantId tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public void setLocationOrigin(Location locationOrigin) {
+        this.locationOrigin = locationOrigin;
+    }
+
+    public void setLocationDestination(Location locationDestination) {
+        this.locationDestination = locationDestination;
+    }
+
+    public void setZoneOrigin(Zone zoneOrigin) {
+        this.zoneOrigin = zoneOrigin;
+    }
+
+    public void setZoneDestination(Zone zoneDestination) {
+        this.zoneDestination = zoneDestination;
     }
 
     public void updateActivityStatus(String activityStatus) {
