@@ -73,7 +73,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         }
         
         // Generate token
-        String token = tokenService.generateToken(user.getUsername(), user.getTenantId());
+        String token = tokenService.generateToken(user.getUsername(), user.getTenant() != null ? user.getTenant().getId() : null);
         
         return ImmutablePair.of(user, token);
     }

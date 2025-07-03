@@ -5,21 +5,27 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmploy
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.FullName;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EmployeeRepository;
+import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.PositionRepository;
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Position;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmployeeCommandServiceImpl implements EmployeeCommandService {
     private final EmployeeRepository employeeRepository;
+    private final PositionRepository positionRepository;
 
-    public EmployeeCommandServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeCommandServiceImpl(EmployeeRepository employeeRepository, PositionRepository positionRepository) {
         this.employeeRepository = employeeRepository;
+        this.positionRepository = positionRepository;
     }
 
     @Override
     public Long handle(CreateEmployeeCommand command) {
         if (employeeRepository.existsByName(new FullName(command.name(), command.lastName())))
             throw new IllegalArgumentException("Employee with name %s already exists".formatted(new FullName(command.name(), command.lastName())));
-        var employee = new Employee(command);
+        Position position = positionRepository.findById(command.positionId())
+            .orElseThrow(() -> new IllegalArgumentException("Position not found"));
+        var employee = new Employee(command, position);
         try {
             employeeRepository.save(employee);
         } catch (Exception e) {

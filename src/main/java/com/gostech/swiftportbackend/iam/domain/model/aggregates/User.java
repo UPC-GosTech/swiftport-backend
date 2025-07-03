@@ -16,6 +16,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -54,8 +55,9 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Column(nullable = false)
     private Boolean active;
     
-    @Column(nullable = false)
-    private Long tenantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", referencedColumnName = "id", nullable = false)
+    private Tenant tenant;
     
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
@@ -71,19 +73,19 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     }
     
     public User(String username, String passwordHash, EmailAddress email, 
-                String firstName, String lastName, Long tenantId) {
+                String firstName, String lastName, Tenant tenant) {
         this();
         this.username = username;
         this.passwordHash = passwordHash;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.tenantId = tenantId;
+        this.tenant = tenant;
     }
     
     public User(String username, String passwordHash, EmailAddress email, 
-                String firstName, String lastName, Long tenantId, List<Role> roles) {
-        this(username, passwordHash, email, firstName, lastName, tenantId);
+                String firstName, String lastName, Tenant tenant, List<Role> roles) {
+        this(username, passwordHash, email, firstName, lastName, tenant);
         addRoles(roles);
     }
     

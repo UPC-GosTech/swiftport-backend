@@ -58,7 +58,7 @@ public class TeamCommandServiceImpl implements TeamCommandService {
                 .orElseThrow(() -> new IllegalArgumentException("Team with id %s does not exist".formatted(command.teamId())));
         try {
             member.setTeam(team);
-            team.removeMember(member.getId());
+            team.removeMember(member.getEmployee());
             teamRepository.save(team);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving team member: %s".formatted(e.getMessage()));

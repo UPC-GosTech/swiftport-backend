@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EquipmentRepository extends JpaRepository<Equipment,Long> {
     boolean existsByPlate(String plate);
+    java.util.List<Equipment> findByTenantId(Long tenantId);
 }

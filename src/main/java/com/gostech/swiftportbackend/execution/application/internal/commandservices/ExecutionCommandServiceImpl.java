@@ -34,30 +34,12 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
 
     @Override
     public Long handle(AddEmployeeIdToExecutionCommand command) {
-        Execution execution = executionRepository.findById(command.executionId())
-                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
-        var employeeId = new EmployeeId(command.employeeId());
-        try {
-            execution.addEmployeeId(employeeId);
-            executionRepository.save(execution);
-        } catch (Exception ex) {
-            throw new IllegalArgumentException("Error saving execution %s".formatted(ex.getMessage()));
-        }
-        return execution.getId();
+        throw new UnsupportedOperationException("Asignación de empleados a ejecución no implementada. Usar entidad intermedia.");
     }
 
     @Override
     public Long handle(AddEquipmentIdToExecutionCommand command) {
-        Execution execution = executionRepository.findById(command.executionId())
-                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
-        var equipmentId = new EquipmentId(command.equipmentId());
-        try {
-            execution.addEquipmentId(equipmentId);
-            executionRepository.save(execution);
-        }  catch (Exception ex) {
-            throw new IllegalArgumentException("Error saving execution %s".formatted(ex.getMessage()));
-        }
-        return execution.getId();
+        throw new UnsupportedOperationException("Asignación de equipos a ejecución no implementada. Usar entidad intermedia.");
     }
 
     @Override

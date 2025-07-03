@@ -7,7 +7,7 @@ public class TeamMemberResourceFromEntityAssembler {
     public static TeamMemberResource toResourceFromEntity(TeamMember entity) {
         return new TeamMemberResource(
                 entity.getId(),
-                entity.getEmployeeId().employeeId()
+                entity.getEmployee() != null ? entity.getEmployee().getId() : null
         );
     }
 }

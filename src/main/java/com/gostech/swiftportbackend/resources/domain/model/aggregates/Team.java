@@ -43,9 +43,9 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
         this.teamMembers.add(teamMember);
     }
 
-    public void removeMember(Long employeeId) {
+    public void removeMember(Employee employee) {
         this.teamMembers.removeIf(member -> {
-            if (member.getEmployeeId().equals(employeeId)) {
+            if (member.getEmployee() != null && member.getEmployee().equals(employee)) {
                 member.setTeam(null);
                 return true;
             }

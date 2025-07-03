@@ -9,9 +9,11 @@ public class CreateEmployeeCommandFromResourceAssembler {
                 resource.tenantId(),
                 resource.name(),
                 resource.lastName(),
-                resource.position(),
+                null,
                 resource.employeeStatus(),
                 resource.email(),
-                resource.phoneNumber());
+                resource.phoneNumber(),
+                resource.positionId()
+        );
     }
 }

@@ -4,8 +4,15 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateReserv
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
+import com.gostech.swiftportbackend.iam.domain.model.aggregates.Tenant;
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Equipment;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.AttributeOverride;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,17 +21,26 @@ import java.time.LocalDateTime;
 @Entity
 public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
 
-    @Embedded
-    private TenantId tenantId;
+    @Column(name = "tenant_id", nullable = false)
+    private Long tenantId;
 
     @Embedded
+    @AttributeOverride(name = "resourceId", column = @Column(name = "resource_id_ref"))
     private ResourceReference resourceReference;
 
     @Embedded
     private TimeInterval timeInterval;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tenant_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private Tenant tenant;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resource_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private Equipment equipment;
+
     public Reservation(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
-        this.tenantId = new TenantId(tenantId);
+        this.tenantId = tenantId;
         switch (resourceType) {
             case "Vehicle":
                 this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), resourceId);
@@ -54,7 +70,7 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
     public Reservation() {}
 
     public Reservation(CreateReservationCommand command) {
-        this.tenantId = new TenantId(command.tenantId());
+        this.tenantId = command.tenantId();
         switch (command.resourceType()) {
             case "Vehicle":
                 this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), command.resourceId());

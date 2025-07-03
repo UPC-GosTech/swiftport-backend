@@ -80,7 +80,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getTenantId(),
+                user.getTenant() != null ? user.getTenant().getId() : null,
                 user.getActive(),
                 authorities);
     }

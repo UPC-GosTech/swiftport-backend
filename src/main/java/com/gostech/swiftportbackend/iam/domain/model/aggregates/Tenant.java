@@ -12,6 +12,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
 
 /**
  * Tenant aggregate root for IAM context
@@ -61,6 +64,9 @@ public class Tenant extends AuditableAbstractAggregateRoot<Tenant> {
     
     @Column(nullable = false)
     private Boolean active;
+    
+    @OneToMany(mappedBy = "tenant", fetch = FetchType.LAZY)
+    private List<User> users;
     
     public Tenant() {
         this.active = true;
