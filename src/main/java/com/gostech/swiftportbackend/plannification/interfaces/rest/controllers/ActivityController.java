@@ -1,5 +1,6 @@
 package com.gostech.swiftportbackend.plannification.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetActivitiesByStatusQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetActivityByIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetAllActivitiesQuery;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;
@@ -72,6 +73,21 @@ public class ActivityController {
     public ResponseEntity<List<ActivityResource>> getAllActivities() {
         var activityList = activityQueryService.handle(new GetAllActivitiesQuery());
         if (activityList.isEmpty()) return ResponseEntity.badRequest().build();
+        var activityResources = activityList.stream()
+                .map(ActivityResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(activityResources);
+    }
+
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get activities by status", description = "Get all activities that match the given status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Activities found"),
+            @ApiResponse(responseCode = "404", description = "No activities found with given status")
+    })
+    public ResponseEntity<List<ActivityResource>> getActivitiesByStatus(@PathVariable String status) {
+        var activityList = activityQueryService.handle(new GetActivitiesByStatusQuery(status));
+        if (activityList.isEmpty()) return ResponseEntity.notFound().build();
         var activityResources = activityList.stream()
                 .map(ActivityResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();

@@ -18,4 +18,5 @@ public interface ActivityQueryService {
     List<Task> handle(GetAllTasksQuery query);
     List<Task> handle(GetTasksByStatusQuery query);
     List<TaskProgramming> handle(GetAllTaskProgrammingsQuery query);
+    List<Activity> handle(GetActivitiesByStatusQuery query);
 }

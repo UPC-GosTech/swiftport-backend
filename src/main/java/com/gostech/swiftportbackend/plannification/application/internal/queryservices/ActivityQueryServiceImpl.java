@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.plannification.domain.model.aggregates.Activ
 import com.gostech.swiftportbackend.plannification.domain.model.entities.Task;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.*;
+import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.TaskStatus;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
@@ -79,5 +80,20 @@ public class ActivityQueryServiceImpl implements ActivityQueryService {
     @Override
     public List<TaskProgramming> handle(GetAllTaskProgrammingsQuery query) {
         return taskProgrammingRepository.findAll();
+    }
+
+    @Override
+    public List<Activity> handle(GetActivitiesByStatusQuery query) {
+        ActivityStatus status;
+        switch (query.activityStatus()) {
+            case "Planned" -> status = ActivityStatus.PLANNED;
+            case "Completed" -> status = ActivityStatus.COMPLETED;
+            case "InProgress" -> status = ActivityStatus.IN_PROGRESS;
+            case "Cancelled" -> status = ActivityStatus.CANCELLED;
+            default -> {
+                return activityRepository.findAll();
+            }
+        }
+        return activityRepository.findByActivityStatus(status);
     }
 }
