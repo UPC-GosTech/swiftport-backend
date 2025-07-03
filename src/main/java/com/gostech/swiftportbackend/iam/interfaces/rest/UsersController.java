@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,21 +20,25 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gostech.swiftportbackend.iam.domain.model.commands.CreateUserCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.DeleteUserCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.UpdateUserCommand;
+import com.gostech.swiftportbackend.iam.domain.model.commands.UpdateUserStatusCommand;
 import com.gostech.swiftportbackend.iam.domain.model.queries.GetAllUsersQuery;
 import com.gostech.swiftportbackend.iam.domain.model.queries.GetUserByIdQuery;
 import com.gostech.swiftportbackend.iam.domain.services.UserCommandService;
 import com.gostech.swiftportbackend.iam.domain.services.UserQueryService;
 import com.gostech.swiftportbackend.iam.interfaces.rest.resources.CreateUserResource;
 import com.gostech.swiftportbackend.iam.interfaces.rest.resources.UpdateUserResource;
+import com.gostech.swiftportbackend.iam.interfaces.rest.resources.UpdateUserStatusResource;
 import com.gostech.swiftportbackend.iam.interfaces.rest.resources.UserResource;
 import com.gostech.swiftportbackend.iam.interfaces.rest.transform.CreateUserCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.iam.interfaces.rest.transform.UpdateUserCommandFromResourceAssembler;
+import com.gostech.swiftportbackend.iam.interfaces.rest.transform.UpdateUserStatusCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 /**
  * UsersController
@@ -146,6 +151,30 @@ public class UsersController {
         var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user);
         
         logger.info("User updated successfully: {}", userResource.username());
+        return ResponseEntity.ok(userResource);
+    }
+    
+    /**
+     * Update user status (activate/deactivate)
+     * @param userId the user ID
+     * @param updateUserStatusResource the user status update data
+     * @return the updated user resource
+     */
+    @PutMapping("/{userId}/status")
+    @Operation(summary = "Update user status", description = "Update user status (activate/deactivate) in the current tenant.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User status updated successfully."),
+            @ApiResponse(responseCode = "404", description = "User not found."),
+            @ApiResponse(responseCode = "400", description = "Bad request.")})
+    public ResponseEntity<UserResource> updateUserStatus(@PathVariable Long userId, 
+                                                         @Valid @RequestBody UpdateUserStatusResource updateUserStatusResource) {
+        logger.info("Updating user status for ID: {} to active: {}", userId, updateUserStatusResource.active());
+        
+        UpdateUserStatusCommand command = UpdateUserStatusCommandFromResourceAssembler.toCommandFromResource(userId, updateUserStatusResource);
+        var user = userCommandService.handle(command);
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user);
+        
+        logger.info("User status updated successfully: {} - Active: {}", userResource.username(), userResource.active());
         return ResponseEntity.ok(userResource);
     }
     
