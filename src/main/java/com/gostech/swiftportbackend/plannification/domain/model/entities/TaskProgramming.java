@@ -75,8 +75,27 @@ public class TaskProgramming extends AuditableModel {
         return timeInterval.overlaps(other);
     }
 
-    public void updateStatus(ProgrammingStatus newStatus) {
-        this.programmingStatus = newStatus;
+    public void updateStatus(String newStatus) {
+        switch (newStatus) {
+            case "Pending":
+                this.programmingStatus = ProgrammingStatus.PENDING;
+                break;
+            case "Completed":
+                this.programmingStatus = ProgrammingStatus.COMPLETED;
+                break;
+            case "InProgress":
+                this.programmingStatus = ProgrammingStatus.IN_PROGRESS;
+                break;
+            case "Cancelled":
+                this.programmingStatus = ProgrammingStatus.CANCELLED;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void updateTime(LocalDateTime start, LocalDateTime end){
+        this.timeInterval = new TimeInterval(start, end);
     }
 
 }
