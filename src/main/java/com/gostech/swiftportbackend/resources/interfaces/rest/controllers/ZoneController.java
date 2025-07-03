@@ -155,4 +155,19 @@ public class ZoneController {
         return ResponseEntity.ok(locationResource);
     }
 
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get locations by status", description = "Get all locations with the given status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Locations found"),
+            @ApiResponse(responseCode = "404", description = "Locations not found")
+    })
+    public ResponseEntity<List<LocationResource>> getLocationsByStatus(@PathVariable String status) {
+        var locations = zoneQueryService.handle(new GetLocationsByStatusQuery(status));
+        if (locations.isEmpty()) return ResponseEntity.notFound().build();
+        var locationResources = locations.stream()
+                .map(LocationResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(locationResources);
+    }
+
 }

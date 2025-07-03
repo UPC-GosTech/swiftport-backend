@@ -1,6 +1,7 @@
 package com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories;
 
 import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
+import com.gostech.swiftportbackend.resources.domain.model.valueobjects.Availability;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,5 @@ import java.util.Optional;
 public interface LocationRepository extends JpaRepository<Location,Long> {
     Optional<Location> findById(Long id);
     List<Location> findByZoneId(Long zoneId);
+    List<Location> findByLocationStatus(Availability status);
 }
