@@ -3,6 +3,7 @@ package com.gostech.swiftportbackend.execution.application.internal.commandservi
 import com.gostech.swiftportbackend.execution.domain.model.aggregates.Execution;
 import com.gostech.swiftportbackend.execution.domain.model.commands.AddIncidentReportCommand;
 import com.gostech.swiftportbackend.execution.domain.model.commands.UpdateIncidentReportDescriptionCommand;
+import com.gostech.swiftportbackend.execution.domain.model.commands.UpdateIncidentReportEmployeeIdCommand;
 import com.gostech.swiftportbackend.execution.domain.model.entities.IncidentReport;
 import com.gostech.swiftportbackend.execution.domain.services.IncidentReportCommandService;
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionRepository;
@@ -43,6 +44,19 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
         IncidentReport incidentReport = incidentReportRepository.findById(command.incidentReportId())
                 .orElseThrow(() -> new IllegalArgumentException("Incident report not found"));
         incidentReport.updateDescription(command.description());
+        try {
+            incidentReportRepository.save(incidentReport);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error saving incident report: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(incidentReport);
+    }
+
+    @Override
+    public Optional<IncidentReport> handle(UpdateIncidentReportEmployeeIdCommand command) {
+        IncidentReport incidentReport = incidentReportRepository.findById(command.incidentReportId())
+                .orElseThrow(() -> new IllegalArgumentException("Incident report not found"));
+        incidentReport.updateEmployeeId(command.employeeId());
         try {
             incidentReportRepository.save(incidentReport);
         } catch (Exception e) {

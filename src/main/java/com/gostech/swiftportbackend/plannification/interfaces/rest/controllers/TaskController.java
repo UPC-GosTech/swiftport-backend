@@ -1,13 +1,13 @@
 package com.gostech.swiftportbackend.plannification.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetAllTasksQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskByIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTasksByActivityIdQuery;
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTasksByStatusQuery;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
-import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.CreateTaskResource;
-import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.TaskResource;
-import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.AddTaskCommandFromResourceAssembler;
-import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.TaskResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.*;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -76,4 +76,80 @@ public class TaskController {
                 .toList();
         return ResponseEntity.ok(resources);
     }
+
+    @PatchMapping("/{taskId}/employeeId")
+    @Operation(summary = "Update employee id assgined on task", description = "Updates only the employee Id assigned to a task")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task Employee Id updated"),
+            @ApiResponse(responseCode = "404", description = "Task not found")
+    })
+    public ResponseEntity<TaskResource> updateTaskEmployeeId(@PathVariable Long taskId, @RequestBody UpdateEmployeeIdResource resource) {
+        var updateEmployeeId = UpdateTaskEmployeeIdCommandFromResourceAssembler.toCommandFromResource(taskId, resource);
+        var updatedTask = activityCommandService.handle(updateEmployeeId);
+        if (updatedTask.isEmpty()) return ResponseEntity.notFound().build();
+        var updatedTaskEntity = updatedTask.get();
+        var updatedTaskResource = TaskResourceFromEntityAssembler.toResourceFromEntity(updatedTaskEntity);
+        return ResponseEntity.ok(updatedTaskResource);
+    }
+
+    @PatchMapping("/{taskId}/description")
+    @Operation(summary = "Update task description", description = "Updates only the task description")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task description updated"),
+            @ApiResponse(responseCode = "404", description = "Task not found")
+    })
+    public ResponseEntity<TaskResource> updateTaskDescription(@PathVariable Long taskId, @RequestBody UpdateTaskDescriptionResource resource) {
+        var command = UpdateTaskDescriptionCommandFromResourceAssembler.toCommandFromResource(taskId, resource);
+        var updatedTask = activityCommandService.handle(command);
+        if (updatedTask.isEmpty()) return ResponseEntity.notFound().build();
+        var updatedTaskEntity = updatedTask.get();
+        var updatedTaskResource = TaskResourceFromEntityAssembler.toResourceFromEntity(updatedTaskEntity);
+        return ResponseEntity.ok(updatedTaskResource);
+    }
+
+    @PatchMapping("/{taskId}/status")
+    @Operation(summary = "Update task status", description = "Updates only the status of a task")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task status updated"),
+            @ApiResponse(responseCode = "404", description = "Task not found")
+    })
+    public ResponseEntity<TaskResource> updateTaskStatus(@PathVariable Long taskId, @RequestBody UpdateTaskStatusResource resource) {
+        var command = UpdateTaskStatusCommandFromResourceAssembler.toCommandFromResource(taskId, resource);
+        var updatedTask = activityCommandService.handle(command);
+        if (updatedTask.isEmpty()) return ResponseEntity.notFound().build();
+        var updatedTaskEntity = updatedTask.get();
+        var updatedTaskResource = TaskResourceFromEntityAssembler.toResourceFromEntity(updatedTaskEntity);
+        return ResponseEntity.ok(updatedTaskResource);
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all tasks", description = "Get all tasks")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks found"),
+            @ApiResponse(responseCode = "404", description = "Tasks not found")
+    })
+    public ResponseEntity<List<TaskResource>> getAllTasks() {
+        var taskList = activityQueryService.handle(new GetAllTasksQuery());
+        if (taskList.isEmpty()) return ResponseEntity.badRequest().build();
+        var taskResources = taskList.stream()
+                .map(TaskResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(taskResources);
+    }
+
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get tasks by status", description = "Get all tasks that match a given status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks found"),
+            @ApiResponse(responseCode = "404", description = "No tasks found")
+    })
+    public ResponseEntity<List<TaskResource>> getTasksByStatus(@PathVariable String status) {
+        var taskList = activityQueryService.handle(new GetTasksByStatusQuery(status));
+        if (taskList.isEmpty()) return ResponseEntity.notFound().build();
+        var taskResources = taskList.stream()
+                .map(TaskResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(taskResources);
+    }
+
 }

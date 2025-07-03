@@ -3,12 +3,15 @@ package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllEmployeesQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeeByIdQuery;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeesByStatusQuery;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeCommandService;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeQueryService;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEmployeeResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.EmployeeResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.UpdateEmployeeStatusResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.CreateEmployeeCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.EmployeeResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.UpdateEmployeeStatusCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -79,4 +82,35 @@ public class EmployeeController {
                 .toList();
         return ResponseEntity.ok(employeeResource);
     }
+
+    @PatchMapping("/{employeeId}/status")
+    @Operation(summary = "Update employee status", description = "Updates the status of an employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employee status updated"),
+            @ApiResponse(responseCode = "404", description = "Employee not found")
+    })
+    public ResponseEntity<EmployeeResource> updateEmployeeStatus(@PathVariable Long employeeId, @RequestBody UpdateEmployeeStatusResource resource) {
+        var command = UpdateEmployeeStatusCommandFromResourceAssembler.toCommandFromResource(employeeId, resource);
+        var updatedEmployee = employeeCommandService.handle(command);
+        if (updatedEmployee.isEmpty()) return ResponseEntity.notFound().build();
+        var employeeEntity = updatedEmployee.get();
+        var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);
+        return ResponseEntity.ok(employeeResource);
+    }
+
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get employees by status", description = "Get all employees with a specific availability status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employees found"),
+            @ApiResponse(responseCode = "404", description = "No employees found with the given status")
+    })
+    public ResponseEntity<List<EmployeeResource>> getEmployeesByStatus(@PathVariable String status) {
+        var employees = employeeQueryService.handle(new GetEmployeesByStatusQuery(status));
+        if (employees.isEmpty()) return ResponseEntity.notFound().build();
+        var employeeResources = employees.stream()
+                .map(EmployeeResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(employeeResources);
+    }
+
 }

@@ -11,7 +11,8 @@ public class LocationResourceFromEntityAssembler {
                 entity.getAddress().city(),
                 entity.getAddress().country(),
                 entity.getCoordinates().latitude(),
-                entity.getCoordinates().longitude()
+                entity.getCoordinates().longitude(),
+                entity.getLocationStatus()
         );
     }
 }

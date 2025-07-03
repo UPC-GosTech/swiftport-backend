@@ -1,6 +1,6 @@
 package com.gostech.swiftportbackend.resources.domain.model.entities;
 
-import com.gostech.swiftportbackend.execution.domain.model.valueobjects.EmployeeId;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Team;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.commands.AddTeamMemberCommand;

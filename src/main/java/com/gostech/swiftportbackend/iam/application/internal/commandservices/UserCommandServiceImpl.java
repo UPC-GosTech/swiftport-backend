@@ -17,6 +17,7 @@ import com.gostech.swiftportbackend.iam.domain.model.commands.CreateUserCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.DeleteUserCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.SignUpCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.UpdateUserCommand;
+import com.gostech.swiftportbackend.iam.domain.model.commands.UpdateUserStatusCommand;
 import com.gostech.swiftportbackend.iam.domain.model.entities.Role;
 import com.gostech.swiftportbackend.iam.domain.model.valueobjects.Roles;
 import com.gostech.swiftportbackend.iam.domain.services.UserCommandService;
@@ -181,7 +182,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Check if email is already used by another user
-        if (!user.getEmail().equals(command.email()) && 
+        if (!user.getEmail().equals(command.email().value()) &&
             userRepository.existsByEmailAndTenantId(command.email(), tenantId)) {
             throw new RuntimeException("Email already exists in this organization");
         }
@@ -222,6 +223,28 @@ public class UserCommandServiceImpl implements UserCommandService {
         
         User savedUser = userRepository.save(user);
         logger.info("User deactivated successfully: {}", savedUser.getUsername());
+        
+        return savedUser;
+    }
+    
+    @Override
+    public User handle(UpdateUserStatusCommand command) {
+        logger.info("Updating user status for ID: {} to active: {}", command.userId(), command.active());
+        
+        Long tenantId = TenantContext.getCurrentTenantId();
+        // Find user in current tenant
+        User user = userRepository.findByIdAndTenantId(command.userId(), tenantId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // Update user status
+        if (command.active()) {
+            user.activate();
+        } else {
+            user.deactivate();
+        }
+        
+        User savedUser = userRepository.save(user);
+        logger.info("User status updated successfully: {} - Active: {}", savedUser.getUsername(), savedUser.isActive());
         
         return savedUser;
     }

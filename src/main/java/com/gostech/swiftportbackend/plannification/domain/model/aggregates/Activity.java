@@ -103,4 +103,23 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
         this.zoneDestination = zoneDestination;
     }
 
+    public void updateActivityStatus(String activityStatus) {
+        switch (activityStatus) {
+            case "Planned":
+                this.activityStatus = ActivityStatus.PLANNED;
+                break;
+            case "Completed":
+                this.activityStatus = ActivityStatus.COMPLETED;
+                break;
+            case "InProgress":
+                this.activityStatus = ActivityStatus.IN_PROGRESS;
+                break;
+            case "Cancelled":
+                this.activityStatus = ActivityStatus.CANCELLED;
+                break;
+            default:
+                break;
+        }
+    }
+
 }

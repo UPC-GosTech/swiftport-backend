@@ -1,6 +1,6 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.resources;
 
-public record CreateLocationResource(Long zoneId, String street, String city, String country, Double latitude, Double longitude) {
+public record CreateLocationResource(Long zoneId, String street, String city, String country, Double latitude, Double longitude, String status) {
     public CreateLocationResource {
         if (zoneId == null || zoneId <= 0) {
             throw new IllegalArgumentException("Zone id cannot be null or less than zero");
@@ -19,6 +19,9 @@ public record CreateLocationResource(Long zoneId, String street, String city, St
         }
         if (longitude == null) {
             throw new IllegalArgumentException("Longitude must not be null");
+        }
+        if (status == null || status.isEmpty()) {
+            throw new IllegalArgumentException("Status must not be null or empty");
         }
     }
 }

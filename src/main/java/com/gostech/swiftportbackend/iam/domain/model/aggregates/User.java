@@ -111,6 +111,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     
     // Convenience method for email
     public String getEmail() {
+
         return email != null ? email.value() : null;
     }
     

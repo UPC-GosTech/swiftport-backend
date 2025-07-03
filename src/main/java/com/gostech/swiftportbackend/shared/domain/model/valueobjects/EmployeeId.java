@@ -1,4 +1,4 @@
-package com.gostech.swiftportbackend.execution.domain.model.valueobjects;
+package com.gostech.swiftportbackend.shared.domain.model.valueobjects;
 
 import jakarta.persistence.Embeddable;
 

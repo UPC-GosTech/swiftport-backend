@@ -1,4 +1,6 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.resources;
 
-public record LocationResource(Long zoneId, String street, String city, String country, Double latitude, Double longitude) {
+import com.gostech.swiftportbackend.resources.domain.model.valueobjects.Availability;
+
+public record LocationResource(Long zoneId, String street, String city, String country, Double latitude, Double longitude, Availability status) {
 }

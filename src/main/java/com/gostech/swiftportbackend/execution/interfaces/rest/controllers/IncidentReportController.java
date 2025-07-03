@@ -7,10 +7,12 @@ import com.gostech.swiftportbackend.execution.domain.services.IncidentReportComm
 import com.gostech.swiftportbackend.execution.domain.services.IncidentReportQueryService;
 import com.gostech.swiftportbackend.execution.interfaces.rest.resources.CreateIncidentReportResource;
 import com.gostech.swiftportbackend.execution.interfaces.rest.resources.IncidentReportResource;
+import com.gostech.swiftportbackend.execution.interfaces.rest.resources.UpdateIncidentReportEmployeeIdResource;
 import com.gostech.swiftportbackend.execution.interfaces.rest.resources.UpdateIncidentReportResource;
 import com.gostech.swiftportbackend.execution.interfaces.rest.transform.AddIncidentReportCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.execution.interfaces.rest.transform.IncidentReportResourceFromEntityAssembler;
 import com.gostech.swiftportbackend.execution.interfaces.rest.transform.UpdateIncidentReportCommandFromResourceAssembler;
+import com.gostech.swiftportbackend.execution.interfaces.rest.transform.UpdateIncidentReportEmployeeIdCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -100,8 +102,8 @@ public class IncidentReportController {
         return ResponseEntity.ok(resources);
     }
 
-    @PutMapping("/incidents/{incidentReportId}")
-    @Operation(summary = "Update incident report", description = "Update the description of an existing incident report")
+    @PatchMapping("/incidents/{incidentReportId}")
+    @Operation(summary = "Update incident report description", description = "Update the description of an existing incident report")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Incident report updated"),
             @ApiResponse(responseCode = "404", description = "Incident report not found"),
@@ -115,4 +117,20 @@ public class IncidentReportController {
         var incidentResource = IncidentReportResourceFromEntityAssembler.toResourceFromEntity(incidentEntity);
         return ResponseEntity.ok(incidentResource);
     }
+
+    @PatchMapping("/{incidentReportId}/employeeId")
+    @Operation(summary = "Update employee ID on incident report", description = "Updates the employee ID assigned to an incident report")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Incident report employee ID updated"),
+            @ApiResponse(responseCode = "404", description = "Incident report not found")
+    })
+    public ResponseEntity<IncidentReportResource> updateIncidentReportEmployeeId(@PathVariable Long incidentReportId, @RequestBody UpdateIncidentReportEmployeeIdResource resource) {
+        var command = UpdateIncidentReportEmployeeIdCommandFromResourceAssembler.toCommandFromResource(incidentReportId, resource);
+        var updatedIncident = incidentReportCommandService.handle(command);
+        if (updatedIncident.isEmpty()) return ResponseEntity.notFound().build();
+        var updatedIncidentEntity = updatedIncident.get();
+        var updatedResource = IncidentReportResourceFromEntityAssembler.toResourceFromEntity(updatedIncidentEntity);
+        return ResponseEntity.ok(updatedResource);
+    }
+
 }

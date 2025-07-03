@@ -2,12 +2,15 @@ package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllEquipmentsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetEquipmentByIdQuery;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetEquipmentsByStatusQuery;
 import com.gostech.swiftportbackend.resources.domain.services.EquipmentCommandService;
 import com.gostech.swiftportbackend.resources.domain.services.EquipmentQueryService;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEquipmentResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.EquipmentResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.UpdateEquipmentStatusResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.CreateEquipmentCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.EquipmentResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.UpdateEquipmentStatusCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -77,4 +80,35 @@ public class EquipmentController {
                 .toList();
         return ResponseEntity.ok(equipmentResources);
     }
+
+    @PatchMapping("/{equipmentId}/status")
+    @Operation(summary = "Update equipment status", description = "Updates the availability status of an equipment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Equipment status updated"),
+            @ApiResponse(responseCode = "404", description = "Equipment not found")
+    })
+    public ResponseEntity<EquipmentResource> updateEquipmentStatus(@PathVariable Long equipmentId, @RequestBody UpdateEquipmentStatusResource resource) {
+        var command = UpdateEquipmentStatusCommandFromResourceAssembler.toCommandFromResource(equipmentId, resource);
+        var updatedEquipment = equipmentCommandService.handle(command);
+        if (updatedEquipment.isEmpty()) return ResponseEntity.notFound().build();
+        var equipmentEntity = updatedEquipment.get();
+        var equipmentResource = EquipmentResourceFromEntityAssembler.toResourceFromEntity(equipmentEntity);
+        return ResponseEntity.ok(equipmentResource);
+    }
+
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get equipments by status", description = "Get all equipments filtered by availability status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Equipments found"),
+            @ApiResponse(responseCode = "404", description = "No equipments found for the given status")
+    })
+    public ResponseEntity<List<EquipmentResource>> getEquipmentsByStatus(@PathVariable String status) {
+        var equipments = equipmentQueryService.handle(new GetEquipmentsByStatusQuery(status));
+        if (equipments.isEmpty()) return ResponseEntity.notFound().build();
+        var resources = equipments.stream()
+                .map(EquipmentResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
 }
