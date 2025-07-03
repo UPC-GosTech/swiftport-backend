@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.plannification.domain.model.aggregates.Activ
 import com.gostech.swiftportbackend.plannification.domain.model.entities.Task;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.*;
+import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.TaskStatus;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
@@ -53,5 +54,25 @@ public class ActivityQueryServiceImpl implements ActivityQueryService {
     @Override
     public List<TaskProgramming> handle(GetTaskProgrammingsByTaskIdQuery query) {
         return taskProgrammingRepository.findByTaskId(query.taskId());
+    }
+
+    @Override
+    public List<Task> handle(GetAllTasksQuery query) {
+        return taskRepository.findAll();
+    }
+
+    @Override
+    public List<Task> handle(GetTasksByStatusQuery query) {
+        TaskStatus status;
+        switch (query.status()) {
+            case "Pending" -> status = TaskStatus.PENDING;
+            case "Completed" -> status = TaskStatus.COMPLETED;
+            case "InProgress" -> status = TaskStatus.IN_PROGRESS;
+            case "Cancelled" -> status = TaskStatus.CANCELLED;
+            default -> {
+                return taskRepository.findAll();
+            }
+        }
+        return taskRepository.findByStatus(status);
     }
 }

@@ -1,7 +1,9 @@
 package com.gostech.swiftportbackend.plannification.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetAllTasksQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskByIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTasksByActivityIdQuery;
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTasksByStatusQuery;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.*;
@@ -118,6 +120,36 @@ public class TaskController {
         var updatedTaskEntity = updatedTask.get();
         var updatedTaskResource = TaskResourceFromEntityAssembler.toResourceFromEntity(updatedTaskEntity);
         return ResponseEntity.ok(updatedTaskResource);
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all tasks", description = "Get all tasks")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks found"),
+            @ApiResponse(responseCode = "404", description = "Tasks not found")
+    })
+    public ResponseEntity<List<TaskResource>> getAllTasks() {
+        var taskList = activityQueryService.handle(new GetAllTasksQuery());
+        if (taskList.isEmpty()) return ResponseEntity.badRequest().build();
+        var taskResources = taskList.stream()
+                .map(TaskResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(taskResources);
+    }
+
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get tasks by status", description = "Get all tasks that match a given status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks found"),
+            @ApiResponse(responseCode = "404", description = "No tasks found")
+    })
+    public ResponseEntity<List<TaskResource>> getTasksByStatus(@PathVariable String status) {
+        var taskList = activityQueryService.handle(new GetTasksByStatusQuery(status));
+        if (taskList.isEmpty()) return ResponseEntity.notFound().build();
+        var taskResources = taskList.stream()
+                .map(TaskResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(taskResources);
     }
 
 }
