@@ -27,7 +27,10 @@ public class TenantContext {
      * @return current tenant ID or default if not set
      */
     public static Long getCurrentTenantId() {
-        return CURRENT_TENANT_ID.get() != null ? CURRENT_TENANT_ID.get() : DEFAULT_TENANT_ID;
+        if (CURRENT_TENANT_ID.get() == null) {
+            throw new IllegalStateException("Tenant context not found. Tenant ID must be set before accessing it.");
+        }
+        return CURRENT_TENANT_ID.get();
     }
     
     /**

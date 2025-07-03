@@ -9,7 +9,8 @@ public class AddTaskCommandFromResourceAssembler {
                 resource.activityId(),
                 resource.title(),
                 resource.description(),
-                resource.status()
+                resource.status(),
+                resource.employeeId()
         );
     }
 }

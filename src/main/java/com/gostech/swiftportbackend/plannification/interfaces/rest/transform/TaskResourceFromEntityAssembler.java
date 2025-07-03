@@ -9,7 +9,8 @@ public class TaskResourceFromEntityAssembler {
                 entity.getId(),
                 entity.getDescription(),
                 entity.getStatus(),
-                entity.getTitle()
+                entity.getTitle(),
+                entity.getEmployeeId().employeeId()
         );
     }
 }

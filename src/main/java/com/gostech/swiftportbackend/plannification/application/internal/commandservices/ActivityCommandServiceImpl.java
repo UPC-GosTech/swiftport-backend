@@ -1,9 +1,7 @@
 package com.gostech.swiftportbackend.plannification.application.internal.commandservices;
 
 import com.gostech.swiftportbackend.plannification.domain.model.aggregates.Activity;
-import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskCommand;
-import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskProgrammingCommand;
-import com.gostech.swiftportbackend.plannification.domain.model.commands.CreateActivityCommand;
+import com.gostech.swiftportbackend.plannification.domain.model.commands.*;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.Task;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActicityCode;
@@ -12,6 +10,8 @@ import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jp
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ActivityCommandServiceImpl implements ActivityCommandService {
@@ -68,5 +68,83 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
             throw new IllegalArgumentException("Error saving task programming: %s".formatted(e.getMessage()));
         }
         return taskProgramming.getId();
+    }
+
+    @Override
+    public Optional<Task> handle(UpdateEmployeeAssignedOnTaskCommand command) {
+        Task task = taskRepository.findById(command.taskId())
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        try {
+            task.updateEmployeeAssigned(command.employeeId());
+            taskRepository.save(task);
+        }  catch (Exception e) {
+            throw new IllegalArgumentException("Error updating employee Id on task: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(task);
+    }
+
+    @Override
+    public Optional<Task> handle(UpdateTaskDescriptionCommand  command) {
+        Task task = taskRepository.findById(command.taskId())
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        try {
+            task.updateTaskDescription(command.description());
+            taskRepository.save(task);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task description: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(task);
+    }
+
+    @Override
+    public Optional<Task> handle(UpdateTaskStatusCommand command) {
+        Task task = taskRepository.findById(command.taskId())
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+        try {
+            task.updateTaskStatus(command.status());
+            taskRepository.save(task);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task status: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(task);
+    }
+
+    @Override
+    public Optional<TaskProgramming> handle(UpdateTaskProgrammingStatusCommand command) {
+        TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
+            .orElseThrow(() -> new IllegalArgumentException("TaskProgramming not found"));
+        try {
+            taskProgramming.updateStatus(command.programmingStatus());
+            taskProgrammingRepository.save(taskProgramming);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task programming: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(taskProgramming);
+    }
+
+    @Override
+    public Optional<TaskProgramming> handle(UpdateTaskProgrammingTimeIntervalCommand command) {
+        TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
+            .orElseThrow(() -> new IllegalArgumentException("TaskProgramming not found"));
+        try {
+            taskProgramming.updateTime(command.start(), command.end());
+            taskProgrammingRepository.save(taskProgramming);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task programming: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(taskProgramming);
+    }
+
+    @Override
+    public Optional<Activity> handle(UpdateActivityStatusCommand command) {
+        Activity activity = activityRepository.findById(command.activityId())
+            .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
+        try {
+            activity.updateActivityStatus(command.activityStatus());
+            activityRepository.save(activity);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating activity status: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(activity);
     }
 }

@@ -1,6 +1,6 @@
 package com.gostech.swiftportbackend.resources.domain.model.commands;
 
-public record AddLocationCommand(Long zoneId, String street, String city, String country, Double latitude, Double longitude) {
+public record AddLocationCommand(Long zoneId, String street, String city, String country, Double latitude, Double longitude, String locationStatus) {
     public AddLocationCommand {
         if (zoneId == null || zoneId <= 0) {
             throw new IllegalArgumentException("Zone id cannot be null or less than zero");
@@ -19,6 +19,9 @@ public record AddLocationCommand(Long zoneId, String street, String city, String
         }
         if (longitude == null) {
             throw new IllegalArgumentException("Longitude must not be null");
+        }
+        if (locationStatus == null || locationStatus.isEmpty()) {
+            throw new IllegalArgumentException("LocationStatus must not be null or empty");
         }
     }
 }

@@ -1,13 +1,19 @@
 package com.gostech.swiftportbackend.plannification.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetAllTaskProgrammingsQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskProgrammingByIdQuery;
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskProgrammingsByActivityIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskProgrammingsByTaskIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.CreateTaskProgrammingResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.TaskProgrammingResource;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.UpdateTaskProgrammingStatusResource;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.UpdateTaskProgrammingTimeIntervalResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.AddTaskProgrammingCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.TaskProgrammingResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateTaskProgrammingStatusCommandFromResourceAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateTaskProgrammingTimeIntervalCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -74,6 +80,66 @@ public class TaskProgrammingController {
         var taskProgrammingList = activityQueryService.handle(new GetTaskProgrammingsByTaskIdQuery(taskId));
         if (taskProgrammingList.isEmpty()) return ResponseEntity.notFound().build();
         var resources = taskProgrammingList.stream()
+                .map(TaskProgrammingResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
+    @PatchMapping("/{taskProgrammingId}/time-interval")
+    @Operation(summary = "Update task programming time interval", description = "Updates the start and end time of a task programming")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task programming time interval updated"),
+            @ApiResponse(responseCode = "404", description = "Task programming not found")
+    })
+    public ResponseEntity<TaskProgrammingResource> updateTaskProgrammingTimeInterval(@PathVariable Long taskProgrammingId, @RequestBody UpdateTaskProgrammingTimeIntervalResource resource) {
+        var command = UpdateTaskProgrammingTimeIntervalCommandFromResourceAssembler.toCommandFromResource(taskProgrammingId, resource);
+        var updatedProgramming = activityCommandService.handle(command);
+        if (updatedProgramming.isEmpty()) return ResponseEntity.notFound().build();
+        var taskProgrammingEntity = updatedProgramming.get();
+        var updatedResource = TaskProgrammingResourceFromEntityAssembler.toResourceFromEntity(taskProgrammingEntity);
+        return ResponseEntity.ok(updatedResource);
+    }
+
+    @PatchMapping("/{taskProgrammingId}/status")
+    @Operation(summary = "Update task programming status", description = "Updates the status of a task programming")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task programming status updated"),
+            @ApiResponse(responseCode = "404", description = "Task programming not found")
+    })
+    public ResponseEntity<TaskProgrammingResource> updateTaskProgrammingStatus(@PathVariable Long taskProgrammingId, @RequestBody UpdateTaskProgrammingStatusResource resource) {
+        var command = UpdateTaskProgrammingStatusCommandFromResourceAssembler.toCommandFromResource(taskProgrammingId, resource);
+        var updatedProgramming = activityCommandService.handle(command);
+        if (updatedProgramming.isEmpty()) return ResponseEntity.notFound().build();
+        var taskProgrammingEntity = updatedProgramming.get();
+        var updatedResource = TaskProgrammingResourceFromEntityAssembler.toResourceFromEntity(taskProgrammingEntity);
+        return ResponseEntity.ok(updatedResource);
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all task programmings", description = "Get all task programmings")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task programmings found"),
+            @ApiResponse(responseCode = "404", description = "No task programmings found")
+    })
+    public ResponseEntity<List<TaskProgrammingResource>> getAllTaskProgrammings() {
+        var allProgrammings = activityQueryService.handle(new GetAllTaskProgrammingsQuery());
+        if (allProgrammings.isEmpty()) return ResponseEntity.notFound().build();
+        var resources = allProgrammings.stream()
+                .map(TaskProgrammingResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
+    @GetMapping("/activities/{activityId}")
+    @Operation(summary = "Get task programmings by activity ID", description = "Get all task programmings for a given activity")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task programmings found"),
+            @ApiResponse(responseCode = "404", description = "Activity or task programmings not found")
+    })
+    public ResponseEntity<List<TaskProgrammingResource>> getTaskProgrammingsByActivityId(@PathVariable Long activityId) {
+        var taskProgrammings = activityQueryService.handle(new GetTaskProgrammingsByActivityIdQuery(activityId));
+        if (taskProgrammings.isEmpty()) return ResponseEntity.notFound().build();
+        var resources = taskProgrammings.stream()
                 .map(TaskProgrammingResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(resources);
