@@ -6,8 +6,12 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityComma
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.CreateTaskProgrammingResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.TaskProgrammingResource;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.UpdateTaskProgrammingStatusResource;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.UpdateTaskProgrammingTimeIntervalResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.AddTaskProgrammingCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.TaskProgrammingResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateTaskProgrammingStatusCommandFromResourceAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateTaskProgrammingTimeIntervalCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -78,4 +82,35 @@ public class TaskProgrammingController {
                 .toList();
         return ResponseEntity.ok(resources);
     }
+
+    @PatchMapping("/{taskProgrammingId}/time-interval")
+    @Operation(summary = "Update task programming time interval", description = "Updates the start and end time of a task programming")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task programming time interval updated"),
+            @ApiResponse(responseCode = "404", description = "Task programming not found")
+    })
+    public ResponseEntity<TaskProgrammingResource> updateTaskProgrammingTimeInterval(@PathVariable Long taskProgrammingId, @RequestBody UpdateTaskProgrammingTimeIntervalResource resource) {
+        var command = UpdateTaskProgrammingTimeIntervalCommandFromResourceAssembler.toCommandFromResource(taskProgrammingId, resource);
+        var updatedProgramming = activityCommandService.handle(command);
+        if (updatedProgramming.isEmpty()) return ResponseEntity.notFound().build();
+        var taskProgrammingEntity = updatedProgramming.get();
+        var updatedResource = TaskProgrammingResourceFromEntityAssembler.toResourceFromEntity(taskProgrammingEntity);
+        return ResponseEntity.ok(updatedResource);
+    }
+
+    @PatchMapping("/{taskProgrammingId}/status")
+    @Operation(summary = "Update task programming status", description = "Updates the status of a task programming")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task programming status updated"),
+            @ApiResponse(responseCode = "404", description = "Task programming not found")
+    })
+    public ResponseEntity<TaskProgrammingResource> updateTaskProgrammingStatus(@PathVariable Long taskProgrammingId, @RequestBody UpdateTaskProgrammingStatusResource resource) {
+        var command = UpdateTaskProgrammingStatusCommandFromResourceAssembler.toCommandFromResource(taskProgrammingId, resource);
+        var updatedProgramming = activityCommandService.handle(command);
+        if (updatedProgramming.isEmpty()) return ResponseEntity.notFound().build();
+        var taskProgrammingEntity = updatedProgramming.get();
+        var updatedResource = TaskProgrammingResourceFromEntityAssembler.toResourceFromEntity(taskProgrammingEntity);
+        return ResponseEntity.ok(updatedResource);
+    }
+
 }
