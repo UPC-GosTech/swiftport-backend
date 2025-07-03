@@ -9,6 +9,11 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityComma
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
+import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
+import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.LocationRepository;
+import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ZoneRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,38 +23,46 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     private final ActivityRepository activityRepository;
     private final TaskRepository taskRepository;
     private final TaskProgrammingRepository taskProgrammingRepository;
+    private final ZoneRepository zoneRepository;
+    private final LocationRepository locationRepository;
 
-    public ActivityCommandServiceImpl(ActivityRepository activityRepository, TaskRepository taskRepository, TaskProgrammingRepository taskProgrammingRepository) {
+    public ActivityCommandServiceImpl(ActivityRepository activityRepository, TaskRepository taskRepository, TaskProgrammingRepository taskProgrammingRepository, ZoneRepository zoneRepository, LocationRepository locationRepository) {
         this.activityRepository = activityRepository;
         this.taskRepository = taskRepository;
         this.taskProgrammingRepository = taskProgrammingRepository;
+        this.zoneRepository = zoneRepository;
+        this.locationRepository = locationRepository;
     }
 
     @Override
     public Long handle(CreateActivityCommand command) {
         if (activityRepository.existsByActivityCode(new ActicityCode(command.activityCode())))
             throw new IllegalArgumentException("Activity with code %s already exists".formatted(command.activityCode()));
-        var activity = new Activity();
-        activity.setActivityCode(new ActicityCode(command.activityCode()));
-        activity.setDescription(command.description());
-        activity.setExpectedTime(command.expectedTime());
-        activity.setWeekNumber(command.weekNumber());
-        switch (command.activityStatus()) {
-            case "Planned":
-                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.PLANNED);
-                break;
-            case "Completed":
-                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.COMPLETED);
-                break;
-            case "InProgress":
-                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.IN_PROGRESS);
-                break;
-            default:
-                activity.setActivityStatus(com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ActivityStatus.CANCELLED);
-                break;
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
         }
-        activity.setTenantId(new com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId(command.tenantId()));
+
+        Location locationOrigin = locationRepository.findById(command.locationOrigin())
+                .orElseThrow(() -> new RuntimeException("Location with origin %s not found".formatted(command.locationOrigin())));
+
+        Location locationDestination = locationRepository.findById(command.locationDestination())
+                .orElseThrow(() -> new RuntimeException("Location destination %s not found".formatted(command.locationDestination())));
+
+        Zone zoneOrigin = zoneRepository.findById(command.zoneOrigin())
+                .orElseThrow(() -> new RuntimeException("Zone origin %s not found".formatted(command.zoneOrigin())));
+
+        Zone zoneDestination = zoneRepository.findById(command.zoneDestination())
+                .orElseThrow(() -> new RuntimeException("Zone destination %s not found".formatted(command.zoneDestination())));
+
+        var activity = new Activity(tenantId, command);
+
         try {
+            activity.setLocationOrigin(locationOrigin);
+            activity.setLocationDestination(locationDestination);
+            activity.setZoneOrigin(zoneOrigin);
+            activity.setZoneDestination(zoneDestination);
             activityRepository.save(activity);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving activity: %s".formatted(e.getMessage()));

@@ -25,11 +25,6 @@ public class ExecutionContextFacadeImpl implements ExecutionContextFacade {
             LocalDateTime start,
             LocalDateTime end) {
 
-        Long tenantId = TenantContext.getCurrentTenantId();
-        if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
-        }
-
         var createExecutionCommand = new CreateExecutionCommand(
                 taskProgrammingId,
                 taskExecutionStatus,

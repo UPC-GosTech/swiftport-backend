@@ -10,11 +10,13 @@ import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
 @Getter
 @Entity
 public class Activity extends AuditableAbstractAggregateRoot<Activity> {
@@ -62,44 +64,27 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
         tasks.add(task);
     }
 
-    public void setActivityCode(ActicityCode activityCode) {
-        this.activityCode = activityCode;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setExpectedTime(LocalDateTime expectedTime) {
-        this.expectedTime = expectedTime;
-    }
-
-    public void setWeekNumber(Integer weekNumber) {
-        this.weekNumber = weekNumber;
-    }
-
-    public void setActivityStatus(ActivityStatus activityStatus) {
-        this.activityStatus = activityStatus;
-    }
-
-    public void setTenantId(TenantId tenantId) {
-        this.tenantId = tenantId;
-    }
-
-    public void setLocationOrigin(Location locationOrigin) {
-        this.locationOrigin = locationOrigin;
-    }
-
-    public void setLocationDestination(Location locationDestination) {
-        this.locationDestination = locationDestination;
-    }
-
-    public void setZoneOrigin(Zone zoneOrigin) {
-        this.zoneOrigin = zoneOrigin;
-    }
-
-    public void setZoneDestination(Zone zoneDestination) {
-        this.zoneDestination = zoneDestination;
+    public Activity(Long tenantId, CreateActivityCommand command) {
+        this.tasks = new ArrayList<>();
+        this.activityCode = new ActicityCode(command.activityCode());
+        this.description = command.description();
+        this.expectedTime = command.expectedTime();
+        this.weekNumber = command.weekNumber();
+        switch (command.activityStatus()) {
+            case "Planned":
+                this.activityStatus = ActivityStatus.PLANNED;
+                break;
+            case "Completed":
+                this.activityStatus = ActivityStatus.COMPLETED;
+                break;
+            case "InProgress":
+                this.activityStatus = ActivityStatus.IN_PROGRESS;
+                break;
+            default:
+                this.activityStatus = ActivityStatus.CANCELLED;
+                break;
+        }
+        this.tenantId = new TenantId(tenantId);
     }
 
     public void updateActivityStatus(String activityStatus) {
