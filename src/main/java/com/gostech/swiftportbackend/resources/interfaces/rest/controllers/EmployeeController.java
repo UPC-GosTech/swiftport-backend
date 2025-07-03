@@ -3,6 +3,7 @@ package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllEmployeesQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeeByIdQuery;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetEmployeesByStatusQuery;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeCommandService;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeQueryService;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEmployeeResource;
@@ -95,6 +96,21 @@ public class EmployeeController {
         var employeeEntity = updatedEmployee.get();
         var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);
         return ResponseEntity.ok(employeeResource);
+    }
+
+    @GetMapping("/status/{status}")
+    @Operation(summary = "Get employees by status", description = "Get all employees with a specific availability status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employees found"),
+            @ApiResponse(responseCode = "404", description = "No employees found with the given status")
+    })
+    public ResponseEntity<List<EmployeeResource>> getEmployeesByStatus(@PathVariable String status) {
+        var employees = employeeQueryService.handle(new GetEmployeesByStatusQuery(status));
+        if (employees.isEmpty()) return ResponseEntity.notFound().build();
+        var employeeResources = employees.stream()
+                .map(EmployeeResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(employeeResources);
     }
 
 }
