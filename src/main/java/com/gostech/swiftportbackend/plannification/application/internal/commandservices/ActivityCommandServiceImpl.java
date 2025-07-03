@@ -108,4 +108,30 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
         }
         return Optional.of(task);
     }
+
+    @Override
+    public Optional<TaskProgramming> handle(UpdateTaskProgrammingStatusCommand command) {
+        TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
+            .orElseThrow(() -> new IllegalArgumentException("TaskProgramming not found"));
+        try {
+            taskProgramming.updateStatus(command.programmingStatus());
+            taskProgrammingRepository.save(taskProgramming);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task programming: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(taskProgramming);
+    }
+
+    @Override
+    public Optional<TaskProgramming> handle(UpdateTaskProgrammingTimeIntervalCommand command) {
+        TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
+            .orElseThrow(() -> new IllegalArgumentException("TaskProgramming not found"));
+        try {
+            taskProgramming.updateTime(command.start(), command.end());
+            taskProgrammingRepository.save(taskProgramming);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating task programming: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(taskProgramming);
+    }
 }
