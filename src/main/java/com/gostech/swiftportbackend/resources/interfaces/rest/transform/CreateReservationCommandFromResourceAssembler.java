@@ -6,7 +6,6 @@ import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateRe
 public class CreateReservationCommandFromResourceAssembler {
     public static CreateReservationCommand toCommandFromResource(CreateReservationResource resource) {
         return new CreateReservationCommand(
-                resource.tenantId(),
                 resource.resourceType(),
                 resource.resourceId(),
                 resource.start(),

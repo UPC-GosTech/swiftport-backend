@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
 @Entity
 public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
 
-    @Column(name = "tenant_id", nullable = false)
-    private Long tenantId;
+    @Embedded
+    private TenantId tenantId;
 
     @Embedded
     @AttributeOverride(name = "resourceId", column = @Column(name = "resource_id_ref"))
@@ -39,8 +39,7 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
     @JoinColumn(name = "resource_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Equipment equipment;
 
-    public Reservation(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
-        this.tenantId = tenantId;
+    public Reservation(String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
         switch (resourceType) {
             case "Vehicle":
                 this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), resourceId);
@@ -69,8 +68,7 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
 
     public Reservation() {}
 
-    public Reservation(CreateReservationCommand command) {
-        this.tenantId = command.tenantId();
+    public Reservation(Long tenantId, CreateReservationCommand command) {
         switch (command.resourceType()) {
             case "Vehicle":
                 this.resourceReference = new ResourceReference(ResourceType.VEHICLE.toString(), command.resourceId());
