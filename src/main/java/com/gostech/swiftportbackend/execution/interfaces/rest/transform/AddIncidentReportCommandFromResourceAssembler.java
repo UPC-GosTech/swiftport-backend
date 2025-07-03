@@ -11,7 +11,8 @@ public class AddIncidentReportCommandFromResourceAssembler {
                 resource.description(),
                 resource.reportedAt(),
                 resource.severity(),
-                resource.tenantId()
+                resource.tenantId(),
+                resource.employeeId()
         );
     }
 }

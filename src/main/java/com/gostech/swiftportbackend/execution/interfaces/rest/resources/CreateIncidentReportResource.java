@@ -2,7 +2,7 @@ package com.gostech.swiftportbackend.execution.interfaces.rest.resources;
 
 import java.time.LocalDateTime;
 
-public record CreateIncidentReportResource(Long executionId, String title, String description, LocalDateTime reportedAt, String severity, Long tenantId) {
+public record CreateIncidentReportResource(Long executionId, String title, String description, LocalDateTime reportedAt, String severity, Long tenantId, Long employeeId) {
     public CreateIncidentReportResource {
         if (executionId == null || executionId <= 0) {
             throw new IllegalArgumentException("Execution id cannot be null or less than 1");
@@ -21,6 +21,9 @@ public record CreateIncidentReportResource(Long executionId, String title, Strin
         }
         if (tenantId == null || tenantId <= 0) {
             throw new IllegalArgumentException("Tenant Id cannot be null or less than 1");
+        }
+        if (employeeId == null || employeeId <= 0) {
+            throw new IllegalArgumentException("Employee Id cannot be null or less than 1");
         }
     }
 }
