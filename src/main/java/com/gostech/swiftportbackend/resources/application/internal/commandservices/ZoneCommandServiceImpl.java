@@ -3,17 +3,23 @@ package com.gostech.swiftportbackend.resources.application.internal.commandservi
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
 import com.gostech.swiftportbackend.resources.domain.model.commands.AddLocationCommand;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateZoneCommand;
+import com.gostech.swiftportbackend.resources.domain.model.commands.UpdateLocationStatusCommand;
 import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneCommandService;
+import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.LocationRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ZoneRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ZoneCommandServiceImpl implements ZoneCommandService {
     private final ZoneRepository zoneRepository;
+    private final LocationRepository locationRepository;
 
-    public ZoneCommandServiceImpl(ZoneRepository zoneRepository) {
+    public ZoneCommandServiceImpl(ZoneRepository zoneRepository, LocationRepository locationRepository) {
         this.zoneRepository = zoneRepository;
+        this.locationRepository = locationRepository;
     }
 
     @Override
@@ -42,5 +48,18 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
             throw new IllegalArgumentException("Error saving zone: %s".formatted(e.getMessage()));
         }
         return location.getId();
+    }
+
+    @Override
+    public Optional<Location> handle(UpdateLocationStatusCommand command) {
+        Location location = locationRepository.findById(command.locationId())
+                .orElseThrow(() -> new IllegalArgumentException("Location with id %s does not exist".formatted(command.locationId())));
+        try {
+            location.updateStatus(command.status());
+            locationRepository.save(location);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error saving location: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(location);
     }
 }

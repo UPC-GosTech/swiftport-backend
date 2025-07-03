@@ -70,4 +70,23 @@ public class Location extends AuditableModel {
                 break;
         }
     }
+
+    public void updateStatus(String locationStatus) {
+        switch (locationStatus) {
+            case "Available":
+                this.locationStatus = Availability.AVAILABLE;
+                break;
+            case "Vacation":
+                this.locationStatus = Availability.VACATION;
+                break;
+            case "Reserved":
+                this.locationStatus = Availability.RESERVED;
+                break;
+            case "Unavailable":
+                this.locationStatus = Availability.UNAVAILABLE;
+                break;
+            default:
+                break;
+        }
+    }
 }

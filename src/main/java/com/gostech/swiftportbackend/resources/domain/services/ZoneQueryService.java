@@ -12,5 +12,5 @@ public interface ZoneQueryService {
     List<Zone> handle(GetAllZonesQuery query);
     Optional<Location> handle(GetLocationByIdQuery query);
     List<Location> handle(GetAllLocationsQuery query);
-    List<Location> handle(GetLocationsByZoneId query);
+    List<Location> handle(GetLocationsByZoneIdQuery query);
 }

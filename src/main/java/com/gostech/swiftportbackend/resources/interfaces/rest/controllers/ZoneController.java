@@ -3,14 +3,8 @@ package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 import com.gostech.swiftportbackend.resources.domain.model.queries.*;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneCommandService;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneQueryService;
-import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateLocationResource;
-import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateZoneResource;
-import com.gostech.swiftportbackend.resources.interfaces.rest.resources.LocationResource;
-import com.gostech.swiftportbackend.resources.interfaces.rest.resources.ZoneResource;
-import com.gostech.swiftportbackend.resources.interfaces.rest.transform.AddLocationCommandFromResourceAssembler;
-import com.gostech.swiftportbackend.resources.interfaces.rest.transform.CreateZoneCommandFromResourceAssembler;
-import com.gostech.swiftportbackend.resources.interfaces.rest.transform.LocationResourceFromEntityAssembler;
-import com.gostech.swiftportbackend.resources.interfaces.rest.transform.ZoneResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.*;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -138,11 +132,27 @@ public class ZoneController {
             @ApiResponse(responseCode = "404", description = "Locations not found")
     })
     public ResponseEntity<List<LocationResource>> getLocationsByZoneId(@PathVariable Long zoneId) {
-        var locations = zoneQueryService.handle(new GetLocationsByZoneId(zoneId));
+        var locations = zoneQueryService.handle(new GetLocationsByZoneIdQuery(zoneId));
         if (locations.isEmpty()) return ResponseEntity.notFound().build();
         var locationResources = locations.stream()
                 .map(LocationResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(locationResources);
     }
+
+    @PatchMapping("/{locationId}/status")
+    @Operation(summary = "Update location status", description = "Update the status of a specific location")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Location status updated"),
+            @ApiResponse(responseCode = "404", description = "Location not found")
+    })
+    public ResponseEntity<LocationResource> updateLocationStatus(@PathVariable Long locationId, @RequestBody UpdateLocationStatusResource resource) {
+        var command = UpdateLocationStatusCommandFromResourceAssembler.toCommandFromResource(locationId, resource);
+        var updatedLocation = zoneCommandService.handle(command);
+        if (updatedLocation.isEmpty()) return ResponseEntity.notFound().build();
+        var locationEntity = updatedLocation.get();
+        var locationResource = LocationResourceFromEntityAssembler.toResourceFromEntity(locationEntity);
+        return ResponseEntity.ok(locationResource);
+    }
+
 }

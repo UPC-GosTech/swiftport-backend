@@ -42,7 +42,7 @@ public class ZoneQueryServiceImpl implements ZoneQueryService {
     }
 
     @Override
-    public List<Location> handle(GetLocationsByZoneId query) {
+    public List<Location> handle(GetLocationsByZoneIdQuery query) {
         return locationRepository.findByZoneId(query.zoneId());
     }
 }
