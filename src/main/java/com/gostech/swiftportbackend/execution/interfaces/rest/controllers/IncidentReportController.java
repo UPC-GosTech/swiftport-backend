@@ -101,7 +101,7 @@ public class IncidentReportController {
     }
 
     @PutMapping("/incidents/{incidentReportId}")
-    @Operation(summary = "Update incident report", description = "Update the description of an existing incident report")
+    @Operation(summary = "Update incident report description", description = "Update the description of an existing incident report")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Incident report updated"),
             @ApiResponse(responseCode = "404", description = "Incident report not found"),

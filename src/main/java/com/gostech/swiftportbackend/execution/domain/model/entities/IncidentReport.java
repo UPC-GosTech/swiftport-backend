@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.execution.domain.model.aggregates.Execution;
 import com.gostech.swiftportbackend.execution.domain.model.commands.AddIncidentReportCommand;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.IncidentSeverity;
 import com.gostech.swiftportbackend.shared.domain.model.entities.AuditableModel;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -31,11 +32,14 @@ public class IncidentReport extends AuditableModel {
     private IncidentSeverity severity;
 
     @Embedded
+    private EmployeeId employeeId;
+
+    @Embedded
     private TenantId tenantId;
 
     public IncidentReport() {}
 
-    public IncidentReport(String title, String description, LocalDateTime reportedAt, String severity, Long tenantId) {
+    public IncidentReport(String title, String description, LocalDateTime reportedAt, String severity, Long tenantId, Long employeeId) {
         this.title = title;
         this.description = description;
         this.reportedAt = reportedAt;
@@ -51,6 +55,7 @@ public class IncidentReport extends AuditableModel {
                 break;
         }
         this.tenantId = new TenantId(tenantId);
+        this.employeeId = new EmployeeId(employeeId);
     }
 
     public IncidentReport(AddIncidentReportCommand command) {
@@ -69,6 +74,7 @@ public class IncidentReport extends AuditableModel {
                 break;
         }
         this.tenantId = new TenantId(command.tenantId());
+        this.employeeId = new EmployeeId(command.employeeId());
     }
 
     public void updateDescription(String description) {
