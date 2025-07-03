@@ -7,8 +7,10 @@ import com.gostech.swiftportbackend.resources.domain.services.EmployeeCommandSer
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeQueryService;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEmployeeResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.EmployeeResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.UpdateEmployeeStatusResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.CreateEmployeeCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.EmployeeResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.UpdateEmployeeStatusCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -79,4 +81,20 @@ public class EmployeeController {
                 .toList();
         return ResponseEntity.ok(employeeResource);
     }
+
+    @PatchMapping("/{employeeId}/status")
+    @Operation(summary = "Update employee status", description = "Updates the status of an employee")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employee status updated"),
+            @ApiResponse(responseCode = "404", description = "Employee not found")
+    })
+    public ResponseEntity<EmployeeResource> updateEmployeeStatus(@PathVariable Long employeeId, @RequestBody UpdateEmployeeStatusResource resource) {
+        var command = UpdateEmployeeStatusCommandFromResourceAssembler.toCommandFromResource(employeeId, resource);
+        var updatedEmployee = employeeCommandService.handle(command);
+        if (updatedEmployee.isEmpty()) return ResponseEntity.notFound().build();
+        var employeeEntity = updatedEmployee.get();
+        var employeeResource = EmployeeResourceFromEntityAssembler.toResourceFromEntity(employeeEntity);
+        return ResponseEntity.ok(employeeResource);
+    }
+
 }

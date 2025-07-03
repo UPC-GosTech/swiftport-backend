@@ -73,7 +73,22 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
         this.contactInfo = contactInfo;
     }
 
-    public void changeAvailability(Availability availability) {
-        this.employeeStatus = availability;
+    public void updateStatus(String status) {
+        switch (status) {
+            case "Available":
+                this.employeeStatus = Availability.AVAILABLE;
+                break;
+            case "Vacation":
+                this.employeeStatus = Availability.VACATION;
+                break;
+            case "Reserved":
+                this.employeeStatus = Availability.RESERVED;
+                break;
+            case "Unavailable":
+                this.employeeStatus = Availability.UNAVAILABLE;
+                break;
+            default:
+                break;
+        }
     }
 }

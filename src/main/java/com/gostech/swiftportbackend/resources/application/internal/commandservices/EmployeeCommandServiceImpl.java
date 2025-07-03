@@ -2,10 +2,13 @@ package com.gostech.swiftportbackend.resources.application.internal.commandservi
 
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmployeeCommand;
+import com.gostech.swiftportbackend.resources.domain.model.commands.UpdateEmployeeStatusCommand;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.FullName;
 import com.gostech.swiftportbackend.resources.domain.services.EmployeeCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EmployeeRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class EmployeeCommandServiceImpl implements EmployeeCommandService {
@@ -26,5 +29,18 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
             throw new IllegalArgumentException("Error saving employee: %s".formatted(e.getMessage()));
         }
         return employee.getId();
+    }
+
+    @Override
+    public Optional<Employee> handle(UpdateEmployeeStatusCommand command) {
+        Employee employee = employeeRepository.findById(command.employeeId())
+                .orElseThrow(() -> new IllegalArgumentException("Employee with id %s does not exist".formatted(command.employeeId())));
+        try {
+            employee.updateStatus(command.status());
+            employeeRepository.save(employee);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error saving employee: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(employee);
     }
 }
