@@ -1,9 +1,6 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
-import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllLocationsQuery;
-import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllZonesQuery;
-import com.gostech.swiftportbackend.resources.domain.model.queries.GetLocationByIdQuery;
-import com.gostech.swiftportbackend.resources.domain.model.queries.GetZoneByIdQuery;
+import com.gostech.swiftportbackend.resources.domain.model.queries.*;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneCommandService;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneQueryService;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateLocationResource;
@@ -97,11 +94,9 @@ public class ZoneController {
         var command = AddLocationCommandFromResourceAssembler.toCommandFromResource(resource);
         var locationId = zoneCommandService.handle(command);
         if (locationId == null || locationId == 0L) return ResponseEntity.badRequest().build();
-
         var query = new GetLocationByIdQuery(locationId);
         var location = zoneQueryService.handle(query);
         if (location.isEmpty()) return ResponseEntity.notFound().build();
-
         var entity = location.get();
         var locationResource = LocationResourceFromEntityAssembler.toResourceFromEntity(entity);
         return new ResponseEntity<>(locationResource, HttpStatus.CREATED);
@@ -117,7 +112,6 @@ public class ZoneController {
         var query = new GetLocationByIdQuery(locationId);
         var optionalLocation = zoneQueryService.handle(query);
         if (optionalLocation.isEmpty()) return ResponseEntity.notFound().build();
-
         var resource = LocationResourceFromEntityAssembler.toResourceFromEntity(optionalLocation.get());
         return ResponseEntity.ok(resource);
     }
@@ -137,4 +131,18 @@ public class ZoneController {
         return ResponseEntity.ok(locationResources);
     }
 
+    @GetMapping("/zones/{zoneId}")
+    @Operation(summary = "Get locations by zone ID", description = "Get all locations that belong to a specific zone")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Locations found"),
+            @ApiResponse(responseCode = "404", description = "Locations not found")
+    })
+    public ResponseEntity<List<LocationResource>> getLocationsByZoneId(@PathVariable Long zoneId) {
+        var locations = zoneQueryService.handle(new GetLocationsByZoneId(zoneId));
+        if (locations.isEmpty()) return ResponseEntity.notFound().build();
+        var locationResources = locations.stream()
+                .map(LocationResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(locationResources);
+    }
 }
