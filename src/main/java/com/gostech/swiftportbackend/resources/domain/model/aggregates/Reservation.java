@@ -95,10 +95,6 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
         this.timeInterval = new TimeInterval(command.start(), command.end());
     }
 
-    public static Reservation create(CreateReservationCommand command) {
-        return new Reservation(command);
-    }
-
     public boolean conflictsWith(TimeInterval other) {
         return this.timeInterval.overlaps(other);
     }
