@@ -110,7 +110,7 @@ public class ZoneController {
         return ResponseEntity.ok(resource);
     }
 
-    @GetMapping
+    @GetMapping("/zones/locations")
     @Operation(summary = "Get all locations", description = "Get all locations")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Locations found"),
