@@ -14,8 +14,8 @@ import lombok.Getter;
 @Entity
 public class Position extends AuditableAbstractAggregateRoot<Position> {
 
-    @Column(name = "tenant_id", nullable = false)
-    private Long tenantId;
+    @Embedded
+    private TenantId tenantId;
 
     private String title;
     private String description;
@@ -23,16 +23,14 @@ public class Position extends AuditableAbstractAggregateRoot<Position> {
     @OneToMany(mappedBy = "position", fetch = FetchType.LAZY)
     private java.util.List<Employee> employees;
 
-    public Position(Long tenantId, String title, String description) {
-        this.tenantId = tenantId;
+    public Position(String title, String description) {
         this.title = title;
         this.description = description;
     }
 
     public Position() {}
 
-    public Position(CreatePositionCommand command) {
-        this.tenantId = command.tenantId();
+    public Position(Long tenantId, CreatePositionCommand command) {
         this.title = command.title();
         this.description = command.description();
     }
