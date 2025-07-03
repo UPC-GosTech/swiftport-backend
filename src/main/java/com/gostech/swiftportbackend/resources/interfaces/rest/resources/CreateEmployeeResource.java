@@ -24,4 +24,8 @@ public record CreateEmployeeResource(Long tenantId, String name, String lastName
             throw new IllegalArgumentException("phoneNumber cannot be null or empty");
         }
     }
+
+    public Long positionId() {
+        return this.positionId;
+    }
 }
