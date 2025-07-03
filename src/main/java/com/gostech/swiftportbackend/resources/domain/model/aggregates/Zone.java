@@ -23,7 +23,6 @@ public class Zone extends AuditableAbstractAggregateRoot<Zone> {
     private List<Location> locationsList;
 
     public Zone(Long tenantId, String name) {
-        this.tenantId = new TenantId(tenantId);
         this.name = name;
         this.locationsList = new ArrayList<>();
     }
@@ -32,8 +31,7 @@ public class Zone extends AuditableAbstractAggregateRoot<Zone> {
         this.locationsList = new ArrayList<>();
     }
 
-    public Zone(CreateZoneCommand command) {
-        this.tenantId = new TenantId(command.tenantId());
+    public Zone(Long tenantId, CreateZoneCommand command) {
         this.name = command.name();
         this.locationsList = new ArrayList<>();
     }
