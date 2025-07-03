@@ -11,7 +11,8 @@ public class AddLocationCommandFromResourceAssembler {
                 resource.city(),
                 resource.country(),
                 resource.longitude(),
-                resource.latitude()
+                resource.latitude(),
+                resource.status()
         );
     }
 }
