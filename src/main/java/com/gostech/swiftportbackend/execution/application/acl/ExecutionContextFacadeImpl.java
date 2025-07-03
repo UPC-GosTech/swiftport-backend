@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.execution.domain.model.commands.CreateExecut
 import com.gostech.swiftportbackend.execution.domain.services.ExecutionCommandService;
 import com.gostech.swiftportbackend.execution.domain.services.ExecutionQueryService;
 import com.gostech.swiftportbackend.execution.interfaces.acl.ExecutionContextFacade;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,14 +23,18 @@ public class ExecutionContextFacadeImpl implements ExecutionContextFacade {
             Long taskProgrammingId,
             String taskExecutionStatus,
             LocalDateTime start,
-            LocalDateTime end,
-            Long tenantId) {
+            LocalDateTime end) {
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
         var createExecutionCommand = new CreateExecutionCommand(
                 taskProgrammingId,
                 taskExecutionStatus,
                 start,
-                end,
-                tenantId
+                end
         );
         return executionCommandService.handle(createExecutionCommand);
     }

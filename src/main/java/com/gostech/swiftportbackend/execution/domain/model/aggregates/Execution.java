@@ -63,7 +63,7 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.tenantId = new TenantId(tenantId);
     }
 
-    public Execution(CreateExecutionCommand  command) {
+    public Execution(Long tenantId, CreateExecutionCommand command) {
         switch (command.taskExecutionStatus()) {
             case "Completed":
                 this.taskExecutionStatus = TaskExecutionStatus.COMPLETED;
@@ -81,7 +81,7 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.executionTimeFrame = new ExecutionTimeFrame(command.start(), command.end());
         this.incidents = new ArrayList<>();
         this.modificationReason = "";
-        this.tenantId = new TenantId(command.tenantId());
+        this.tenantId = new TenantId(tenantId);
     }
 
     public void addIncidentReport(IncidentReport incidentReport) {

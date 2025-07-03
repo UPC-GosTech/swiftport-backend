@@ -21,12 +21,12 @@ public class TenantId {
         }
         this.value = value;
     }
-    
+
     public TenantId() {
         // Constructor por defecto para JPA
         this.value = 1L; // Valor por defecto
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

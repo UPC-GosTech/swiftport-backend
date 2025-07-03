@@ -7,6 +7,7 @@ import com.gostech.swiftportbackend.execution.domain.model.valueobjects.Equipmen
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.TaskProgrammingId;
 import com.gostech.swiftportbackend.execution.domain.services.ExecutionCommandService;
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,7 +24,13 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     public Long handle(CreateExecutionCommand command) {
         if (executionRepository.existsByTaskProgrammingId(new TaskProgrammingId(command.taskProgrammingId())))
             throw new IllegalArgumentException("Task Programming %s already exists".formatted(command.taskProgrammingId()));
-        var execution = new Execution(command);
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
+        var execution = new Execution(tenantId, command);
         try {
             executionRepository.save(execution);
         } catch (Exception ex) {
