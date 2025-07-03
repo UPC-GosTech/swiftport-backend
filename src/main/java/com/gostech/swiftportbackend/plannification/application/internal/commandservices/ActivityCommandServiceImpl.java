@@ -134,4 +134,17 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
         }
         return Optional.of(taskProgramming);
     }
+
+    @Override
+    public Optional<Activity> handle(UpdateActivityStatusCommand command) {
+        Activity activity = activityRepository.findById(command.activityId())
+            .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
+        try {
+            activity.updateActivityStatus(command.activityStatus());
+            activityRepository.save(activity);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error updating activity status: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(activity);
+    }
 }

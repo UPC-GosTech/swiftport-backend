@@ -7,8 +7,10 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityComma
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.ActivityResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.CreateActivityResource;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.resources.UpdateActivityStatusResource;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.ActivityResourceFromEntityAssembler;
 import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.CreateActivityCommandFromResourceAssembler;
+import com.gostech.swiftportbackend.plannification.interfaces.rest.transform.UpdateActivityStatusCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -92,5 +94,19 @@ public class ActivityController {
                 .map(ActivityResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(activityResources);
+    }
+
+    @PatchMapping("/{activityId}/status")
+    @Operation(summary = "Update activity status", description = "Updates the status of an activity")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Activity status updated"),
+            @ApiResponse(responseCode = "404", description = "Activity not found")
+    })
+    public ResponseEntity<ActivityResource> updateActivityStatus(@PathVariable Long activityId, @RequestBody UpdateActivityStatusResource resource) {
+        var command = UpdateActivityStatusCommandFromResourceAssembler.toCommandFromResource(activityId, resource);
+        var updatedActivity = activityCommandService.handle(command);
+        if (updatedActivity.isEmpty()) return ResponseEntity.notFound().build();
+        var activityResource = ActivityResourceFromEntityAssembler.toResourceFromEntity(updatedActivity.get());
+        return ResponseEntity.ok(activityResource);
     }
 }
