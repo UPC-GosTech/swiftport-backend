@@ -6,7 +6,6 @@ import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateTe
 public class CreateTeamCommandFromResourceAssembler {
     public static CreateTeamCommand toCommandFromResource(CreateTeamResource resource) {
         return new CreateTeamCommand(
-                resource.tenantId(),
                 resource.name()
         );
     }

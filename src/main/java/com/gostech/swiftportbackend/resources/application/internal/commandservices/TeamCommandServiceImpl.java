@@ -8,6 +8,7 @@ import com.gostech.swiftportbackend.resources.domain.model.entities.TeamMember;
 import com.gostech.swiftportbackend.resources.domain.services.TeamCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.TeamMemberRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.TeamRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,7 +27,13 @@ public class TeamCommandServiceImpl implements TeamCommandService {
     public Long handle(CreateTeamCommand command) {
         if (teamRepository.existsByName(command.name()))
             throw new IllegalArgumentException("Team with name %s already exists".formatted(command.name()));
-        var team = new Team(command);
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
+        var team = new Team(tenantId, command);
         try {
             teamRepository.save(team);
         } catch (Exception e) {
