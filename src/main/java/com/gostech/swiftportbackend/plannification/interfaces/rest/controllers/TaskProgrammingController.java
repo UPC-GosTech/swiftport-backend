@@ -2,6 +2,7 @@ package com.gostech.swiftportbackend.plannification.interfaces.rest.controllers;
 
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetAllTaskProgrammingsQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskProgrammingByIdQuery;
+import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskProgrammingsByActivityIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.model.queries.GetTaskProgrammingsByTaskIdQuery;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
@@ -129,4 +130,18 @@ public class TaskProgrammingController {
         return ResponseEntity.ok(resources);
     }
 
+    @GetMapping("/activities/{activityId}")
+    @Operation(summary = "Get task programmings by activity ID", description = "Get all task programmings for a given activity")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task programmings found"),
+            @ApiResponse(responseCode = "404", description = "Activity or task programmings not found")
+    })
+    public ResponseEntity<List<TaskProgrammingResource>> getTaskProgrammingsByActivityId(@PathVariable Long activityId) {
+        var taskProgrammings = activityQueryService.handle(new GetTaskProgrammingsByActivityIdQuery(activityId));
+        if (taskProgrammings.isEmpty()) return ResponseEntity.notFound().build();
+        var resources = taskProgrammings.stream()
+                .map(TaskProgrammingResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
 }

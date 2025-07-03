@@ -12,6 +12,7 @@ import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jp
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,4 +97,12 @@ public class ActivityQueryServiceImpl implements ActivityQueryService {
         }
         return activityRepository.findByActivityStatus(status);
     }
+
+    @Override
+    public List<TaskProgramming> handle(GetTaskProgrammingsByActivityIdQuery query) {
+        return taskRepository.findByActivityId(query.activityId()).stream()
+                .flatMap(task -> taskProgrammingRepository.findByTaskId(task.getId()).stream())
+                .toList();
+    }
+
 }
