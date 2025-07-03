@@ -7,7 +7,7 @@ public class EquipmentResourceFromEntityAssembler {
     public static EquipmentResource toResourceFromEntity(Equipment entity) {
         return new EquipmentResource(
                 entity.getId(),
-                entity.getTenantId(),
+                entity.getTenantId().getValue(),
                 entity.getName(),
                 entity.getEquipmentStatus(),
                 entity.getCode(),

@@ -5,6 +5,7 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEquipm
 import com.gostech.swiftportbackend.resources.domain.model.commands.UpdateEquipmentStatusCommand;
 import com.gostech.swiftportbackend.resources.domain.services.EquipmentCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EquipmentRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,7 +22,13 @@ public class EquipmentCommandServiceImpl implements EquipmentCommandService {
     public Long handle(CreateEquipmentCommand command) {
         if (equipmentRepository.existsByPlate(command.plate()))
             throw new IllegalArgumentException("Equipment with plate %s already exists".formatted(command.plate()));
-        var equipment = new Equipment(command);
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
+        var equipment = new Equipment(tenantId, command);
         try {
             equipmentRepository.save(equipment);
         } catch (Exception e) {
