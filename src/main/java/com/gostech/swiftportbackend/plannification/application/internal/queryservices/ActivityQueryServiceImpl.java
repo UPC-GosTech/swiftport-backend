@@ -75,4 +75,9 @@ public class ActivityQueryServiceImpl implements ActivityQueryService {
         }
         return taskRepository.findByStatus(status);
     }
+
+    @Override
+    public List<TaskProgramming> handle(GetAllTaskProgrammingsQuery query) {
+        return taskProgrammingRepository.findAll();
+    }
 }
