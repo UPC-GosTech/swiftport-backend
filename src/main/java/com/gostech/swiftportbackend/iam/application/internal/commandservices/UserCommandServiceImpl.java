@@ -178,7 +178,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Check if email is already used by another user
-        if (!user.getEmail().equals(command.email()) && 
+        if (!user.getEmail().equals(command.email().value()) &&
             userRepository.existsByEmailAndTenantId(command.email(), tenantId)) {
             throw new RuntimeException("Email already exists in this organization");
         }

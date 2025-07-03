@@ -126,6 +126,7 @@ public class TokenServiceImpl implements BearerTokenService {
    @Override
    public String getBearerTokenFrom(HttpServletRequest request) {
        String parameter = getAuthorizationParameterFrom(request);
+       LOGGER.info(parameter);
        if (isTokenPresentIn(parameter) && isBearerTokenIn(parameter)) return extractTokenFrom(parameter);
        return null;
    }

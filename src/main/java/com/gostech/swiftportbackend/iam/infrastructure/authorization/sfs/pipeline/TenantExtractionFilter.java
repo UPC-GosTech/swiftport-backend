@@ -44,7 +44,7 @@ public class TenantExtractionFilter extends OncePerRequestFilter {
         try {
             // Extraer token del request
             String token = tokenService.getBearerTokenFrom(request);
-            LOGGER.debug("Token extracted: {}", token != null ? "Present" : "Not present");
+            LOGGER.info("Token extracted: {}", token != null ? "Present" : "Not present");
             
             if (token != null && tokenService.validateToken(token)) {
                 // Extraer tenantId del token
@@ -56,6 +56,7 @@ public class TenantExtractionFilter extends OncePerRequestFilter {
                 LOGGER.info("Tenant context set from JWT: tenantId={}", tenantId);
             } else {
                 // Si no hay token válido, usar valor por defecto
+                LOGGER.info(token);
                 TenantContext.setCurrentTenantId(1L);
                 LOGGER.info("No valid token found, using default tenant context: tenantId=1");
             }
