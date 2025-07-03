@@ -1,5 +1,6 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllLocationsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllZonesQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetLocationByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetZoneByIdQuery;
@@ -120,4 +121,20 @@ public class ZoneController {
         var resource = LocationResourceFromEntityAssembler.toResourceFromEntity(optionalLocation.get());
         return ResponseEntity.ok(resource);
     }
+
+    @GetMapping
+    @Operation(summary = "Get all locations", description = "Get all locations")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Locations found"),
+            @ApiResponse(responseCode = "404", description = "Locations not found")
+    })
+    public ResponseEntity<List<LocationResource>> getAllLocations() {
+        var locations = zoneQueryService.handle(new GetAllLocationsQuery());
+        if (locations.isEmpty()) return ResponseEntity.notFound().build();
+        var locationResources = locations.stream()
+                .map(LocationResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(locationResources);
+    }
+
 }

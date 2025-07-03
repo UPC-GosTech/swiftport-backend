@@ -2,6 +2,7 @@ package com.gostech.swiftportbackend.resources.application.internal.queryservice
 
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
 import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllLocationsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllZonesQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetLocationByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetZoneByIdQuery;
@@ -36,5 +37,10 @@ public class ZoneQueryServiceImpl implements ZoneQueryService {
     @Override
     public Optional<Location> handle(GetLocationByIdQuery query) {
         return locationRepository.findById(query.id());
+    }
+
+    @Override
+    public List<Location> handle(GetAllLocationsQuery query) {
+        return locationRepository.findAll();
     }
 }
