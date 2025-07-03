@@ -2,9 +2,12 @@ package com.gostech.swiftportbackend.resources.application.internal.commandservi
 
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Equipment;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEquipmentCommand;
+import com.gostech.swiftportbackend.resources.domain.model.commands.UpdateEquipmentStatusCommand;
 import com.gostech.swiftportbackend.resources.domain.services.EquipmentCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EquipmentRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class EquipmentCommandServiceImpl implements EquipmentCommandService {
@@ -25,5 +28,18 @@ public class EquipmentCommandServiceImpl implements EquipmentCommandService {
             throw new IllegalArgumentException("Error saving equipment: %s".formatted(e.getMessage()));
         }
         return equipment.getId();
+    }
+
+    @Override
+    public Optional<Equipment> handle(UpdateEquipmentStatusCommand command) {
+        Equipment equipment = equipmentRepository.findById(command.equipmentId())
+                .orElseThrow(() -> new IllegalArgumentException("Equipment with id %s does not exist".formatted(command.equipmentId())));
+        try {
+            equipment.updateEquipmentStatus(command.status());
+            equipmentRepository.save(equipment);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error saving equipment: %s".formatted(e.getMessage()));
+        }
+        return Optional.of(equipment);
     }
 }

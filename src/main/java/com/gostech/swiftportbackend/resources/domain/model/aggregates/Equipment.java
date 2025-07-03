@@ -74,20 +74,22 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
         }
     }
 
-    public boolean isAvailable(TimeInterval timeInterval) {
-        return this.equipmentStatus == Availability.AVAILABLE;
-
-        /**
-         * MISSING PART OF THE LOGIC
-         */
-
-    }
-
-    public void scheduleInspection(LocalDateTime scheduledTime) {
-        this.equipmentStatus = Availability.VACATION;
-
-        /**
-         * MISSING PART OF THE LOGIC
-         */
+    public void updateEquipmentStatus(String status) {
+        switch (status) {
+            case "Available":
+                this.equipmentStatus = Availability.AVAILABLE;
+                break;
+            case "Vacation":
+                this.equipmentStatus = Availability.VACATION;
+                break;
+            case "Reserved":
+                this.equipmentStatus = Availability.RESERVED;
+                break;
+            case "Unavailable":
+                this.equipmentStatus = Availability.UNAVAILABLE;
+                break;
+            default:
+                break;
+        }
     }
 }

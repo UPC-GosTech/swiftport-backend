@@ -6,8 +6,10 @@ import com.gostech.swiftportbackend.resources.domain.services.EquipmentCommandSe
 import com.gostech.swiftportbackend.resources.domain.services.EquipmentQueryService;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEquipmentResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.EquipmentResource;
+import com.gostech.swiftportbackend.resources.interfaces.rest.resources.UpdateEquipmentStatusResource;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.CreateEquipmentCommandFromResourceAssembler;
 import com.gostech.swiftportbackend.resources.interfaces.rest.transform.EquipmentResourceFromEntityAssembler;
+import com.gostech.swiftportbackend.resources.interfaces.rest.transform.UpdateEquipmentStatusCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -77,4 +79,20 @@ public class EquipmentController {
                 .toList();
         return ResponseEntity.ok(equipmentResources);
     }
+
+    @PatchMapping("/{equipmentId}/status")
+    @Operation(summary = "Update equipment status", description = "Updates the availability status of an equipment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Equipment status updated"),
+            @ApiResponse(responseCode = "404", description = "Equipment not found")
+    })
+    public ResponseEntity<EquipmentResource> updateEquipmentStatus(@PathVariable Long equipmentId, @RequestBody UpdateEquipmentStatusResource resource) {
+        var command = UpdateEquipmentStatusCommandFromResourceAssembler.toCommandFromResource(equipmentId, resource);
+        var updatedEquipment = equipmentCommandService.handle(command);
+        if (updatedEquipment.isEmpty()) return ResponseEntity.notFound().build();
+        var equipmentEntity = updatedEquipment.get();
+        var equipmentResource = EquipmentResourceFromEntityAssembler.toResourceFromEntity(equipmentEntity);
+        return ResponseEntity.ok(equipmentResource);
+    }
+
 }
