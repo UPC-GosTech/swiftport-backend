@@ -7,6 +7,7 @@ import com.gostech.swiftportbackend.iam.domain.model.commands.CreateUserCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.DeleteUserCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.SignUpCommand;
 import com.gostech.swiftportbackend.iam.domain.model.commands.UpdateUserCommand;
+import com.gostech.swiftportbackend.iam.domain.model.commands.UpdateUserStatusCommand;
 
 /**
  * User command service interface
@@ -41,4 +42,11 @@ public interface UserCommandService {
      * @return the deactivated user
      */
     User handle(DeleteUserCommand command);
+    
+    /**
+     * Handle update user status command
+     * @param command the update user status command
+     * @return the updated user
+     */
+    User handle(UpdateUserStatusCommand command);
 } 
