@@ -50,6 +50,7 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
         try {
             location.setZone(zone);
             zone.addLocation(location);
+            locationRepository.save(location);
             zoneRepository.save(zone);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving zone: %s".formatted(e.getMessage()));

@@ -6,8 +6,8 @@ import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateTe
 public class AddTeamMemberCommandFromResourceAssembler {
     public static AddTeamMemberCommand toCommandFromResource(CreateTeamMemberResource resource) {
         return new AddTeamMemberCommand(
-                resource.teamId(),
-                resource.employeeId()
+                resource.employeeId(),
+                resource.teamId()
         );
     }
 }

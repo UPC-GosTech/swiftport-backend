@@ -33,6 +33,7 @@ public class Zone extends AuditableAbstractAggregateRoot<Zone> {
 
     public Zone(Long tenantId, CreateZoneCommand command) {
         this.name = command.name();
+        this.tenantId = new TenantId(tenantId);
         this.locationsList = new ArrayList<>();
     }
 

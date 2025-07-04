@@ -93,6 +93,7 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
                 break;
         }
         this.timeInterval = new TimeInterval(command.start(), command.end());
+        this.tenantId = new TenantId(tenantId);
     }
 
     public boolean conflictsWith(TimeInterval other) {

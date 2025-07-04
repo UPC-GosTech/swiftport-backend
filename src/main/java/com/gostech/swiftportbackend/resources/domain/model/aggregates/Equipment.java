@@ -70,6 +70,7 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
                 this.equipmentStatus = Availability.UNAVAILABLE;
                 break;
         }
+        this.tenantId = new TenantId(TenantId);
     }
 
     public void updateEquipmentStatus(String status) {

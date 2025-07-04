@@ -7,6 +7,7 @@ public class LocationResourceFromEntityAssembler {
     public static LocationResource toResourceFromEntity(Location entity) {
         return new LocationResource(
                 entity.getId(),
+                entity.getZone().getId(),
                 entity.getAddress().street(),
                 entity.getAddress().city(),
                 entity.getAddress().country(),

@@ -33,6 +33,7 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
 
     public Team(Long tenantId, CreateTeamCommand command) {
         this.name = command.name();
+        this.tenantId = new TenantId(tenantId);
         this.teamMembers = new ArrayList<>();
     }
 

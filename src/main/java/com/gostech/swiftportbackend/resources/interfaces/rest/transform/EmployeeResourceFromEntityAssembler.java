@@ -9,6 +9,7 @@ public class EmployeeResourceFromEntityAssembler {
         String positionTitle = entity.getPosition() != null ? entity.getPosition().getTitle() : null;
         return new EmployeeResource(
             entity.getTenantId().getValue(),
+            entity.getId(),
             entity.getName().firstName(),
             entity.getName().lastName(),
             positionId,

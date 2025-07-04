@@ -40,19 +40,19 @@ public class Activity extends AuditableAbstractAggregateRoot<Activity> {
     private List<Task> tasks;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id_origin", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "location_id_origin")
     private Location locationOrigin;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id_destination", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "location_id_destination")
     private Location locationDestination;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "zone_id_origin", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "zone_id_origin")
     private Zone zoneOrigin;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "zone_id_destination", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "zone_id_destination")
     private Zone zoneDestination;
 
     public Activity() {

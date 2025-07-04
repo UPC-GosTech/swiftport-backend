@@ -33,6 +33,7 @@ public class Position extends AuditableAbstractAggregateRoot<Position> {
     public Position(Long tenantId, CreatePositionCommand command) {
         this.title = command.title();
         this.description = command.description();
+        this.tenantId = new TenantId(tenantId);
     }
 
     public void updateDetails(String title, String description) {

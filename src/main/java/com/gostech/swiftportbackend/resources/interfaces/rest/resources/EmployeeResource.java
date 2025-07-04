@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.resources.domain.model.valueobjects.Availabi
 
 public record EmployeeResource(
     Long tenantId,
+    Long employeeId,
     String name,
     String lastName,
     Long positionId,

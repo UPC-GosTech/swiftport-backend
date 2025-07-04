@@ -67,6 +67,7 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
                 this.employeeStatus = Availability.UNAVAILABLE;
                 break;
         }
+        this.tenantId = new TenantId(tenantId);
     }
 
     public void updateContactInfo(ContactInfo contactInfo) {
