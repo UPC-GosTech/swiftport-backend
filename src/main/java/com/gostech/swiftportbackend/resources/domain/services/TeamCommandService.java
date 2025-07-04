@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface TeamCommandService {
     Long handle(CreateTeamCommand command);
     Long handle(AddTeamMemberCommand command);
-    Optional<TeamMember> handle(DeleteTeamMemberCommand command);
+    Long handle(DeleteTeamMemberCommand command);
 }

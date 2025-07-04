@@ -67,19 +67,18 @@ public class TeamCommandServiceImpl implements TeamCommandService {
     }
 
     @Override
-    public Optional<TeamMember> handle(DeleteTeamMemberCommand command) {
+    public Long handle(DeleteTeamMemberCommand command) {
         TeamMember member = teamMemberRepository.findById(command.id())
                 .orElseThrow(() -> new IllegalArgumentException("Team member with id %s does not exist".formatted(command.id())));
         Team team = teamRepository.findById(command.teamId())
                 .orElseThrow(() -> new IllegalArgumentException("Team with id %s does not exist".formatted(command.teamId())));
 
         try {
-            member.setTeam(team);
             team.removeMember(member.getEmployee());
             teamRepository.save(team);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving team member: %s".formatted(e.getMessage()));
         }
-        return Optional.of(member);
+        return team.getId();
     }
 }
