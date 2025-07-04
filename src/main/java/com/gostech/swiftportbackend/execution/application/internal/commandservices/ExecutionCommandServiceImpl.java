@@ -2,8 +2,16 @@ package com.gostech.swiftportbackend.execution.application.internal.commandservi
 
 import com.gostech.swiftportbackend.execution.domain.model.aggregates.Execution;
 import com.gostech.swiftportbackend.execution.domain.model.commands.*;
+import com.gostech.swiftportbackend.execution.domain.model.entities.ExecutionEmployee;
+import com.gostech.swiftportbackend.execution.domain.model.entities.ExecutionEquipment;
+import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionEmployeeRepository;
+import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionEquipmentRepository;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
+import com.gostech.swiftportbackend.resources.domain.model.aggregates.Equipment;
+import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EmployeeRepository;
+import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EquipmentRepository;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.EquipmentId;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.TaskProgrammingId;
@@ -18,10 +26,25 @@ import java.util.Optional;
 public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     private final ExecutionRepository executionRepository;
     private final TaskProgrammingRepository taskProgrammingRepository;
+    private final ExecutionEmployeeRepository executionEmployeeRepository;
+    private final ExecutionEquipmentRepository executionEquipmentRepository;
+    private final EquipmentRepository equipmentRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public ExecutionCommandServiceImpl(ExecutionRepository executionRepository, TaskProgrammingRepository taskProgrammingRepository) {
+    public ExecutionCommandServiceImpl(
+            ExecutionRepository executionRepository,
+            TaskProgrammingRepository taskProgrammingRepository,
+            ExecutionEquipmentRepository executionEquipmentRepository,
+            ExecutionEmployeeRepository executionEmployeeRepository,
+            EquipmentRepository equipmentRepository,
+            EmployeeRepository employeeRepository
+    ) {
         this.executionRepository = executionRepository;
         this.taskProgrammingRepository = taskProgrammingRepository;
+        this.executionEquipmentRepository = executionEquipmentRepository;
+        this.executionEmployeeRepository = executionEmployeeRepository;
+        this.equipmentRepository = equipmentRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -49,12 +72,34 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
 
     @Override
     public Long handle(AddEmployeeIdToExecutionCommand command) {
-        throw new UnsupportedOperationException("Asignación de empleados a ejecución no implementada. Usar entidad intermedia.");
+        Execution execution = executionRepository.findById(command.executionId())
+                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+        Employee employee = employeeRepository.findById(command.employeeId())
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+        var executionEmployee = new ExecutionEmployee(execution, employee);
+        try {
+            executionEmployeeRepository.save(executionEmployee);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Error saving execution-employee relation: %s".formatted(ex.getMessage()));
+        }
+        return executionEmployee.getId();
     }
 
     @Override
     public Long handle(AddEquipmentIdToExecutionCommand command) {
-        throw new UnsupportedOperationException("Asignación de equipos a ejecución no implementada. Usar entidad intermedia.");
+        Execution execution = executionRepository.findById(command.executionId())
+                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+
+        Equipment equipment = equipmentRepository.findById(command.equipmentId())
+                .orElseThrow(() -> new IllegalArgumentException("Equipment not found"));
+
+        var executionEquipment = new ExecutionEquipment(execution, equipment);
+        try {
+            executionEquipmentRepository.save(executionEquipment);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Error saving execution %s".formatted(ex.getMessage()));
+        }
+        return executionEquipment.getId();
     }
 
     @Override
