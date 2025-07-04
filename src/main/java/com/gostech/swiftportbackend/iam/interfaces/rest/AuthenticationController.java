@@ -40,8 +40,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * </p>
  */
 @RestController
-@RequestMapping(value = "/api/v1/authentications", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Authentications", description = "Available Authentication Endpoints")
+@RequestMapping(value = "/api/v1/authentication", produces = MediaType.APPLICATION_JSON_VALUE)
+@Tag(name = "Authentication", description = "Available Authentication Endpoints")
 public class AuthenticationController {
     
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
