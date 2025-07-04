@@ -44,8 +44,8 @@ public class IncidentReportController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Execution not found")
     })
-    public ResponseEntity<IncidentReportResource> addIncidentReportToExecution(@RequestBody CreateIncidentReportResource resource) {
-        var command = AddIncidentReportCommandFromResourceAssembler.toCommandFromResource(resource);
+    public ResponseEntity<IncidentReportResource> addIncidentReportToExecution(@PathVariable Long executionId, @RequestBody CreateIncidentReportResource resource) {
+        var command = AddIncidentReportCommandFromResourceAssembler.toCommandFromResource(executionId, resource);
         var incidentReportId = incidentReportCommandService.handle(command);
         if (incidentReportId == null || incidentReportId == 0L) return ResponseEntity.badRequest().build();
         var query = new GetIncidentReportByIdQuery(incidentReportId);

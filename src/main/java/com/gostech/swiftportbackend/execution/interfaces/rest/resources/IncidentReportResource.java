@@ -4,5 +4,5 @@ import com.gostech.swiftportbackend.execution.domain.model.valueobjects.Incident
 
 import java.time.LocalDateTime;
 
-public record IncidentReportResource(Long id, String title, String description, LocalDateTime reportedAt, IncidentSeverity severity, Long tenantId) {
+public record IncidentReportResource(Long id, Long executionId, String title, String description, LocalDateTime reportedAt, IncidentSeverity severity, Long tenantId) {
 }

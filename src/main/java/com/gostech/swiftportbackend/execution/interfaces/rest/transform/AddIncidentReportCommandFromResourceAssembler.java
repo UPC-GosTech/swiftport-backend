@@ -4,14 +4,13 @@ import com.gostech.swiftportbackend.execution.domain.model.commands.AddIncidentR
 import com.gostech.swiftportbackend.execution.interfaces.rest.resources.CreateIncidentReportResource;
 
 public class AddIncidentReportCommandFromResourceAssembler {
-    public static AddIncidentReportCommand toCommandFromResource(CreateIncidentReportResource resource) {
+    public static AddIncidentReportCommand toCommandFromResource(Long executionId, CreateIncidentReportResource resource) {
         return new AddIncidentReportCommand(
-                resource.executionId(),
+                executionId,
                 resource.title(),
                 resource.description(),
                 resource.reportedAt(),
                 resource.severity(),
-                resource.tenantId(),
                 resource.employeeId()
         );
     }

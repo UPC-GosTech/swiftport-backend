@@ -8,6 +8,7 @@ import com.gostech.swiftportbackend.execution.domain.model.entities.IncidentRepo
 import com.gostech.swiftportbackend.execution.domain.services.IncidentReportCommandService;
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionRepository;
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.IncidentReportRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,7 +29,13 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
             throw new IllegalStateException("Incident report with title %s already exists".formatted(command.title()));
         Execution execution = executionRepository.findById(command.executionId())
                 .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
-        var incident = new IncidentReport(command);
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
+        var incident = new IncidentReport(tenantId, command);
         try {
             incident.setExecution(execution);
             execution.addIncidentReport(incident);
