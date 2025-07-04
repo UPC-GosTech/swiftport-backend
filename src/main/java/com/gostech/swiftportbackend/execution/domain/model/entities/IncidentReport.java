@@ -28,7 +28,7 @@ public class IncidentReport extends AuditableModel {
     private String description;
     private LocalDateTime reportedAt;
 
-    @Embedded
+    @Enumerated(EnumType.STRING)
     private IncidentSeverity severity;
 
     @Embedded
@@ -58,7 +58,7 @@ public class IncidentReport extends AuditableModel {
         this.employeeId = new EmployeeId(employeeId);
     }
 
-    public IncidentReport(AddIncidentReportCommand command) {
+    public IncidentReport(Long tenantId, AddIncidentReportCommand command) {
         this.title = command.title();
         this.description = command.description();
         this.reportedAt = command.reportedAt();
@@ -73,7 +73,7 @@ public class IncidentReport extends AuditableModel {
                 this.severity = IncidentSeverity.LOW;
                 break;
         }
-        this.tenantId = new TenantId(command.tenantId());
+        this.tenantId = new TenantId(tenantId);
         this.employeeId = new EmployeeId(command.employeeId());
     }
 

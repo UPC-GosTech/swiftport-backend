@@ -4,9 +4,9 @@ import com.gostech.swiftportbackend.execution.domain.model.commands.UpdateTaskEx
 import com.gostech.swiftportbackend.execution.interfaces.rest.resources.UpdateTaskExecutionStatusResource;
 
 public class UpdateTaskExecutionStatusCommandFromResourceAssembler {
-    public static UpdateTaskExecutionStatusCommand toCommandFromResource(UpdateTaskExecutionStatusResource resource) {
+    public static UpdateTaskExecutionStatusCommand toCommandFromResource(Long executionId, UpdateTaskExecutionStatusResource resource) {
         return new UpdateTaskExecutionStatusCommand(
-                resource.executionId(),
+                executionId,
                 resource.taskExecutionStatus()
         );
     }

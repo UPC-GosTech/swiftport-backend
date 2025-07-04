@@ -6,9 +6,9 @@ import com.gostech.swiftportbackend.execution.interfaces.rest.resources.UpdateEx
 import java.time.LocalDateTime;
 
 public class UpdateExecutionCommandFromResourceAssembler {
-    public static UpdateExecutionCommand toCommandFromResource(UpdateExecutionResource resource) {
+    public static UpdateExecutionCommand toCommandFromResource(Long executionId, UpdateExecutionResource resource) {
         return new UpdateExecutionCommand(
-                resource.executionId(),
+                executionId,
                 resource.reason(),
                 resource.taskProgrammingId(),
                 resource.taskExecutionStatus(),
