@@ -23,7 +23,6 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
     private List<TeamMember> teamMembers;
 
     public Team(Long tenantId, String name) {
-        this.tenantId = new TenantId(tenantId);
         this.name = name;
         this.teamMembers = new ArrayList<>();
     }
@@ -32,9 +31,9 @@ public class Team extends AuditableAbstractAggregateRoot<Team> {
         this.teamMembers = new ArrayList<>();
     }
 
-    public Team(CreateTeamCommand command) {
-        this.tenantId = new TenantId(command.tenantId());
+    public Team(Long tenantId, CreateTeamCommand command) {
         this.name = command.name();
+        this.tenantId = new TenantId(tenantId);
         this.teamMembers = new ArrayList<>();
     }
 

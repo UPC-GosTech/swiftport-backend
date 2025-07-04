@@ -2,11 +2,8 @@ package com.gostech.swiftportbackend.resources.domain.model.commands;
 
 import java.math.BigDecimal;
 
-public record CreateEquipmentCommand(Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
+public record CreateEquipmentCommand(String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
     public  CreateEquipmentCommand {
-        if (tenantId == null || tenantId <= 0) {
-            throw new IllegalArgumentException("tenantId cannot be null");
-        }
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
         }

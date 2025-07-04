@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.resources.domain.model.aggregates.Position;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreatePositionCommand;
 import com.gostech.swiftportbackend.resources.domain.services.PositionCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.PositionRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +19,13 @@ public class PositionCommandServiceImpl implements PositionCommandService {
     public Long handle(CreatePositionCommand command) {
         if (positionRepository.existsByTitle(command.title()))
             throw new IllegalArgumentException("Position with title %s already exists".formatted(command.title()));
-        var position = new Position(command);
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
+        var position = new Position(tenantId, command);
         try {
             positionRepository.save(position);
         } catch (Exception ex) {

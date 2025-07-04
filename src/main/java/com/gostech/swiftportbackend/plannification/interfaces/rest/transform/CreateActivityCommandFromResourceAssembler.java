@@ -14,8 +14,7 @@ public class CreateActivityCommandFromResourceAssembler {
                 resource.zoneOrigin(),
                 resource.locationOrigin(),
                 resource.zoneDestination(),
-                resource.locationDestination(),
-                resource.tenantId()
+                resource.locationDestination()
         );
     }
 }

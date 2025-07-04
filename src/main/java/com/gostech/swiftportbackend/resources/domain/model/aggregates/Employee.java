@@ -4,11 +4,11 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmploy
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
-import com.gostech.swiftportbackend.resources.domain.model.entities.TeamMember;
-import java.util.List;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 public class Employee extends AuditableAbstractAggregateRoot<Employee> {
@@ -26,14 +26,12 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
     @JoinColumn(name = "position", referencedColumnName = "id")
     private Position position;
 
-    @Embedded
     private Availability employeeStatus;
 
-    public Employee(Long tenantId, String name, String lastName, Position position, String status, String email, String phoneNumber) {
+    public Employee(Long tenantId, String name, String lastName, String status, String email, String phoneNumber) {
         this.tenantId = new TenantId(tenantId);
         this.name = new FullName(name, lastName);
         this.contactInfo = new ContactInfo(email, phoneNumber);
-        this.position = position;
         switch (status) {
             case "Available":
                 this.employeeStatus = Availability.AVAILABLE;
@@ -52,11 +50,9 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
 
     public Employee() {}
 
-    public Employee(CreateEmployeeCommand command, Position position) {
-        this.tenantId = new TenantId(command.tenantId());
+    public Employee(Long tenantId, CreateEmployeeCommand command) {
         this.name = new FullName(command.name(), command.lastName());
         this.contactInfo = new ContactInfo(command.email(), command.phoneNumber());
-        this.position = position;
         switch (command.employeeStatus()) {
             case "Available":
                 this.employeeStatus = Availability.AVAILABLE;
@@ -71,6 +67,7 @@ public class Employee extends AuditableAbstractAggregateRoot<Employee> {
                 this.employeeStatus = Availability.UNAVAILABLE;
                 break;
         }
+        this.tenantId = new TenantId(tenantId);
     }
 
     public void updateContactInfo(ContactInfo contactInfo) {

@@ -4,9 +4,9 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.AddLocationC
 import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateLocationResource;
 
 public class AddLocationCommandFromResourceAssembler {
-    public static AddLocationCommand toCommandFromResource(CreateLocationResource resource) {
+    public static AddLocationCommand toCommandFromResource(CreateLocationResource resource, Long zoneId) {
         return new AddLocationCommand(
-                resource.zoneId(),
+                zoneId,
                 resource.street(),
                 resource.city(),
                 resource.country(),

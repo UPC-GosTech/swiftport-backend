@@ -8,6 +8,7 @@ import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.LocationRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ZoneRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -26,7 +27,13 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
     public Long handle(CreateZoneCommand command) {
         if (zoneRepository.existsByName(command.name()))
             throw new IllegalArgumentException("Zone with name %s already exists".formatted(command.name()));
-        var zone = new Zone(command);
+
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
+        var zone = new Zone(tenantId, command);
         try {
             zoneRepository.save(zone);
         } catch (Exception e) {
@@ -43,6 +50,7 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
         try {
             location.setZone(zone);
             zone.addLocation(location);
+            locationRepository.save(location);
             zoneRepository.save(zone);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error saving zone: %s".formatted(e.getMessage()));

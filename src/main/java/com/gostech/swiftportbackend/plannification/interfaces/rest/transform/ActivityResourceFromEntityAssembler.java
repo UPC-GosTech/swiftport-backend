@@ -15,8 +15,7 @@ public class ActivityResourceFromEntityAssembler {
                 entity.getZoneOrigin() != null ? entity.getZoneOrigin().getId() : null,
                 entity.getLocationOrigin() != null ? entity.getLocationOrigin().getId() : null,
                 entity.getZoneDestination() != null ? entity.getZoneDestination().getId() : null,
-                entity.getLocationDestination() != null ? entity.getLocationDestination().getId() : null,
-                entity.getTenantId().getValue()
+                entity.getLocationDestination() != null ? entity.getLocationDestination().getId() : null
         );
     }
 }

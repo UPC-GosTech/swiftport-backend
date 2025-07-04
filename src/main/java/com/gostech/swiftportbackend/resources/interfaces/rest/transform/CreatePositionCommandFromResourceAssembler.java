@@ -6,7 +6,6 @@ import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreatePo
 public class CreatePositionCommandFromResourceAssembler {
     public static CreatePositionCommand toCommandFromResource(CreatePositionResource resource) {
         return new CreatePositionCommand(
-                resource.tenantId(),
                 resource.title(),
                 resource.description()
         );

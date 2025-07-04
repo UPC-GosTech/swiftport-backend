@@ -28,7 +28,6 @@ public class Location extends AuditableModel {
     @Embedded
     private Coordinates coordinates;
 
-    @Embedded
     Availability locationStatus;
 
     public Location(Address address, Coordinates coordinates, String locationStatus) {

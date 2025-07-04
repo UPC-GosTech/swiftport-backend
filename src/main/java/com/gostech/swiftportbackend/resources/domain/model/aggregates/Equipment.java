@@ -6,18 +6,18 @@ import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbst
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @Entity
 public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
 
-    @Column(name = "tenant_id", nullable = false)
-    private Long tenantId;
+    @Embedded
+    private TenantId tenantId;
 
     private String code;
     private String name;
@@ -26,11 +26,9 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
     @Embedded
     Capacity capacity;
 
-    @Embedded
     Availability equipmentStatus;
 
-    public Equipment(Long tenantId, String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
-        this.tenantId = tenantId;
+    public Equipment(String name, String status, String code, String plate, BigDecimal capacityLoad, Integer capacityPax) {
         this.code = code;
         this.name = name;
         this.plate = plate;
@@ -53,8 +51,7 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
 
     public Equipment() {}
 
-    public Equipment(CreateEquipmentCommand command) {
-        this.tenantId = command.tenantId();
+    public Equipment(Long TenantId, CreateEquipmentCommand command) {
         this.code = command.code();
         this.name = command.name();
         this.plate = command.plate();
@@ -73,6 +70,7 @@ public class Equipment extends AuditableAbstractAggregateRoot<Equipment> {
                 this.equipmentStatus = Availability.UNAVAILABLE;
                 break;
         }
+        this.tenantId = new TenantId(TenantId);
     }
 
     public void updateEquipmentStatus(String status) {

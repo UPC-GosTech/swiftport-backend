@@ -2,7 +2,7 @@ package com.gostech.swiftportbackend.plannification.interfaces.rest.resources;
 
 import java.time.LocalDateTime;
 
-public record CreateActivityResource(String activityCode, String description, LocalDateTime expectedTime, Integer weekNumber, String activityStatus, Long zoneOrigin, Long locationOrigin, Long zoneDestination, Long locationDestination, Long tenantId) {
+public record CreateActivityResource(String activityCode, String description, LocalDateTime expectedTime, Integer weekNumber, String activityStatus, Long zoneOrigin, Long locationOrigin, Long zoneDestination, Long locationDestination) {
     public CreateActivityResource {
         if (activityCode == null || activityCode.isEmpty()) {
             throw new IllegalArgumentException("ActivityCode cannot be null or empty");
@@ -30,9 +30,6 @@ public record CreateActivityResource(String activityCode, String description, Lo
         }
         if (locationDestination == null || locationDestination < 0) {
             throw new IllegalArgumentException("LocationDestination cannot be null or less than 0");
-        }
-        if (tenantId == null || tenantId < 0) {
-            throw new IllegalArgumentException("TenantId cannot be null or less than 0");
         }
     }
 }

@@ -4,6 +4,7 @@ import com.gostech.swiftportbackend.resources.domain.model.aggregates.Reservatio
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateReservationCommand;
 import com.gostech.swiftportbackend.resources.domain.services.ReservationCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ReservationRepository;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +17,12 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
     @Override
     public Long handle(CreateReservationCommand command) {
-        var reservation = new Reservation(command);
+        Long tenantId = TenantContext.getCurrentTenantId();
+        if (tenantId == null) {
+            throw new RuntimeException("Tenant context not found");
+        }
+
+        var reservation = new Reservation(tenantId, command);
         try {
             reservationRepository.save(reservation);
         } catch (Exception e) {

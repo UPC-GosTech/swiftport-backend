@@ -6,7 +6,6 @@ import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateZo
 public class CreateZoneCommandFromResourceAssembler {
     public static CreateZoneCommand toCommandFromResource(CreateZoneResource resource) {
         return new CreateZoneCommand(
-                resource.tenantId(),
                 resource.name()
         );
     }

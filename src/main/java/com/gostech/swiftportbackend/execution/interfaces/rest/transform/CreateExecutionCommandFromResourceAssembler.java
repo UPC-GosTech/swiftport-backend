@@ -9,8 +9,7 @@ public class CreateExecutionCommandFromResourceAssembler {
                 resource.taskProgrammingId(),
                 resource.taskExecutionStatus(),
                 resource.start(),
-                resource.end(),
-                resource.tenantId()
+                resource.end()
         );
     }
 }

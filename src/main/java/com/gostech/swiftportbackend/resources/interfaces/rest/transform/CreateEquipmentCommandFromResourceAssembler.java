@@ -6,7 +6,6 @@ import com.gostech.swiftportbackend.resources.interfaces.rest.resources.CreateEq
 public class CreateEquipmentCommandFromResourceAssembler {
     public static CreateEquipmentCommand toCommandFromResource(CreateEquipmentResource resource) {
         return new CreateEquipmentCommand(
-                resource.tenantId(),
                 resource.name(),
                 resource.status(),
                 resource.code(),

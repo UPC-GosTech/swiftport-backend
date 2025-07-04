@@ -87,15 +87,17 @@ public class TeamController {
         return ResponseEntity.ok(teamResources);
     }
 
-    @PostMapping("/{teamId}/members")
+    @PostMapping("/teams/{teamId}/members")
     @Operation(summary = "Add team member to team", description = "Creates a new team member and adds it to the given team")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Team member added to team"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Team not found")
     })
-    public ResponseEntity<TeamMemberResource> addTeamMemberToTeam(@RequestBody CreateTeamMemberResource resource) {
-        var command = AddTeamMemberCommandFromResourceAssembler.toCommandFromResource(resource);
+    public ResponseEntity<TeamMemberResource> addTeamMemberToTeam(
+            @PathVariable Long teamId,
+            @RequestBody CreateTeamMemberResource resource) {
+        var command = AddTeamMemberCommandFromResourceAssembler.toCommandFromResource(resource, teamId);
         var teamMemberId = teamCommandService.handle(command);
         if (teamMemberId == null || teamMemberId == 0L) return ResponseEntity.badRequest().build();
         var query = new GetTeamMemberByIdQuery(teamMemberId);
@@ -105,6 +107,7 @@ public class TeamController {
         var teamMemberResource = TeamMemberResourceFromEntityAssembler.toResourceFromEntity(entity);
         return new ResponseEntity<>(teamMemberResource, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/members/{memberId}")
     @Operation(summary = "Get team member by ID within a team", description = "Retrieve a specific team member from a given team by their employee ID")
@@ -120,18 +123,15 @@ public class TeamController {
         return ResponseEntity.ok(resource);
     }
 
-    @DeleteMapping("/members/{memberId}")
+    @DeleteMapping("/teams/{teamId}/members/{memberId}")
     @Operation(summary = "Delete team member", description = "Delete (deactivate or remove) a team member from its team")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Team member deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Team member not found")
     })
-    public ResponseEntity<TeamMemberResource> deleteTeamMember(@PathVariable Long memberId, @PathVariable Long teamId) {
+    public ResponseEntity<Void> deleteTeamMember(@PathVariable Long teamId, @PathVariable Long memberId) {
         var command = new DeleteTeamMemberCommand(memberId, teamId);
-        var deletedMember = teamCommandService.handle(command);
-        if (deletedMember.isEmpty()) return ResponseEntity.notFound().build();
-        var resource = TeamMemberResourceFromEntityAssembler.toResourceFromEntity(deletedMember.get());
-        return ResponseEntity.ok(resource);
+        teamCommandService.handle(command);
+        return ResponseEntity.noContent().build();
     }
-
 }

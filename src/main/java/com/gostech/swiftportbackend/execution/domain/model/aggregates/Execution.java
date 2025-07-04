@@ -11,6 +11,7 @@ import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskPro
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import java.util.Set;
 @Entity
 public class Execution extends AuditableAbstractAggregateRoot<Execution> {
 
-    @Embedded
     private TaskExecutionStatus taskExecutionStatus;
 
     @Embedded
@@ -35,6 +35,7 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
     @Embedded
     private TenantId tenantId;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_programming_id", referencedColumnName = "id")
     private TaskProgramming taskProgramming;
@@ -43,7 +44,7 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.incidents = new ArrayList<>();
     }
 
-    public Execution(String taskExecutionStatus, LocalDateTime start, LocalDateTime end, Long tenantId) {
+    public Execution(String taskExecutionStatus, LocalDateTime start, LocalDateTime end, Long tenantId, Long taskProgrammingId) {
         switch (taskExecutionStatus) {
             case "Completed":
                 this.taskExecutionStatus = TaskExecutionStatus.COMPLETED;
@@ -64,7 +65,7 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.tenantId = new TenantId(tenantId);
     }
 
-    public Execution(CreateExecutionCommand  command) {
+    public Execution(Long tenantId, CreateExecutionCommand command) {
         switch (command.taskExecutionStatus()) {
             case "Completed":
                 this.taskExecutionStatus = TaskExecutionStatus.COMPLETED;
@@ -82,7 +83,7 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.executionTimeFrame = new ExecutionTimeFrame(command.start(), command.end());
         this.incidents = new ArrayList<>();
         this.modificationReason = "";
-        this.tenantId = new TenantId(command.tenantId());
+        this.tenantId = new TenantId(tenantId);
     }
 
     public void addIncidentReport(IncidentReport incidentReport) {
@@ -112,4 +113,5 @@ public class Execution extends AuditableAbstractAggregateRoot<Execution> {
         this.executionTimeFrame = new ExecutionTimeFrame(command.start(), command.end());
         this.modificationReason = command.reason();
     }
+
 }

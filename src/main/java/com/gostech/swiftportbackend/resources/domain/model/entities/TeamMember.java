@@ -30,6 +30,11 @@ public class TeamMember extends AuditableModel {
     public TeamMember() {}
 
     public TeamMember(AddTeamMemberCommand command) {
-        // Debes setear el Employee desde el servicio usando el repositorio de Employee
+
+    }
+
+    public TeamMember(Team team, Employee employee) {
+        this.team = team;
+        this.employee = employee;
     }
 }

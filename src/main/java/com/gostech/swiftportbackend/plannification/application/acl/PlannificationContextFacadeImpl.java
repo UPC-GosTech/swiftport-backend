@@ -5,6 +5,7 @@ import com.gostech.swiftportbackend.plannification.domain.model.commands.CreateA
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityCommandService;
 import com.gostech.swiftportbackend.plannification.domain.services.ActivityQueryService;
 import com.gostech.swiftportbackend.plannification.interfaces.acl.PlannificationContextFacade;
+import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,8 +29,8 @@ public class PlannificationContextFacadeImpl implements PlannificationContextFac
             Long zoneOrigin,
             Long locationOrigin,
             Long zoneDestination,
-            Long locationDestination,
-            Long tenantId){
+            Long locationDestination){
+
         var createActivityCommand = new CreateActivityCommand(
                 activityCode,
                 description,
@@ -39,8 +40,7 @@ public class PlannificationContextFacadeImpl implements PlannificationContextFac
                 zoneOrigin,
                 locationOrigin,
                 zoneDestination,
-                locationDestination,
-                tenantId
+                locationDestination
         );
         return activityCommandService.handle(createActivityCommand);
     }

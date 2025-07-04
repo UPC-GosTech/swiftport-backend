@@ -84,8 +84,8 @@ public class ZoneController {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Zone not found")
     })
-    public ResponseEntity<LocationResource> addLocationToZone(@RequestBody CreateLocationResource resource) {
-        var command = AddLocationCommandFromResourceAssembler.toCommandFromResource(resource);
+    public ResponseEntity<LocationResource> addLocationToZone(@PathVariable Long zoneId, @RequestBody CreateLocationResource resource) {
+        var command = AddLocationCommandFromResourceAssembler.toCommandFromResource(resource, zoneId);
         var locationId = zoneCommandService.handle(command);
         if (locationId == null || locationId == 0L) return ResponseEntity.badRequest().build();
         var query = new GetLocationByIdQuery(locationId);
@@ -93,8 +93,10 @@ public class ZoneController {
         if (location.isEmpty()) return ResponseEntity.notFound().build();
         var entity = location.get();
         var locationResource = LocationResourceFromEntityAssembler.toResourceFromEntity(entity);
+        System.out.println("Location resource: " + locationResource);
         return new ResponseEntity<>(locationResource, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/locations/{locationId}")
     @Operation(summary = "Get location by ID", description = "Retrieve a specific location by its ID")
