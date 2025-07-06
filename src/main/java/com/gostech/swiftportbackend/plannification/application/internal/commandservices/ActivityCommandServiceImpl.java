@@ -97,17 +97,17 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
 
         var reserveId = externalReservationService.fetchReservationByResourceReference(command.resourceId(), command.resourceType());
 
-        if (reserveId.isPresent()) {
+        if (!reserveId.isEmpty()) {
             if (externalReservationService.overlaps(reserveId.get().reservationId(), command.start(), command.end()))
                 throw new IllegalArgumentException("Reservation date overlaps");
-        } else {
-            reserveId = externalReservationService.createReservation(
-                    command.resourceType(),
-                    command.resourceId(),
-                    command.start(),
-                    command.end()
-            );
         }
+
+        reserveId = externalReservationService.createReservation(
+                command.resourceType(),
+                command.resourceId(),
+                command.start(),
+                command.end()
+        );
 
         var taskProgramming = new TaskProgramming(reserveId.get().reservationId(), command);
         try {
@@ -177,8 +177,25 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
         TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
             .orElseThrow(() -> new IllegalArgumentException("TaskProgramming not found"));
 
+        /*
+        * var reserveId = externalReservationService.fetchReservationByResourceReference(command.resourceId(), command.resourceType());
+
+        if (!reserveId.isEmpty()) {
+            if (externalReservationService.overlaps(reserveId.get().reservationId(), command.start(), command.end()))
+                throw new IllegalArgumentException("Reservation date overlaps");
+        }
+
+        reserveId = externalReservationService.createReservation(
+                command.resourceType(),
+                command.resourceId(),
+                command.start(),
+                command.end()
+        );
+
+        var taskProgramming = new TaskProgramming(reserveId.get().reservationId(), command);
+        * */
         var success = externalReservationService.updateReservationTimeInterval(taskProgramming.getReservationId().reservationId(), command.start(), command.end());
-        if (!success) throw new IllegalArgumentException("TaskProgramming date overlaps");
+        if (success) throw new IllegalArgumentException("TaskProgramming date overlaps");
 
         try {
             taskProgrammingRepository.save(taskProgramming);

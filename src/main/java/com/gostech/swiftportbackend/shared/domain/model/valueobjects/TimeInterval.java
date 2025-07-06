@@ -16,11 +16,7 @@ public record TimeInterval(LocalDateTime start, LocalDateTime end) {
     }
 
     public boolean overlaps(TimeInterval other) {
-        return ((this.start.isBefore(other.end) && this.end.isAfter(other.start)) ||
-                (this.start == other.start && this.end == other.end) ||
-                (this.start.isBefore(other.end) && this.end == other.end) ||
-                (this.start == other.start && this.end.isAfter(other.start)) ||
-                (this.start.isBefore(other.end) && this.start.isAfter(other.start)) ||
-                (this.end.isAfter(other.start) && this.end.isBefore(other.end)));
+        return ((this.start.isBefore(other.end) || this.start.isEqual((other.end))) &&
+                (this.end.isAfter(other.start) || this.end.isEqual((other.start))));
     }
 }

@@ -59,7 +59,7 @@ public class ReservationsContextFacadeImpl implements ReservationsContextFacade 
         if (!reservations.isEmpty()) {
             coincidence = reservations.stream()
                     .filter(r -> r.getTimeInterval().equals(new TimeInterval(start, end)))
-                    .anyMatch(r -> !r.overlaps(reservation.get().getTimeInterval()));
+                    .anyMatch(r -> r.overlaps(reservation.get().getTimeInterval()));
         }
         return !coincidence;
     }

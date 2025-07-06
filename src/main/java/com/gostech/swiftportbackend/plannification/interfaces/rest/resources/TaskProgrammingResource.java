@@ -4,5 +4,5 @@ import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.Pro
 
 import java.time.LocalDateTime;
 
-public record TaskProgrammingResource(Long taskProgrammingId, Long resourceId, ProgrammingStatus programmingStatus) {
+public record TaskProgrammingResource(Long taskProgrammingId, Long reservationId, ProgrammingStatus programmingStatus) {
 }
