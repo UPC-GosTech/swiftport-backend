@@ -4,19 +4,17 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateReserv
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.*;
 import com.gostech.swiftportbackend.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TenantId;
-import com.gostech.swiftportbackend.iam.domain.model.aggregates.Tenant;
-import com.gostech.swiftportbackend.resources.domain.model.aggregates.Equipment;
+import com.gostech.swiftportbackend.shared.domain.model.valueobjects.TimeInterval;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 @Entity
 public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
-
-    @Embedded
-    private TenantId tenantId;
 
     @Embedded
     @AttributeOverrides({
@@ -28,15 +26,14 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
     @Embedded
     private TimeInterval timeInterval;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private Tenant tenant;
+    @Embedded
+    private TenantId tenantId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Equipment equipment;
 
-    public Reservation(String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
+    public Reservation(Long tenantId, String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end) {
         switch (resourceType) {
             case "Vehicle":
                 this.resourceReference = new ResourceReference("Vehicle", resourceId);
@@ -58,6 +55,7 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
                 break;
         }
         this.timeInterval = new TimeInterval(start, end);
+        this.tenantId = new TenantId(tenantId);
     }
 
     public Reservation() {}
@@ -84,11 +82,15 @@ public class Reservation extends AuditableAbstractAggregateRoot<Reservation> {
                 break;
         }
         this.timeInterval = new TimeInterval(command.start(), command.end());
-        this.tenantId = new TenantId(tenantId);
+        this.tenantId =  new TenantId(tenantId);
     }
 
-    public boolean conflictsWith(TimeInterval other) {
+    public boolean overlaps(TimeInterval other) {
         return this.timeInterval.overlaps(other);
+    }
+
+    public void setTimeInterval(LocalDateTime start, LocalDateTime end) {
+        this.timeInterval = new TimeInterval(start, end);
     }
 
 }

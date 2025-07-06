@@ -1,4 +1,4 @@
-package com.gostech.swiftportbackend.resources.domain.model.valueobjects;
+package com.gostech.swiftportbackend.shared.domain.model.valueobjects;
 
 import jakarta.persistence.Embeddable;
 import java.time.LocalDateTime;
@@ -16,6 +16,7 @@ public record TimeInterval(LocalDateTime start, LocalDateTime end) {
     }
 
     public boolean overlaps(TimeInterval other) {
-        return this.start.isBefore(other.end) && this.end.isAfter(other.start);
+        return ((this.start.isBefore(other.end) || this.start.isEqual((other.end))) &&
+                (this.end.isAfter(other.start) || this.end.isEqual((other.start))));
     }
 }

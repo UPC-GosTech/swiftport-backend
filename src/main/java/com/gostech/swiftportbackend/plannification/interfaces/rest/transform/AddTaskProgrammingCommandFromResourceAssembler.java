@@ -9,9 +9,9 @@ public class AddTaskProgrammingCommandFromResourceAssembler {
                 resource.taskId(),
                 resource.resourceType(),
                 resource.resourceId(),
+                resource.programmingStatus(),
                 resource.start(),
-                resource.end(),
-                resource.programmingStatus()
+                resource.end()
         );
     }
 }
