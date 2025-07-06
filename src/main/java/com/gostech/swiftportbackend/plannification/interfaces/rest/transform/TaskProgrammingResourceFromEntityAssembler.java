@@ -7,10 +7,7 @@ public class TaskProgrammingResourceFromEntityAssembler {
     public static TaskProgrammingResource toResourceFromEntity(TaskProgramming entity) {
         return new TaskProgrammingResource(
                 entity.getId(),
-                entity.getResourceReference().resourceType(),
-                entity.getResourceReference().resourceId(),
-                entity.getTimeInterval().start(),
-                entity.getTimeInterval().end(),
+                entity.getReservationId().reservationId(),
                 entity.getProgrammingStatus()
         );
     }

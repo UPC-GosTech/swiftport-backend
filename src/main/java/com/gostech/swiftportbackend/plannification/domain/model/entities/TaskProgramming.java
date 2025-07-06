@@ -2,25 +2,19 @@ package com.gostech.swiftportbackend.plannification.domain.model.entities;
 
 import com.gostech.swiftportbackend.plannification.domain.model.commands.AddTaskProgrammingCommand;
 import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ProgrammingStatus;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.ResourceReference;
-import com.gostech.swiftportbackend.resources.domain.model.valueobjects.TimeInterval;
+import com.gostech.swiftportbackend.plannification.domain.model.valueobjects.ReservationId;
 import com.gostech.swiftportbackend.shared.domain.model.entities.AuditableModel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 public class TaskProgramming extends AuditableModel {
 
     @Embedded
-    private ResourceReference resourceReference;
-
-    @Embedded
-    private TimeInterval timeInterval;
+    private ReservationId reservationId;
 
     private ProgrammingStatus programmingStatus;
 
@@ -30,9 +24,8 @@ public class TaskProgramming extends AuditableModel {
     @NotNull
     private Task task;
 
-    public TaskProgramming(String resourceType, Long resourceId, LocalDateTime start, LocalDateTime end, String programmingStatus) {
-        this.resourceReference = new ResourceReference(resourceType, resourceId);
-        this.timeInterval = new TimeInterval(start, end);
+    public TaskProgramming(Long reservationId, String programmingStatus) {
+        this.reservationId = new ReservationId(reservationId);
         switch (programmingStatus) {
             case "Pending":
                 this.programmingStatus = ProgrammingStatus.PENDING;
@@ -51,9 +44,8 @@ public class TaskProgramming extends AuditableModel {
 
     public TaskProgramming() {}
 
-    public TaskProgramming(AddTaskProgrammingCommand command) {
-        this.resourceReference = new ResourceReference(command.resourceType(), command.resourceId());
-        this.timeInterval = new TimeInterval(command.start(), command.end());
+    public TaskProgramming(Long reservationId, AddTaskProgrammingCommand command) {
+        this.reservationId = new ReservationId(reservationId);
         switch (command.programmingStatus()) {
             case "Pending":
                 this.programmingStatus = ProgrammingStatus.PENDING;
@@ -68,10 +60,6 @@ public class TaskProgramming extends AuditableModel {
                 this.programmingStatus = ProgrammingStatus.CANCELLED;
                 break;
         }
-    }
-
-    public boolean overlaps(TimeInterval other) {
-        return timeInterval.overlaps(other);
     }
 
     public void updateStatus(String newStatus) {
@@ -91,10 +79,6 @@ public class TaskProgramming extends AuditableModel {
             default:
                 break;
         }
-    }
-
-    public void updateTime(LocalDateTime start, LocalDateTime end){
-        this.timeInterval = new TimeInterval(start, end);
     }
 
 }

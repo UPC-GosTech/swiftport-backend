@@ -1,6 +1,7 @@
 package com.gostech.swiftportbackend.resources.application.internal.queryservices;
 
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Reservation;
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllReservationsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetReservationByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetReservationsByResourceReference;
 import com.gostech.swiftportbackend.resources.domain.model.valueobjects.ResourceReference;
@@ -27,5 +28,10 @@ public class ReservationQueryServiceImpl implements ReservationQueryService {
     @Override
     public List<Reservation> handle(GetReservationsByResourceReference query) {
         return reservationRepository.findByResourceReference(new ResourceReference(query.resourceType(), query.resourceId()));
+    }
+
+    @Override
+    public List<Reservation> handle(GetAllReservationsQuery query) {
+        return reservationRepository.findAll();
     }
 }

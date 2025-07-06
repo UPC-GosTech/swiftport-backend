@@ -1,5 +1,6 @@
 package com.gostech.swiftportbackend.resources.interfaces.rest.controllers;
 
+import com.gostech.swiftportbackend.resources.domain.model.queries.GetAllReservationsQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetReservationByIdQuery;
 import com.gostech.swiftportbackend.resources.domain.model.queries.GetReservationsByResourceReference;
 import com.gostech.swiftportbackend.resources.domain.services.ReservationCommandService;
@@ -82,4 +83,20 @@ public class ReservationController {
                 .toList();
         return ResponseEntity.ok(reservationResources);
     }
+
+    @GetMapping
+    @Operation(summary = "Get all reservations", description = "Retrieve a list of all reservations")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reservations retrieved"),
+            @ApiResponse(responseCode = "204", description = "No reservations found")
+    })
+    public ResponseEntity<List<ReservationResource>> getAllReservations() {
+        var reservations = reservationQueryService.handle(new GetAllReservationsQuery());
+        if (reservations.isEmpty()) return ResponseEntity.noContent().build();
+        var reservationResources = reservations.stream()
+                .map(ReservationResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(reservationResources);
+    }
+
 }
