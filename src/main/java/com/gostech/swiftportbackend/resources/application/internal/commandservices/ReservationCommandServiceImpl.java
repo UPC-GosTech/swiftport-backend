@@ -1,9 +1,11 @@
 package com.gostech.swiftportbackend.resources.application.internal.commandservices;
 
+import com.gostech.swiftportbackend.resources.domain.exceptions.ReservationNotSavedException;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Reservation;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateReservationCommand;
 import com.gostech.swiftportbackend.resources.domain.services.ReservationCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ReservationRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +21,14 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
     public Long handle(CreateReservationCommand command) {
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         var reservation = new Reservation(tenantId, command);
         try {
             reservationRepository.save(reservation);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving reservation: %s".formatted(e.getMessage()));
+            throw new ReservationNotSavedException(e.getMessage());
         }
         return reservation.getId();
     }

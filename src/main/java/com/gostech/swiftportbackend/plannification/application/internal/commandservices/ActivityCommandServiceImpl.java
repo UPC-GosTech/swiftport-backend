@@ -1,6 +1,7 @@
 package com.gostech.swiftportbackend.plannification.application.internal.commandservices;
 
 import com.gostech.swiftportbackend.plannification.application.internal.outboundservice.acl.ExternalReservationService;
+import com.gostech.swiftportbackend.plannification.domain.exceptions.*;
 import com.gostech.swiftportbackend.plannification.domain.model.aggregates.Activity;
 import com.gostech.swiftportbackend.plannification.domain.model.commands.*;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.Task;
@@ -10,10 +11,15 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityComma
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNotFoundException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNotSavedException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.LocationNotFoundException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.ZoneNotFoundException;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
 import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.LocationRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ZoneRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -40,24 +46,24 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Long handle(CreateActivityCommand command) {
         if (activityRepository.existsByActivityCode(new ActicityCode(command.activityCode())))
-            throw new IllegalArgumentException("Activity with code %s already exists".formatted(command.activityCode()));
+            throw new ActivityCodeAlreadyExistsException(command.activityCode());
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         Location locationOrigin = locationRepository.findById(command.locationOrigin())
-                .orElseThrow(() -> new RuntimeException("Location with origin %s not found".formatted(command.locationOrigin())));
+                .orElseThrow(() -> new LocationNotFoundException(command.locationOrigin()));
 
         Location locationDestination = locationRepository.findById(command.locationDestination())
-                .orElseThrow(() -> new RuntimeException("Location destination %s not found".formatted(command.locationDestination())));
+                .orElseThrow(() -> new LocationNotFoundException(command.locationOrigin()));
 
         Zone zoneOrigin = zoneRepository.findById(command.zoneOrigin())
-                .orElseThrow(() -> new RuntimeException("Zone origin %s not found".formatted(command.zoneOrigin())));
+                .orElseThrow(() -> new ZoneNotFoundException(command.zoneOrigin()));
 
         Zone zoneDestination = zoneRepository.findById(command.zoneDestination())
-                .orElseThrow(() -> new RuntimeException("Zone destination %s not found".formatted(command.zoneDestination())));
+                .orElseThrow(() -> new ZoneNotFoundException(command.zoneOrigin()));
 
         var activity = new Activity(tenantId, command);
 
@@ -68,7 +74,7 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
             activity.setZoneDestination(zoneDestination);
             activityRepository.save(activity);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving activity: %s".formatted(e.getMessage()));
+            throw new ActivityNotSavedException(e.getMessage());
         }
         return activity.getId();
     }
@@ -76,16 +82,16 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Long handle(AddTaskCommand command) {
         if (taskRepository.existsByTitle(command.title()))
-            throw new IllegalArgumentException("Task with title %s already exists".formatted(command.title()));
+            throw new TaskTitleAlreadyExistsException();
         Activity activity = activityRepository.findById(command.activityId())
-            .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
+            .orElseThrow(() -> new ActivityNotFoundException(command.activityId()));
         var task = new Task(command);
         try {
             task.setActivity(activity);
             activity.addTask(task);
             taskRepository.save(task);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving task: %s".formatted(e.getMessage()));
+            throw new TaskNotSavedException(e.getMessage());
         }
         return task.getId();
     }
@@ -93,13 +99,13 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Long handle(AddTaskProgrammingCommand command) {
         Task task = taskRepository.findById(command.taskId())
-            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+            .orElseThrow(() -> new TaskNotFoundException(command.taskId()));
 
         var reserveId = externalReservationService.fetchReservationByResourceReference(command.resourceId(), command.resourceType());
 
         if (!reserveId.isEmpty()) {
             if (externalReservationService.overlaps(reserveId.get().reservationId(), command.start(), command.end()))
-                throw new IllegalArgumentException("Reservation date overlaps");
+                throw new ReservationDateOverlappedException();
         }
 
         reserveId = externalReservationService.createReservation(
@@ -115,7 +121,7 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
             task.addProgramming(taskProgramming);
             taskProgrammingRepository.save(taskProgramming);
         }  catch (Exception e) {
-            throw new IllegalArgumentException("Error saving task programming: %s".formatted(e.getMessage()));
+            throw new TaskNotSavedException(e.getMessage());
         }
         return taskProgramming.getId();
     }
@@ -123,12 +129,12 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Optional<Task> handle(UpdateEmployeeAssignedOnTaskCommand command) {
         Task task = taskRepository.findById(command.taskId())
-            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+            .orElseThrow(() -> new TaskNotFoundException(command.taskId()));
         try {
             task.updateEmployeeAssigned(command.employeeId());
             taskRepository.save(task);
         }  catch (Exception e) {
-            throw new IllegalArgumentException("Error updating employee Id on task: %s".formatted(e.getMessage()));
+            throw new EmployeeNotSavedException(e.getMessage());
         }
         return Optional.of(task);
     }
@@ -136,12 +142,12 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Optional<Task> handle(UpdateTaskDescriptionCommand  command) {
         Task task = taskRepository.findById(command.taskId())
-            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+            .orElseThrow(() -> new TaskNotFoundException(command.taskId()));
         try {
             task.updateTaskDescription(command.description());
             taskRepository.save(task);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error updating task description: %s".formatted(e.getMessage()));
+            throw new TaskNotUpdatedException(e.getMessage());
         }
         return Optional.of(task);
     }
@@ -149,12 +155,12 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Optional<Task> handle(UpdateTaskStatusCommand command) {
         Task task = taskRepository.findById(command.taskId())
-            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+            .orElseThrow(() -> new TaskNotFoundException(command.taskId()));
         try {
             task.updateTaskStatus(command.status());
             taskRepository.save(task);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error updating task status: %s".formatted(e.getMessage()));
+            throw new TaskNotUpdatedException(e.getMessage());
         }
         return Optional.of(task);
     }
@@ -162,12 +168,12 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Optional<TaskProgramming> handle(UpdateTaskProgrammingStatusCommand command) {
         TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
-            .orElseThrow(() -> new IllegalArgumentException("TaskProgramming not found"));
+            .orElseThrow(() -> new TaskProgrammingNotFoundException(command.taskProgrammingId()));
         try {
             taskProgramming.updateStatus(command.programmingStatus());
             taskProgrammingRepository.save(taskProgramming);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error updating task programming: %s".formatted(e.getMessage()));
+            throw new TaskProgrammingNotUpdatedException(e.getMessage());
         }
         return Optional.of(taskProgramming);
     }
@@ -175,7 +181,7 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Optional<TaskProgramming> handle(UpdateTaskProgrammingTimeIntervalCommand command) {
         TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
-            .orElseThrow(() -> new IllegalArgumentException("TaskProgramming not found"));
+            .orElseThrow(() -> new TaskProgrammingNotFoundException(command.taskProgrammingId()));
 
         /*
         * var reserveId = externalReservationService.fetchReservationByResourceReference(command.resourceId(), command.resourceType());
@@ -195,12 +201,12 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
         var taskProgramming = new TaskProgramming(reserveId.get().reservationId(), command);
         * */
         var success = externalReservationService.updateReservationTimeInterval(taskProgramming.getReservationId().reservationId(), command.start(), command.end());
-        if (success) throw new IllegalArgumentException("TaskProgramming date overlaps");
+        if (success) throw new ReservationDateOverlappedException();
 
         try {
             taskProgrammingRepository.save(taskProgramming);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error updating task programming: %s".formatted(e.getMessage()));
+            throw new TaskProgrammingNotUpdatedException(e.getMessage());
         }
         return Optional.of(taskProgramming);
     }
@@ -208,12 +214,12 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
     @Override
     public Optional<Activity> handle(UpdateActivityStatusCommand command) {
         Activity activity = activityRepository.findById(command.activityId())
-            .orElseThrow(() -> new IllegalArgumentException("Activity not found"));
+            .orElseThrow(() -> new ActivityNotFoundException(command.activityId()));
         try {
             activity.updateActivityStatus(command.activityStatus());
             activityRepository.save(activity);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error updating activity status: %s".formatted(e.getMessage()));
+            throw new TaskProgrammingNotUpdatedException(e.getMessage());
         }
         return Optional.of(activity);
     }

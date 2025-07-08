@@ -1,5 +1,6 @@
 package com.gostech.swiftportbackend.resources.application.internal.commandservices;
 
+import com.gostech.swiftportbackend.resources.domain.exceptions.*;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Team;
 import com.gostech.swiftportbackend.resources.domain.model.commands.AddTeamMemberCommand;
@@ -10,6 +11,7 @@ import com.gostech.swiftportbackend.resources.domain.services.TeamCommandService
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EmployeeRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.TeamMemberRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.TeamRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -30,18 +32,18 @@ public class TeamCommandServiceImpl implements TeamCommandService {
     @Override
     public Long handle(CreateTeamCommand command) {
         if (teamRepository.existsByName(command.name()))
-            throw new IllegalArgumentException("Team with name %s already exists".formatted(command.name()));
+            throw new TeamNameAlreadyExistsException(command.name());
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         var team = new Team(tenantId, command);
         try {
             teamRepository.save(team);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving team: %s".formatted(e.getMessage()));
+            throw new TeamNotSavedException(e.getMessage());
         }
         return team.getId();
     }
@@ -49,9 +51,9 @@ public class TeamCommandServiceImpl implements TeamCommandService {
     @Override
     public Long handle(AddTeamMemberCommand command) {
         Employee employee = employeeRepository.findById(command.employeeId())
-                .orElseThrow(() -> new IllegalArgumentException("Employee id %s does not exist".formatted(command.employeeId())));
+                .orElseThrow(() -> new EmployeeNotFoundException(command.employeeId()));
         Team team = teamRepository.findById(command.teamId())
-                .orElseThrow(() -> new IllegalArgumentException("Team with id %s does not exist".formatted(command.teamId())));
+                .orElseThrow(() -> new TeamNotFoundException(command.teamId()));
 
         TeamMember member = new TeamMember(team, employee);
 
@@ -61,7 +63,7 @@ public class TeamCommandServiceImpl implements TeamCommandService {
             teamMemberRepository.save(member);
             teamRepository.save(team);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving team member: %s".formatted(e.getMessage()));
+            throw new TeamMemberNotSavedException(e.getMessage());
         }
         return member.getId();
     }
@@ -69,15 +71,15 @@ public class TeamCommandServiceImpl implements TeamCommandService {
     @Override
     public Long handle(DeleteTeamMemberCommand command) {
         TeamMember member = teamMemberRepository.findById(command.id())
-                .orElseThrow(() -> new IllegalArgumentException("Team member with id %s does not exist".formatted(command.id())));
+                .orElseThrow(() -> new TeamMemberNotFoundException(command.teamId()));
         Team team = teamRepository.findById(command.teamId())
-                .orElseThrow(() -> new IllegalArgumentException("Team with id %s does not exist".formatted(command.teamId())));
+                .orElseThrow(() -> new TeamNotFoundException(command.teamId()));
 
         try {
             team.removeMember(member.getEmployee());
             teamRepository.save(team);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving team member: %s".formatted(e.getMessage()));
+            throw new TeamMemberNotSavedException(e.getMessage());
         }
         return team.getId();
     }
