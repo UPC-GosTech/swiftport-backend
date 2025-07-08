@@ -1,5 +1,8 @@
 package com.gostech.swiftportbackend.execution.application.internal.commandservices;
 
+import com.gostech.swiftportbackend.execution.domain.exceptions.ExecutionNoFoundException;
+import com.gostech.swiftportbackend.execution.domain.exceptions.ExecutionNotSavedException;
+import com.gostech.swiftportbackend.execution.domain.exceptions.ExecutionNotUpdatedException;
 import com.gostech.swiftportbackend.execution.domain.model.aggregates.Execution;
 import com.gostech.swiftportbackend.execution.domain.model.commands.*;
 import com.gostech.swiftportbackend.execution.domain.model.entities.ExecutionEmployee;
@@ -65,7 +68,7 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
             execution.setTaskProgramming(taskProgramming);
             executionRepository.save(execution);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("Error saving execution %s".formatted(ex.getMessage()));
+            throw new ExecutionNotSavedException(ex.getMessage());
         }
         return execution.getId();
     }
@@ -73,14 +76,14 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     @Override
     public Long handle(AddEmployeeIdToExecutionCommand command) {
         Execution execution = executionRepository.findById(command.executionId())
-                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+                .orElseThrow(() -> new ExecutionNoFoundException(command.executionId()));
         Employee employee = employeeRepository.findById(command.employeeId())
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
         var executionEmployee = new ExecutionEmployee(execution, employee);
         try {
             executionEmployeeRepository.save(executionEmployee);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("Error saving execution-employee relation: %s".formatted(ex.getMessage()));
+            throw new ExecutionNotSavedException(ex.getMessage());
         }
         return executionEmployee.getId();
     }
@@ -88,7 +91,7 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     @Override
     public Long handle(AddEquipmentIdToExecutionCommand command) {
         Execution execution = executionRepository.findById(command.executionId())
-                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+                .orElseThrow(() -> new ExecutionNoFoundException(command.executionId()));
 
         Equipment equipment = equipmentRepository.findById(command.equipmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Equipment not found"));
@@ -97,7 +100,7 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
         try {
             executionEquipmentRepository.save(executionEquipment);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("Error saving execution %s".formatted(ex.getMessage()));
+            throw new ExecutionNotSavedException(ex.getMessage());
         }
         return executionEquipment.getId();
     }
@@ -105,12 +108,12 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     @Override
     public Optional<Execution> handle(UpdateExecutionCommand command) {
         Execution execution = executionRepository.findById(command.executionId())
-                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+                .orElseThrow(() -> new ExecutionNoFoundException(command.executionId()));
         execution.addModifications(command);
         try {
             executionRepository.save(execution);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("Error updating execution %s".formatted(ex.getMessage()));
+            throw new ExecutionNotUpdatedException(ex.getMessage());
         }
         return Optional.of(execution);
     }
@@ -118,12 +121,12 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     @Override
     public Optional<Execution> handle(UpdateTaskExecutionStatusCommand command) {
         Execution execution = executionRepository.findById(command.executionId())
-                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+                .orElseThrow(() -> new ExecutionNoFoundException(command.executionId()));
         execution.updateTaskExecutionStatus(command.taskExecutionStatus());
         try {
             executionRepository.save(execution);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("Error updating execution %s".formatted(ex.getMessage()));
+            throw new ExecutionNotUpdatedException(ex.getMessage());
         }
         return Optional.of(execution);
     }

@@ -1,5 +1,9 @@
 package com.gostech.swiftportbackend.execution.application.internal.commandservices;
 
+import com.gostech.swiftportbackend.execution.domain.exceptions.ExecutionNoFoundException;
+import com.gostech.swiftportbackend.execution.domain.exceptions.IncidentReportNotFoundExceptions;
+import com.gostech.swiftportbackend.execution.domain.exceptions.IncidentReportNotSavedException;
+import com.gostech.swiftportbackend.execution.domain.exceptions.IncidentReportTitleAlreadyExistsException;
 import com.gostech.swiftportbackend.execution.domain.model.aggregates.Execution;
 import com.gostech.swiftportbackend.execution.domain.model.commands.AddIncidentReportCommand;
 import com.gostech.swiftportbackend.execution.domain.model.commands.UpdateIncidentReportDescriptionCommand;
@@ -26,9 +30,9 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
     @Override
     public Long handle(AddIncidentReportCommand command) {
         if (incidentReportRepository.existsByTitle(command.title()))
-            throw new IllegalStateException("Incident report with title %s already exists".formatted(command.title()));
+            throw new IncidentReportTitleAlreadyExistsException(command.title());
         Execution execution = executionRepository.findById(command.executionId())
-                .orElseThrow(() -> new IllegalArgumentException("Execution not found"));
+                .orElseThrow(() -> new ExecutionNoFoundException(command.executionId()));
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
@@ -41,7 +45,7 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
             execution.addIncidentReport(incident);
             incidentReportRepository.save(incident);
         } catch (Exception e) {
-            throw new IllegalStateException("Error saving incident report: %s".formatted(e.getMessage()));
+            throw new IncidentReportNotSavedException(e.getMessage());
         }
         return incident.getId();
     }
@@ -49,12 +53,12 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
     @Override
     public Optional<IncidentReport> handle(UpdateIncidentReportDescriptionCommand command) {
         IncidentReport incidentReport = incidentReportRepository.findById(command.incidentReportId())
-                .orElseThrow(() -> new IllegalArgumentException("Incident report not found"));
+                .orElseThrow(() -> new IncidentReportNotFoundExceptions(command.incidentReportId()));
         incidentReport.updateDescription(command.description());
         try {
             incidentReportRepository.save(incidentReport);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving incident report: %s".formatted(e.getMessage()));
+            throw new IncidentReportNotSavedException(e.getMessage());
         }
         return Optional.of(incidentReport);
     }
@@ -62,12 +66,12 @@ public class IncidentReportCommandServiceImpl implements IncidentReportCommandSe
     @Override
     public Optional<IncidentReport> handle(UpdateIncidentReportEmployeeIdCommand command) {
         IncidentReport incidentReport = incidentReportRepository.findById(command.incidentReportId())
-                .orElseThrow(() -> new IllegalArgumentException("Incident report not found"));
+                .orElseThrow(() -> new IncidentReportNotFoundExceptions(command.incidentReportId()));
         incidentReport.updateEmployeeId(command.employeeId());
         try {
             incidentReportRepository.save(incidentReport);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving incident report: %s".formatted(e.getMessage()));
+            throw new IncidentReportNotSavedException(e.getMessage());
         }
         return Optional.of(incidentReport);
     }
