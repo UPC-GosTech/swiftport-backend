@@ -9,12 +9,17 @@ import com.gostech.swiftportbackend.execution.domain.model.entities.ExecutionEmp
 import com.gostech.swiftportbackend.execution.domain.model.entities.ExecutionEquipment;
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionEmployeeRepository;
 import com.gostech.swiftportbackend.execution.infrastructure.persistence.jpa.repositories.ExecutionEquipmentRepository;
+import com.gostech.swiftportbackend.plannification.domain.exceptions.TaskProgrammingAlreadyExistsException;
+import com.gostech.swiftportbackend.plannification.domain.exceptions.TaskProgrammingNotFoundException;
 import com.gostech.swiftportbackend.plannification.domain.model.entities.TaskProgramming;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNotFoundException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EquipmentNotFoundException;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Equipment;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EmployeeRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EquipmentRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.domain.model.valueobjects.EmployeeId;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.EquipmentId;
 import com.gostech.swiftportbackend.execution.domain.model.valueobjects.TaskProgrammingId;
@@ -53,15 +58,15 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
     @Override
     public Long handle(CreateExecutionCommand command) {
         if (executionRepository.existsByTaskProgrammingId(command.taskProgrammingId()))
-            throw new IllegalArgumentException("Task Programming %s already exists".formatted(command.taskProgrammingId()));
+            throw new TaskProgrammingAlreadyExistsException(command.taskProgrammingId());
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         TaskProgramming taskProgramming = taskProgrammingRepository.findById(command.taskProgrammingId())
-                .orElseThrow(() -> new IllegalArgumentException("Task Programming not found"));
+                .orElseThrow(() -> new TaskProgrammingNotFoundException(command.taskProgrammingId()));
 
         var execution = new Execution(tenantId, command);
         try {
@@ -78,7 +83,7 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
         Execution execution = executionRepository.findById(command.executionId())
                 .orElseThrow(() -> new ExecutionNoFoundException(command.executionId()));
         Employee employee = employeeRepository.findById(command.employeeId())
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+                .orElseThrow(() -> new EmployeeNotFoundException(command.employeeId()));
         var executionEmployee = new ExecutionEmployee(execution, employee);
         try {
             executionEmployeeRepository.save(executionEmployee);
@@ -94,7 +99,7 @@ public class ExecutionCommandServiceImpl implements ExecutionCommandService {
                 .orElseThrow(() -> new ExecutionNoFoundException(command.executionId()));
 
         Equipment equipment = equipmentRepository.findById(command.equipmentId())
-                .orElseThrow(() -> new IllegalArgumentException("Equipment not found"));
+                .orElseThrow(() -> new EquipmentNotFoundException(command.equipmentId()));
 
         var executionEquipment = new ExecutionEquipment(execution, equipment);
         try {

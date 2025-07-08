@@ -11,10 +11,15 @@ import com.gostech.swiftportbackend.plannification.domain.services.ActivityComma
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.ActivityRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskProgrammingRepository;
 import com.gostech.swiftportbackend.plannification.infrastructure.persistence.jpa.repositories.TaskRepository;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNotFoundException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNotSavedException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.LocationNotFoundException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.ZoneNotFoundException;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Zone;
 import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.LocationRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ZoneRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -45,20 +50,20 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         Location locationOrigin = locationRepository.findById(command.locationOrigin())
-                .orElseThrow(() -> new RuntimeException("Location with origin %s not found".formatted(command.locationOrigin())));
+                .orElseThrow(() -> new LocationNotFoundException(command.locationOrigin()));
 
         Location locationDestination = locationRepository.findById(command.locationDestination())
-                .orElseThrow(() -> new RuntimeException("Location destination %s not found".formatted(command.locationDestination())));
+                .orElseThrow(() -> new LocationNotFoundException(command.locationOrigin()));
 
         Zone zoneOrigin = zoneRepository.findById(command.zoneOrigin())
-                .orElseThrow(() -> new RuntimeException("Zone origin %s not found".formatted(command.zoneOrigin())));
+                .orElseThrow(() -> new ZoneNotFoundException(command.zoneOrigin()));
 
         Zone zoneDestination = zoneRepository.findById(command.zoneDestination())
-                .orElseThrow(() -> new RuntimeException("Zone destination %s not found".formatted(command.zoneDestination())));
+                .orElseThrow(() -> new ZoneNotFoundException(command.zoneOrigin()));
 
         var activity = new Activity(tenantId, command);
 
@@ -129,7 +134,7 @@ public class ActivityCommandServiceImpl implements ActivityCommandService {
             task.updateEmployeeAssigned(command.employeeId());
             taskRepository.save(task);
         }  catch (Exception e) {
-            throw new IllegalArgumentException("Error updating employee Id on task: %s".formatted(e.getMessage()));
+            throw new EmployeeNotSavedException(e.getMessage());
         }
         return Optional.of(task);
     }

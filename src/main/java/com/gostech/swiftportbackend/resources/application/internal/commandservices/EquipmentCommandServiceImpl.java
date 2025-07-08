@@ -8,6 +8,7 @@ import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEquipm
 import com.gostech.swiftportbackend.resources.domain.model.commands.UpdateEquipmentStatusCommand;
 import com.gostech.swiftportbackend.resources.domain.services.EquipmentCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EquipmentRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class EquipmentCommandServiceImpl implements EquipmentCommandService {
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         var equipment = new Equipment(tenantId, command);

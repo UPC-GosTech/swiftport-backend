@@ -6,6 +6,7 @@ import com.gostech.swiftportbackend.resources.domain.model.aggregates.Position;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreatePositionCommand;
 import com.gostech.swiftportbackend.resources.domain.services.PositionCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.PositionRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class PositionCommandServiceImpl implements PositionCommandService {
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         var position = new Position(tenantId, command);

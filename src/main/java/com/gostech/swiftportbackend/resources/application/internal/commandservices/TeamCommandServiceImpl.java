@@ -11,6 +11,7 @@ import com.gostech.swiftportbackend.resources.domain.services.TeamCommandService
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.EmployeeRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.TeamMemberRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.TeamRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class TeamCommandServiceImpl implements TeamCommandService {
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         var team = new Team(tenantId, command);

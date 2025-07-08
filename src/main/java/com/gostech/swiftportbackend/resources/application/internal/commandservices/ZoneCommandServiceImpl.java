@@ -9,6 +9,7 @@ import com.gostech.swiftportbackend.resources.domain.model.entities.Location;
 import com.gostech.swiftportbackend.resources.domain.services.ZoneCommandService;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.LocationRepository;
 import com.gostech.swiftportbackend.resources.infrastructure.persistence.jpa.repositories.ZoneRepository;
+import com.gostech.swiftportbackend.shared.domain.exceptions.TenantNotFoundException;
 import com.gostech.swiftportbackend.shared.infrastructure.multitenancy.TenantContext;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class ZoneCommandServiceImpl implements ZoneCommandService {
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
-            throw new RuntimeException("Tenant context not found");
+            throw new TenantNotFoundException();
         }
 
         var zone = new Zone(tenantId, command);
