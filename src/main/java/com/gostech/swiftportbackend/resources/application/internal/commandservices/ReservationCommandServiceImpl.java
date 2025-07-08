@@ -1,5 +1,6 @@
 package com.gostech.swiftportbackend.resources.application.internal.commandservices;
 
+import com.gostech.swiftportbackend.resources.domain.exceptions.ReservationNotSavedException;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Reservation;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateReservationCommand;
 import com.gostech.swiftportbackend.resources.domain.services.ReservationCommandService;
@@ -26,7 +27,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         try {
             reservationRepository.save(reservation);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving reservation: %s".formatted(e.getMessage()));
+            throw new ReservationNotSavedException(e.getMessage());
         }
         return reservation.getId();
     }

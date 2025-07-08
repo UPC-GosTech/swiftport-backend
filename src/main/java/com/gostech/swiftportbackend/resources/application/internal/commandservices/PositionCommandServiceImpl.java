@@ -1,5 +1,7 @@
 package com.gostech.swiftportbackend.resources.application.internal.commandservices;
 
+import com.gostech.swiftportbackend.resources.domain.exceptions.PositionNotSavedException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.PositionTitleAlreadyExistsException;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Position;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreatePositionCommand;
 import com.gostech.swiftportbackend.resources.domain.services.PositionCommandService;
@@ -18,7 +20,7 @@ public class PositionCommandServiceImpl implements PositionCommandService {
     @Override
     public Long handle(CreatePositionCommand command) {
         if (positionRepository.existsByTitle(command.title()))
-            throw new IllegalArgumentException("Position with title %s already exists".formatted(command.title()));
+            throw new PositionTitleAlreadyExistsException(command.title());
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
@@ -29,7 +31,7 @@ public class PositionCommandServiceImpl implements PositionCommandService {
         try {
             positionRepository.save(position);
         } catch (Exception ex) {
-            throw new IllegalArgumentException("Error saving position: %s".formatted(ex.getMessage()));
+            throw new PositionNotSavedException(ex.getMessage());
         }
         return position.getId();
     }

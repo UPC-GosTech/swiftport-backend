@@ -1,5 +1,9 @@
 package com.gostech.swiftportbackend.resources.application.internal.commandservices;
 
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNameAlreadyExistsException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNotFoundException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.EmployeeNotSavedException;
+import com.gostech.swiftportbackend.resources.domain.exceptions.PositionNotFoundException;
 import com.gostech.swiftportbackend.resources.domain.model.aggregates.Employee;
 import com.gostech.swiftportbackend.resources.domain.model.commands.CreateEmployeeCommand;
 import com.gostech.swiftportbackend.resources.domain.model.commands.UpdateEmployeeStatusCommand;
@@ -26,7 +30,7 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
     @Override
     public Long handle(CreateEmployeeCommand command) {
         if (employeeRepository.existsByName(new FullName(command.name(), command.lastName())))
-            throw new IllegalArgumentException("Employee with name %s already exists".formatted(new FullName(command.name(), command.lastName())));
+            throw new EmployeeNameAlreadyExistsException(command.name(), command.lastName());
 
         Long tenantId = TenantContext.getCurrentTenantId();
         if (tenantId == null) {
@@ -34,14 +38,14 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
         }
 
         Position position = positionRepository.findById(command.positionId())
-            .orElseThrow(() -> new IllegalArgumentException("Position not found"));
+            .orElseThrow(() -> new PositionNotFoundException(command.positionId()));
 
         var employee = new Employee(tenantId, command);
         try {
             employee.setPosition(position);
             employeeRepository.save(employee);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving employee: %s".formatted(e.getMessage()));
+            throw new EmployeeNotSavedException(e.getMessage());
         }
         return employee.getId();
     }
@@ -49,12 +53,12 @@ public class EmployeeCommandServiceImpl implements EmployeeCommandService {
     @Override
     public Optional<Employee> handle(UpdateEmployeeStatusCommand command) {
         Employee employee = employeeRepository.findById(command.employeeId())
-                .orElseThrow(() -> new IllegalArgumentException("Employee with id %s does not exist".formatted(command.employeeId())));
+                .orElseThrow(() -> new EmployeeNotFoundException(command.employeeId()));
         try {
             employee.updateStatus(command.status());
             employeeRepository.save(employee);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error saving employee: %s".formatted(e.getMessage()));
+            throw new EmployeeNotSavedException(e.getMessage());
         }
         return Optional.of(employee);
     }
